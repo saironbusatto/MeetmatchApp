@@ -1,0 +1,30 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;background:var(--bg-page);}
+  body{font-family:var(--font-body);color:var(--fg-1);padding:24px 30px;display:flex;flex-direction:column;gap:14px;}
+  label{font:600 12px/1 var(--font-body);color:var(--fg-2);letter-spacing:0.04em;text-transform:uppercase;}
+  .field{display:flex;flex-direction:column;gap:6px;max-width:480px;}
+  .input,.select{font:400 15px/1.4 var(--font-body);padding:12px 14px;border:1.5px solid var(--ink-100);border-radius:12px;background:var(--ink-0);color:var(--ink-900);}
+  .input:focus,.select:focus{outline:none;border-color:var(--vermillion-500);box-shadow:0 0 0 3px var(--vermillion-50);}
+  .input::placeholder{color:var(--ink-300);}
+  .error{border-color:var(--vermillion-500);background:var(--vermillion-50);}
+  .hint{font:var(--t-caption);color:var(--fg-3);}
+  .hint.err{color:var(--vermillion-700);}
+</style></head>
+<body>
+  <div class="field">
+    <label>What are we meeting about?</label>
+    <input class="input" value="Q3 planning lunch" />
+  </div>
+  <div class="field">
+    <label>Key person</label>
+    <input class="input" placeholder="@diego — must attend" />
+    <div class="hint">Their availability is weighted highest.</div>
+  </div>
+  <div class="field">
+    <label>Window</label>
+    <input class="input error" value="Jun 3 → May 28" />
+    <div class="hint err">End date is before start date.</div>
+  </div>
+</body></html>

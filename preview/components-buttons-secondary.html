@@ -1,0 +1,20 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;background:var(--bg-page);}
+  body{font-family:var(--font-body);color:var(--fg-1);padding:24px 30px;display:flex;flex-direction:column;gap:14px;}
+  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+  .meta{font:var(--t-mono);font-size:10px;color:var(--fg-3);min-width:80px;}
+  .btn{font:600 14px/1 var(--font-body);padding:12px 18px;border-radius:12px;cursor:pointer;}
+  .secondary{background:var(--ink-0);color:var(--ink-900);border:1.5px solid var(--ink-900);}
+  .ghost{background:transparent;color:var(--ink-900);border:none;text-decoration:underline;text-underline-offset:4px;}
+  .tonal{background:var(--vermillion-50);color:var(--vermillion-700);border:1px solid var(--vermillion-100);}
+  .ai{background:var(--ink-900);color:var(--spark-300);border:1.5px solid var(--ink-900);box-shadow:2px 2px 0 var(--vermillion-500);display:inline-flex;align-items:center;gap:6px;}
+  .ai .sp{font-size:14px;}
+</style></head>
+<body>
+  <div class="row"><span class="meta">SECONDARY</span><button class="btn secondary">View details</button><button class="btn secondary">+ Add option</button></div>
+  <div class="row"><span class="meta">TONAL</span><button class="btn tonal">Resend</button><button class="btn tonal">Edit window</button></div>
+  <div class="row"><span class="meta">GHOST</span><button class="btn ghost">Cancel</button><button class="btn ghost">Maybe later</button></div>
+  <div class="row"><span class="meta">AI</span><button class="btn ai"><span class="sp">✦</span> Pick the best day</button></div>
+</body></html>

@@ -1,0 +1,30 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;background:var(--bg-page);}
+  body{font-family:var(--font-body);color:var(--fg-1);padding:24px 30px;display:flex;flex-direction:column;gap:10px;}
+  .row{display:flex;gap:12px;align-items:flex-start;}
+  .col{flex:1;background:var(--bg-surface);border:1px solid var(--border-1);border-radius:14px;padding:14px 16px;}
+  .col.dont{border-color:var(--vermillion-200);background:var(--vermillion-50);}
+  .col.do{border-color:#BCE5CD;background:#EFFAF3;}
+  .tag{font:var(--t-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;}
+  .tag.x{color:var(--vermillion-700);}
+  .tag.y{color:var(--success-500);}
+  .ex{font:500 15px/1.4 var(--font-body);color:var(--ink-900);}
+  .ex + .ex{margin-top:8px;}
+</style></head>
+<body>
+  <div class="row">
+    <div class="col dont"><div class="tag x">Don't</div>
+      <div class="ex">"Calculating optimal date…"</div>
+      <div class="ex">"Event Confirmed Successfully"</div>
+      <div class="ex">"No events yet"</div>
+    </div>
+    <div class="col do"><div class="tag y">Do</div>
+      <div class="ex">"Hunting for a time that works…"</div>
+      <div class="ex">"Locked in. ¡Vamos!"</div>
+      <div class="ex">"Nothing on the calendar — yet."</div>
+    </div>
+  </div>
+  <div style="font:var(--t-caption);color:var(--fg-3);margin-top:4px;">Warm · conversational · second person · sentence case · em dashes welcome · light bilingual flavor</div>
+</body></html>

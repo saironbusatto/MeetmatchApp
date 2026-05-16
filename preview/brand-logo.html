@@ -1,0 +1,29 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;background:var(--bg-page);}
+  body{font-family:var(--font-body);color:var(--fg-1);padding:30px 36px;display:flex;align-items:center;gap:40px;}
+  .col{display:flex;flex-direction:column;gap:8px;align-items:flex-start;}
+  .label{font:var(--t-mono);font-size:10px;color:var(--fg-3);letter-spacing:0.06em;text-transform:uppercase;}
+  .invert{background:var(--ink-900);padding:14px 18px;border-radius:14px;}
+  .invert .wm{font:800 36px/0.95 var(--font-display);letter-spacing:-0.035em;color:#fff;position:relative;}
+  .wm{font:800 36px/0.95 var(--font-display);letter-spacing:-0.035em;color:var(--ink-900);position:relative;}
+  .wm::after{content:"";position:absolute;right:-7px;bottom:3px;width:7px;height:7px;border-radius:50%;background:var(--vermillion-500);}
+  .wm .dot{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--vermillion-500);top:-1px;left:60px;}
+</style></head>
+<body>
+  <div class="col">
+    <div class="label">Wordmark</div>
+    <div class="wm">vamo<span class="dot"></span>intao</div>
+  </div>
+  <div class="col">
+    <div class="label">Inverse</div>
+    <div class="invert">
+      <div class="wm" style="color:#fff;">vamo<span class="dot"></span>intao</div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="label">Mark</div>
+    <img src="../assets/logomark.svg" width="72" height="72" alt="logomark"/>
+  </div>
+</body></html>

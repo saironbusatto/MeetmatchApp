@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;background:var(--bg-page);}
+  body{font-family:var(--font-body);color:var(--fg-1);padding:24px 30px;display:flex;flex-direction:column;gap:14px;}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .meta{font:var(--t-mono);font-size:10px;color:var(--fg-3);min-width:80px;}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;font:500 13px/1 var(--font-body);border-radius:999px;border:1px solid var(--ink-100);background:var(--ink-0);color:var(--ink-900);cursor:pointer;}
+  .chip.on{background:var(--ink-900);color:var(--ink-0);border-color:var(--ink-900);}
+  .chip.brand{background:var(--vermillion-50);color:var(--vermillion-700);border-color:var(--vermillion-200);}
+  .chip.ai{background:var(--spark-300);color:var(--ink-900);border-color:var(--ink-900);font-weight:600;}
+  .chip .dot{width:6px;height:6px;border-radius:50%;background:var(--success-500);}
+  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;font:600 11px/1.2 var(--font-body);border-radius:6px;text-transform:uppercase;letter-spacing:0.05em;}
+  .badge.success{background:var(--success-100);color:var(--success-500);}
+  .badge.warn{background:var(--warn-100);color:#9D6B0C;}
+  .badge.brand{background:var(--vermillion-50);color:var(--vermillion-700);}
+</style></head>
+<body>
+  <div class="row"><span class="meta">CHIPS</span>
+    <span class="chip">All</span>
+    <span class="chip on">Upcoming</span>
+    <span class="chip">Past</span>
+    <span class="chip brand">You</span>
+    <span class="chip ai">✦ AI pick</span>
+    <span class="chip"><span class="dot"></span>Maya</span>
+  </div>
+  <div class="row"><span class="meta">BADGES</span>
+    <span class="badge success">Locked in</span>
+    <span class="badge warn">1 conflict</span>
+    <span class="badge brand">Key person</span>
+  </div>
+</body></html>

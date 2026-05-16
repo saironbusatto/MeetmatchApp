@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Farmei — Protótipo clicável</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; background: var(--bg-page); min-height: 100vh; }
+  body { font-family: var(--font-body); color: var(--fg-1); }
+
+  .stage {
+    min-height: 100vh; display: grid;
+    grid-template-columns: 280px 1fr 280px; gap: 32px;
+    padding: 32px 40px; box-sizing: border-box;
+    background: radial-gradient(ellipse at 30% 0%, #FFEFEB 0%, var(--bg-page) 60%);
+  }
+
+  /* Left rail — brand & instructions */
+  .rail-l {
+    display: flex; flex-direction: column; gap: 20px;
+    position: sticky; top: 32px; align-self: flex-start;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .wm {
+    font-family: var(--font-display); font-weight: 800; font-size: 22px;
+    letter-spacing: -0.035em; color: var(--ink-900); position: relative;
+  }
+  .brand .wm::after {
+    content: ""; position: absolute; top: 4px; right: -10px;
+    width: 7px; height: 7px; border-radius: 50%; background: var(--vermillion-500);
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 999px;
+    background: var(--ink-900); color: #fff;
+    font: 600 12px/1 var(--font-body); letter-spacing: 0.04em; text-transform: uppercase;
+    width: fit-content;
+  }
+  .pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--spark-300); }
+  h1.kicker {
+    margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 38px;
+    line-height: 0.96; letter-spacing: -0.025em; color: var(--ink-900);
+  }
+  p.lede {
+    margin: 0; font: 400 15px/1.5 var(--font-body); color: var(--ink-600); text-wrap: pretty;
+  }
+  .tip {
+    margin-top: 12px; padding: 14px 16px; border-radius: 14px;
+    background: var(--bg-surface); border: 1px solid var(--border-1);
+  }
+  .tip .label {
+    font: 600 11px/1 var(--font-body); color: var(--vermillion-600);
+    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px;
+  }
+  .tip p { margin: 0; font: 400 13px/1.5 var(--font-body); color: var(--ink-700); }
+
+  /* Center stage — phone */
+  .phone-wrap {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+  }
+  .reset-btn {
+    font: 600 13px/1 var(--font-body); padding: 8px 14px; border-radius: 999px;
+    background: var(--bg-surface); border: 1px solid var(--border-1); color: var(--ink-700);
+    cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .reset-btn:hover { background: var(--ink-50); }
+
+  /* Right rail — step list */
+  .rail-r {
+    display: flex; flex-direction: column; gap: 6px;
+    position: sticky; top: 32px; align-self: flex-start;
+  }
+  .rail-r .h {
+    font: 600 11px/1 var(--font-body); color: var(--ink-500);
+    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .step {
+    display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+    border: 1px solid transparent; border-radius: 12px;
+    cursor: pointer; background: transparent; text-align: left; width: 100%;
+    transition: background 160ms;
+    font-family: var(--font-body);
+  }
+  .step:hover { background: var(--ink-50); }
+  .step.on { background: var(--bg-surface); border-color: var(--ink-900); box-shadow: 2px 2px 0 var(--ink-900); }
+  .step .n {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--ink-50); color: var(--ink-700);
+    font: 600 12px/1 var(--font-mono); display: flex; align-items: center; justify-content: center;
+    flex: none;
+  }
+  .step.on .n { background: var(--ink-900); color: var(--spark-300); }
+  .step .nm { font: 600 14px/1.2 var(--font-body); color: var(--ink-900); }
+  .step .sub { font: 400 11px/1.2 var(--font-body); color: var(--ink-500); margin-top: 2px; }
+
+  @media (max-width: 1080px) {
+    .stage { grid-template-columns: 1fr; gap: 24px; padding: 24px; }
+    .rail-l, .rail-r { position: static; }
+  }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="ui_kits/mobile/ios-frame.jsx"></script>
+  <script type="text/babel" src="ui_kits/mobile/components.jsx"></script>
+  <script type="text/babel" src="ui_kits/mobile/screens-a.jsx"></script>
+  <script type="text/babel" src="ui_kits/mobile/screens-b.jsx"></script>
+  <script type="text/babel" src="ui_kits/mobile/screens-public.jsx"></script>
+  <script type="text/babel" src="ui_kits/mobile/screens-social.jsx"></script>
+
+  <script type="text/babel">
+    const STEPS = [
+      { key: 'onboarding',    name: 'Onboarding',      sub: 'Tela inicial' },
+      { key: 'home',          name: 'Home private',    sub: 'Lista de eventos' },
+      { key: 'create',        name: 'Novo privado',    sub: 'Título + janela' },
+      { key: 'invite',        name: 'Convidar',        sub: 'Pessoas e key person' },
+      { key: 'availability',  name: 'Disponibilidade', sub: 'Sim · talvez · não' },
+      { key: 'result',        name: 'IA escolhe',      sub: 'A melhor data' },
+      { key: 'confirmed',     name: 'Confirmado',      sub: 'Locked in 🎉' },
+      { key: 'public-home',   name: 'Home público',    sub: 'Eventos perto' },
+      { key: 'public-create', name: 'Novo público',    sub: 'Host um evento' },
+      { key: 'public-detail', name: 'Detalhes',        sub: 'Ver + se inscrever' },
+      { key: 'host-dash',     name: 'Host manager',    sub: 'Gerenciar inscritos' },
+      { key: 'crush-find',    name: 'Crush finder',    sub: 'Quem mais vai' },
+      { key: 'map',           name: 'Mapa',            sub: 'Eventos próximos' },
+      { key: 'stories',       name: 'Stories',         sub: 'O que rola lá' },
+    ];
+
+    function Prototype() {
+      const [step, setStep] = React.useState(0);
+
+      // Read from URL hash on mount so refresh keeps position
+      React.useEffect(() => {
+        const h = parseInt(window.location.hash.slice(1), 10);
+        if (!isNaN(h) && h >= 0 && h < STEPS.length) setStep(h);
+      }, []);
+      React.useEffect(() => {
+        window.location.hash = String(step);
+      }, [step]);
+
+      const go = (i) => setStep(Math.max(0, Math.min(STEPS.length - 1, i)));
+
+      const publicEvent = {
+        id: 1,
+        title: 'Show de Rock — Caverna Pub',
+        when: 'Sex · Jun 07 · 22:00',
+        location: 'Caverna Pub · Lapa',
+        category: 'Music',
+        people: SAMPLE_PEOPLE.slice(0, 5),
+        current: 24,
+        max: 80,
+        color: '#7A5BAA',
+      };
+
+      const screens = {
+        onboarding:   <OnboardingScreen   onContinue={() => go(1)} />,
+        home:         <HomeScreen         onNewEvent={() => go(2)} onOpen={() => go(6)} onChangeNav={(k) => { if (k === 'new') go(2); else if (k === 'public') go(7); }} />,
+        create:       <CreateScreen       onBack={() => go(1)}     onNext={() => go(3)} />,
+        invite:       <InviteScreen       onBack={() => go(2)}     onNext={() => go(4)} />,
+        availability: <AvailabilityScreen onBack={() => go(3)}     onNext={() => go(5)} />,
+        result:       <ResultScreen       onBack={() => go(4)}     onLock={() => go(6)} />,
+        confirmed:    <ConfirmedScreen    onBack={() => go(5)}     onHome={() => go(1)} />,
+        'public-home': <PublicEventsHome onNewPublic={() => go(8)} onOpen={() => go(9)} onChangeNav={(k) => { if (k === 'new') go(8); else if (k === 'home') go(1); }} />,
+        'public-create': <CreatePublicEvent onBack={() => go(7)} onNext={() => go(7)} />,
+        'public-detail': <PublicEventDetails event={publicEvent} onBack={() => go(7)} onJoin={() => alert('✓ Você está inscrito! Até lá.')} />,
+        'host-dash': <HostDashboard event={publicEvent} onBack={() => go(7)} />,
+        'crush-find': <CrushFinder onBack={() => go(7)} />,
+        'map': <MapView onBack={() => go(7)} onEventDetail={() => go(9)} />,
+        'stories': <EventStories event={publicEvent} onBack={() => go(9)} />,
+      };
+
+      const current = STEPS[step];
+
+      return (
+        <div className="stage" data-screen-label="Protótipo Farmei">
+          <aside className="rail-l">
+            <div className="brand">
+              <img src="assets/logomark.svg" width="36" height="36" alt=""/>
+              <span className="wm">farmei</span>
+            </div>
+            <span className="pill"><span className="dot"></span>Protótipo clicável</span>
+            <h1 className="kicker">Clica no celular pra navegar.</h1>
+            <p className="lede">Cada CTA dentro do app te leva pra próxima tela — exatamente como funcionaria de verdade. Os dados são fictícios, mas o fluxo é real.</p>
+            <div className="tip">
+              <div className="label">Como testar</div>
+              <p>Começa em <strong>Onboarding</strong> e segue os botões. Pode também clicar nas etapas à direita pra pular direto pra qualquer tela.</p>
+            </div>
+          </aside>
+
+          <div className="phone-wrap">
+            <IOSDevice width={400} height={860}>{screens[current.key]}</IOSDevice>
+            <button className="reset-btn" onClick={() => go(0)}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12 a9 9 0 1 0 3 -6.7"/><path d="M3 4 V10 H9"/></svg>
+              Voltar ao início
+            </button>
+          </div>
+
+          <aside className="rail-r">
+            <div className="h">Etapas do fluxo</div>
+            {STEPS.map((s, i) => (
+              <button key={s.key} className={"step " + (i === step ? "on" : "")} onClick={() => go(i)}>
+                <span className="n">{String(i + 1).padStart(2, '0')}</span>
+                <span>
+                  <div className="nm">{s.name}</div>
+                  <div className="sub">{s.sub}</div>
+                </span>
+              </button>
+            ))}
+          </aside>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<Prototype/>);
+  </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;background:var(--bg-page);}
+  body{font-family:var(--font-body);color:var(--fg-1);padding:24px 30px;display:flex;flex-direction:column;gap:16px;}
+  .row{display:flex;align-items:center;gap:12px;}
+  .meta{font:var(--t-mono);font-size:10px;color:var(--fg-3);min-width:80px;}
+  /* Toggle */
+  .t{position:relative;width:46px;height:26px;background:var(--ink-200);border-radius:999px;cursor:pointer;transition:background 200ms;}
+  .t::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0 1px 2px rgba(0,0,0,0.15);transition:left 200ms var(--ease-out);}
+  .t.on{background:var(--vermillion-500);}
+  .t.on::after{left:23px;}
+  /* Checkbox */
+  .c{width:22px;height:22px;border:1.5px solid var(--ink-300);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;background:#fff;cursor:pointer;}
+  .c.on{background:var(--ink-900);border-color:var(--ink-900);}
+  .c.on::after{content:"";width:8px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:translateY(-1px) rotate(-45deg);}
+  /* Segmented */
+  .seg{display:inline-flex;background:var(--ink-50);border:1px solid var(--ink-100);border-radius:10px;padding:3px;gap:2px;}
+  .seg button{font:600 13px/1 var(--font-body);padding:8px 14px;border:none;background:transparent;color:var(--fg-2);border-radius:7px;cursor:pointer;}
+  .seg button.on{background:var(--ink-0);color:var(--ink-900);box-shadow:0 1px 2px rgba(0,0,0,0.08);}
+  /* Radio */
+  .r{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--ink-300);background:#fff;display:inline-flex;align-items:center;justify-content:center;}
+  .r.on{border-color:var(--vermillion-500);}
+  .r.on::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--vermillion-500);}
+</style></head>
+<body>
+  <div class="row"><span class="meta">TOGGLE</span>
+    <div class="t"></div><span style="font:var(--t-body-sm);color:var(--fg-2);">Off</span>
+    <div class="t on" style="margin-left:14px;"></div><span style="font:var(--t-body-sm);">On</span>
+  </div>
+  <div class="row"><span class="meta">CHECKBOX</span>
+    <div class="c"></div><span style="font:var(--t-body-sm);color:var(--fg-2);">Available</span>
+    <div class="c on" style="margin-left:14px;"></div><span style="font:var(--t-body-sm);">Available</span>
+  </div>
+  <div class="row"><span class="meta">RADIO</span>
+    <div class="r"></div><span style="font:var(--t-body-sm);color:var(--fg-2);">Anytime</span>
+    <div class="r on" style="margin-left:14px;"></div><span style="font:var(--t-body-sm);">Mornings only</span>
+  </div>
+  <div class="row"><span class="meta">SEGMENTED</span>
+    <div class="seg"><button class="on">Day</button><button>Week</button><button>Month</button></div>
+  </div>
+</body></html>

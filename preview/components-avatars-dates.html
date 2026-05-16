@@ -1,0 +1,39 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;background:var(--bg-page);}
+  body{font-family:var(--font-body);color:var(--fg-1);padding:24px 30px;display:flex;flex-direction:column;gap:16px;}
+  .row{display:flex;align-items:center;gap:12px;}
+  .meta{font:var(--t-mono);font-size:10px;color:var(--fg-3);min-width:80px;}
+  .stack{display:flex;}
+  .av{width:36px;height:36px;border-radius:50%;border:2px solid var(--bg-page);font:700 13px/1 var(--font-body);display:flex;align-items:center;justify-content:center;color:#fff;margin-left:-10px;flex:none;}
+  .av:first-child{margin-left:0;}
+  .av.key{outline:2px solid var(--vermillion-500);outline-offset:1px;}
+  .av-l{width:48px;height:48px;font-size:16px;}
+  .more{background:var(--ink-100);color:var(--ink-700);}
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;background:var(--ink-0);border:1.5px solid var(--ink-100);border-radius:999px;font:600 14px/1 var(--font-body);color:var(--ink-900);}
+  .pill .when{font:600 14px/1 var(--font-mono);color:var(--ink-900);}
+  .pill .day{color:var(--fg-3);font-weight:500;}
+  .pill.ai{background:var(--spark-100);border-color:var(--ink-900);box-shadow:2px 2px 0 var(--ink-900);}
+</style></head>
+<body>
+  <div class="row"><span class="meta">AVATARS</span>
+    <div class="stack">
+      <div class="av key" style="background:#FF3B2E;">D</div>
+      <div class="av" style="background:#2A6F7A;">M</div>
+      <div class="av" style="background:#7A5BAA;">JR</div>
+      <div class="av" style="background:#C99B00;">SO</div>
+      <div class="av more">+3</div>
+    </div>
+    <div class="stack" style="margin-left:18px;">
+      <div class="av av-l key" style="background:#FF3B2E;width:48px;height:48px;font-size:16px;">D</div>
+      <div class="av av-l" style="background:#2A6F7A;width:48px;height:48px;font-size:16px;">M</div>
+      <div class="av av-l" style="background:#7A5BAA;width:48px;height:48px;font-size:16px;">JR</div>
+    </div>
+  </div>
+  <div class="row"><span class="meta">DATE PILLS</span>
+    <span class="pill"><span class="day">Mon</span><span class="when">Jun 03</span></span>
+    <span class="pill ai"><span class="day">Tue</span><span class="when">Jun 04</span></span>
+    <span class="pill"><span class="day">Wed</span><span class="when">Jun 05</span></span>
+  </div>
+</body></html>

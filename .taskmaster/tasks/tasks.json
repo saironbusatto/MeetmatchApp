@@ -1,0 +1,748 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup do monorepo com pnpm workspaces",
+        "description": "Inicializar a estrutura de monorepo com pnpm workspaces, configurar Turbo como task runner, e criar os packages compartilhados base.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Criar estrutura conforme ARCHITECTURE.md:\n- /apps/web (Next.js 15)\n- /services/api (Hono + TypeScript)\n- /packages/ui, design-tokens, types, utils, config\n\nConfigurar:\n- pnpm-workspace.yaml\n- turbo.json com pipelines build, dev, lint, test\n- tsconfig base em packages/config\n- eslint config base em packages/config\n- .gitignore, .nvmrc (Node 20+)\n\nNão inicializar Nx — decisão ADR-002.",
+        "testStrategy": "Rodar `pnpm install` e `pnpm build` sem erros. Cada package deve compilar de forma independente.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Criar estrutura de pastas e pnpm-workspace.yaml",
+            "description": "Scaffolding inicial do monorepo",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Configurar turbo.json com pipelines",
+            "description": "Pipelines de build, dev, lint e test",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Criar packages/config com tsconfig e eslint base",
+            "description": "Configurações compartilhadas de TypeScript e ESLint",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 4,
+            "title": "Criar package.json raiz e inicializar cada workspace",
+            "description": "package.json de cada app e package com scripts básicos",
+            "status": "pending",
+            "dependencies": [1, 2, 3]
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Package design-tokens: portar design system para Tailwind",
+        "description": "Criar packages/design-tokens que exporta tailwind.config.ts e global.css com os tokens do design system Farmei.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [1],
+        "details": "Fonte: colors_and_type.css na raiz do projeto.\n\nO package deve exportar:\n- tailwind.config.ts com cores (vermillion #FF3B2E, spark yellow #FFD93D, etc.), fontes (Bricolage Grotesque, Geist, JetBrains Mono), spacing e shadows customizadas\n- global.css com CSS variables\n\nNão alterar o colors_and_type.css original — apenas ler e traduzir os tokens.\nPrefixo CSS legado --vmt-* pode ser mantido como alias (ADR-008).\n\nO package deve ser consumível por apps/web e futuramente por mobile.",
+        "testStrategy": "Importar tailwind.config.ts em apps/web e verificar que as classes utilitárias dos tokens estão disponíveis. Verificar visualmente que a cor primária e tipografia batem com o protótipo.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Mapear tokens do colors_and_type.css para objeto Tailwind",
+            "description": "Extrair cores, fontes, shadows e spacing",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Criar tailwind.config.ts exportável",
+            "description": "Config Tailwind com todos os tokens mapeados",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Criar global.css com CSS variables",
+            "description": "CSS variables equivalentes para uso direto",
+            "status": "pending",
+            "dependencies": [1]
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Package types: contratos compartilhados TypeScript",
+        "description": "Criar packages/types com todas as interfaces, enums e tipos compartilhados entre API e web.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [1],
+        "details": "Tipos a definir baseados no modelo de dados da ARCHITECTURE.md:\n\n- Enums: EventType (PRIVATE | PUBLIC), EventStatus (DRAFT | OPEN | CONFIRMED | CANCELLED), ParticipantRole (OWNER | INVITEE | KEY_PERSON), InviteStatus (PENDING | ACCEPTED | DECLINED), AvailabilityResponse (YES | MAYBE | NO), RegistrationStatus (REGISTERED | CANCELLED)\n\n- Interfaces: User, Event, PrivateEventSettings, PublicEventSettings, EventParticipant, AvailabilityResponse, PublicEventRegistration\n\n- DTOs de request/response para cada endpoint da API\n\nNão colocar lógica de negócio — apenas contratos de dados.",
+        "testStrategy": "Verificar que a API e o web conseguem importar os tipos sem erro de compilação TypeScript.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Definir enums de domínio",
+            "description": "EventType, EventStatus, ParticipantRole, etc.",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Definir interfaces de entidades",
+            "description": "User, Event, PrivateEventSettings, PublicEventSettings, etc.",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Definir DTOs de request/response da API",
+            "description": "Tipos de entrada e saída de cada endpoint",
+            "status": "pending",
+            "dependencies": [2]
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Package utils: algoritmo de melhor data",
+        "description": "Implementar em packages/utils/src/date-suggestion.ts a função pura de cálculo de melhor data com pesos, conforme especificado na ARCHITECTURE.md seção 5.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [3],
+        "details": "Implementar:\n- scoreDay(responses, keyPersonId, keyPersonWeight): number\n- maxPossibleScore(participantCount, keyPersonId, keyPersonWeight): number\n- suggestDate(input: SuggestionInput): SuggestionResult\n\nRegras (ADR-007, PRD seção 9.1):\n- YES = peso 1.0, MAYBE = 0.5, NO = 0\n- Key person recebe multiplicador (default 3.0)\n- Melhor dia = maior soma; empate = data mais cedo\n- confidence = score_dia / max_possible_score\n- Explicação textual via template (sem LLM no MVP)\n\nExemplo de template: 'Terça, 4 de jun — 5 de 6 podem. A pessoa-chave está livre.'\n\nFunção deve ser puramente funcional e testável sem dependências externas.",
+        "testStrategy": "Testes unitários cobrindo: todos YES sem key person, mix YES/MAYBE/NO, key person com MAYBE, empate de score (data mais cedo vence), todos NO (confidence = 0), janela de 1 dia.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implementar scoreDay e maxPossibleScore",
+            "description": "Funções de cálculo de peso por dia",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Implementar suggestDate com tiebreaker e confidence",
+            "description": "Função principal que retorna melhor data",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Implementar geração de explicação textual por template",
+            "description": "Templates de reasoning em português",
+            "status": "pending",
+            "dependencies": [2]
+          },
+          {
+            "id": 4,
+            "title": "Escrever testes unitários completos",
+            "description": "Cobertura de todos os casos de borda do algoritmo",
+            "status": "pending",
+            "dependencies": [1, 2, 3]
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Setup do Supabase: projeto, banco e autenticação",
+        "description": "Criar projeto no Supabase, configurar banco PostgreSQL com o schema completo, e habilitar Supabase Auth com email/senha.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [1],
+        "details": "Ações:\n1. Criar projeto no Supabase (ou usar Supabase local via CLI para dev)\n2. Habilitar Auth: email/senha, desativar confirmação de email no dev\n3. Criar schema com Drizzle ORM (ADR-004) em services/api/src/db:\n   - Tabelas: users, events, private_event_settings, event_participants, availability_responses, public_event_settings, public_event_registrations\n   - Enums PostgreSQL correspondentes\n   - Indexes: events.owner_id, event_participants.event_id, availability_responses.event_id+participant_id\n4. Configurar variáveis de ambiente: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, DATABASE_URL\n5. Criar migration inicial e rodar no banco dev\n\nNão usar Supabase como BaaS direto no frontend — toda lógica passa pela API Hono.",
+        "testStrategy": "Conectar no banco via Drizzle Studio ou psql e verificar que todas as tabelas e enums foram criados. Testar signup/login via Supabase Auth dashboard.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Criar projeto Supabase e configurar Auth",
+            "description": "Setup inicial do projeto e habilitação de email/senha",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Definir schema Drizzle com todas as tabelas e enums",
+            "description": "Schema TypeScript correspondente ao modelo de dados da ARCHITECTURE.md",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Gerar e rodar migration inicial",
+            "description": "drizzle-kit generate e migrate",
+            "status": "pending",
+            "dependencies": [2]
+          },
+          {
+            "id": 4,
+            "title": "Configurar variáveis de ambiente e .env.example",
+            "description": "Documentar todas as vars necessárias",
+            "status": "pending",
+            "dependencies": [1]
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "API Hono: setup base e middleware",
+        "description": "Inicializar services/api com Hono, configurar middleware de autenticação JWT via Supabase, CORS, validação Zod e estrutura de roteamento.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [3, 5],
+        "details": "Setup:\n- Hono app com TypeScript\n- Middleware de auth: extrai JWT do header Authorization, valida via Supabase SDK, injeta user_id no context\n- CORS configurado para o domínio do web app\n- Middleware de erro: retorna erros estruturados com status HTTP correto\n- Zod para validação de body, params e query em todos os endpoints\n- Estrutura de routers: /auth, /users, /private-events, /public-events\n- Health check: GET /health\n\nVariáveis de ambiente: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, PORT, CORS_ORIGIN\n\nEndpoint base: /api/v1",
+        "testStrategy": "GET /health retorna 200. Request sem JWT em endpoint protegido retorna 401. Request com JWT inválido retorna 401. Request com body inválido retorna 400 com detalhes Zod.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Inicializar projeto Hono com TypeScript",
+            "description": "Setup básico com tsup ou bun para build",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Implementar middleware de autenticação JWT",
+            "description": "Validação do token Supabase e injeção do user_id",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Configurar CORS, error handler e validação Zod",
+            "description": "Middlewares globais",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 4,
+            "title": "Criar estrutura de roteamento e health check",
+            "description": "Organização dos routers e endpoint /health",
+            "status": "pending",
+            "dependencies": [1, 2, 3]
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "API: endpoints de Auth e Usuário",
+        "description": "Implementar os endpoints de auth delegando para Supabase Auth, e os endpoints de perfil do usuário.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [6],
+        "details": "Endpoints (ARCHITECTURE.md seção 4):\n- POST /auth/signup — cria conta no Supabase Auth + insere registro em users\n- POST /auth/login — autentica e retorna JWT\n- POST /auth/logout — invalida sessão\n- GET /auth/me — retorna dados do usuário autenticado\n- GET /users/me — perfil completo\n- PUT /users/me — atualizar nome, avatar_url\n\nSignup deve criar registro em `users` no banco próprio após criar conta no Supabase Auth.\nLogin retorna { access_token, user }.\nTodos os endpoints de /users/* exigem JWT válido.",
+        "testStrategy": "Fluxo completo: signup → login → GET /auth/me → PUT /users/me → GET /users/me. Verificar que signup duplicado retorna 409. Verificar que login com senha errada retorna 401.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implementar POST /auth/signup",
+            "description": "Criar conta no Supabase Auth + inserir em users",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Implementar POST /auth/login e POST /auth/logout",
+            "description": "Autenticação e invalidação de sessão",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 3,
+            "title": "Implementar GET /auth/me e endpoints /users/me",
+            "description": "Leitura e atualização de perfil",
+            "status": "pending",
+            "dependencies": [1, 2]
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "API: CRUD de eventos privados",
+        "description": "Implementar endpoints de criação, leitura, edição e cancelamento de eventos privados, incluindo private_event_settings.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [6, 7],
+        "details": "Endpoints:\n- POST /private-events — cria event (type=PRIVATE, status=DRAFT) + private_event_settings\n- GET /private-events/:id — retorna evento com settings e participantes\n- PUT /private-events/:id — edita título, descrição, local, janela de datas, key person\n- DELETE /private-events/:id — muda status para CANCELLED\n\nRegras de autorização:\n- Apenas o owner (owner_id == user_id do JWT) pode editar/cancelar\n- GET retorna para qualquer participante do evento\n\nBody de criação inclui: title, description?, location_text?, date_window_start, date_window_end, key_person_user_id?\n\nValidação Zod em todos os endpoints.",
+        "testStrategy": "Criar evento, ler, editar, cancelar. Verificar que usuário não-owner recebe 403 ao tentar editar. Verificar que date_window_end >= date_window_start é validado.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implementar POST /private-events",
+            "description": "Criação do evento + settings em transação",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Implementar GET /private-events/:id",
+            "description": "Retorno com settings e participantes",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Implementar PUT e DELETE /private-events/:id",
+            "description": "Edição e cancelamento com verificação de ownership",
+            "status": "pending",
+            "dependencies": [1, 2]
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "API: participantes e convites",
+        "description": "Implementar endpoints para convidar participantes, gerar tokens de convite e aceitar convites via link.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [8],
+        "details": "Endpoints:\n- POST /private-events/:id/participants — adiciona convidado (por email ou user_id)\n- DELETE /private-events/:id/participants/:pid — remove convidado\n- POST /invites/:token/accept — aceita convite, vincula user_id ao participant\n\nLógica de convite (ADR-006 — sem email transacional no MVP):\n1. Ao adicionar participante, gera UUID opaco como invite_token\n2. Retorna link compartilhável: /invite/:token\n3. Organizador compartilha manualmente (WhatsApp, etc.)\n4. Ao acessar /invite/:token: convidado pode criar conta ou prosseguir sem conta\n5. POST /invites/:token/accept vincula user_id e muda invite_status para ACCEPTED\n\nConvidado sem conta pode marcar disponibilidade com o token — não precisa de JWT.\nOwner não pode ser removido como participante.",
+        "testStrategy": "Adicionar participante, verificar token gerado, aceitar convite, verificar invite_status=ACCEPTED. Tentar remover owner deve retornar 400. Tentar aceitar token inválido deve retornar 404.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implementar POST /private-events/:id/participants",
+            "description": "Adicionar convidado e gerar invite token",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Implementar DELETE /private-events/:id/participants/:pid",
+            "description": "Remover convidado com guard de ownership",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Implementar POST /invites/:token/accept",
+            "description": "Aceitar convite e vincular user",
+            "status": "pending",
+            "dependencies": [1]
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "API: disponibilidade e sugestão de data",
+        "description": "Implementar endpoints para registrar disponibilidade por participante, calcular e retornar a sugestão de melhor data, e confirmar a data final.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [4, 9],
+        "details": "Endpoints:\n- POST /private-events/:id/availability — registra/atualiza respostas do participante (upsert por participant+date)\n- GET /private-events/:id/availability — retorna mapa de disponibilidade (todos os participantes × todos os dias)\n- GET /private-events/:id/suggestion — executa suggestDate() do package utils e retorna { date, score, confidence, reasoning }\n- POST /private-events/:id/confirm — define confirmed_date e muda status para CONFIRMED\n\nAutorização:\n- POST /availability: participante autenticado ou via invite token (sem conta)\n- GET /availability: qualquer participante do evento\n- GET /suggestion: apenas owner\n- POST /confirm: apenas owner\n\nO endpoint /suggestion não persiste nada — apenas calcula em tempo real.",
+        "testStrategy": "Registrar disponibilidade para 3 participantes, chamar /suggestion e verificar que a data retornada bate com o cálculo esperado do algoritmo. Confirmar data e verificar status=CONFIRMED. Tentar confirmar evento já confirmado deve retornar 409.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implementar POST /private-events/:id/availability (upsert)",
+            "description": "Registro e atualização de disponibilidade",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Implementar GET /private-events/:id/availability",
+            "description": "Mapa completo de disponibilidade",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Implementar GET /private-events/:id/suggestion",
+            "description": "Integrar algoritmo do package utils e retornar resultado",
+            "status": "pending",
+            "dependencies": [1, 2]
+          },
+          {
+            "id": 4,
+            "title": "Implementar POST /private-events/:id/confirm",
+            "description": "Confirmar data e atualizar status do evento",
+            "status": "pending",
+            "dependencies": [3]
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "API: CRUD de eventos públicos",
+        "description": "Implementar endpoints de criação, listagem, detalhe, edição e cancelamento de eventos públicos, incluindo public_event_settings.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [6, 7],
+        "details": "Endpoints:\n- POST /public-events — cria event (type=PUBLIC, status=OPEN) + public_event_settings\n- GET /public-events — lista eventos públicos com paginação (limit/offset), filtros por data e categoria (MVP: sem geo)\n- GET /public-events/:id — detalhe do evento com contagem de inscritos e vagas disponíveis\n- PUT /public-events/:id — editar (apenas owner)\n- DELETE /public-events/:id — cancelar (apenas owner)\n\nBody de criação inclui: title, description?, location_text, event_date, event_time?, capacity, category?\n\nA listagem é pública (sem JWT obrigatório). O detalhe calcula vagas_disponíveis = capacity - count(registrations where status=REGISTERED).",
+        "testStrategy": "Criar evento público, verificar listagem, verificar detalhe com vagas corretas. Editar e cancelar. Verificar paginação com limit/offset.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implementar POST /public-events",
+            "description": "Criação do evento público + settings",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Implementar GET /public-events com paginação e filtros",
+            "description": "Listagem pública com vagas disponíveis",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Implementar GET /public-events/:id",
+            "description": "Detalhe com vagas e contagem de inscritos",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 4,
+            "title": "Implementar PUT e DELETE /public-events/:id",
+            "description": "Edição e cancelamento com guard de ownership",
+            "status": "pending",
+            "dependencies": [1, 3]
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "API: inscrições em eventos públicos",
+        "description": "Implementar endpoints de inscrição, cancelamento de inscrição e listagem de inscritos para o host.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [11],
+        "details": "Endpoints:\n- POST /public-events/:id/registrations — inscrever usuário autenticado\n- DELETE /public-events/:id/registrations/me — cancelar própria inscrição\n- GET /public-events/:id/registrations — listar inscritos (apenas owner)\n\nRegras de negócio (PRD seção 9.2):\n- Não permitir inscrição se vagas_disponíveis == 0 → retornar 409 com mensagem clara\n- Não permitir inscrição duplicada → retornar 409\n- Cancelamento muda status para CANCELLED (não deleta — ADR-010: sem waitlist no MVP)\n- Listagem retorna: user_id, name_snapshot, email, created_at, status\n\nExportar inscritos (CSV) é feito no endpoint de listagem com query param ?format=csv.",
+        "testStrategy": "Inscrever usuário, verificar vagas diminuíram. Inscrever além da capacidade deve retornar 409. Cancelar inscrição, verificar que vagas voltaram. Listar com owner e verificar que não-owner recebe 403.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implementar POST /public-events/:id/registrations",
+            "description": "Inscrição com verificação de capacidade e duplicidade",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Implementar DELETE /public-events/:id/registrations/me",
+            "description": "Cancelamento de inscrição",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Implementar GET /public-events/:id/registrations com export CSV",
+            "description": "Listagem de inscritos e export para host",
+            "status": "pending",
+            "dependencies": [1]
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Web app Next.js: setup base e roteamento",
+        "description": "Inicializar apps/web com Next.js 15, App Router, Tailwind configurado com design-tokens, shadcn/ui e a estrutura de rotas do projeto.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [2, 3],
+        "details": "Setup:\n- Next.js 15 com App Router e React 19\n- Tailwind CSS 4 integrado com packages/design-tokens\n- shadcn/ui instalado com tema base (ADR-009 — sem visual padrão, sobrescrever tudo)\n- Fontes: Bricolage Grotesque, Geist e JetBrains Mono via next/font\n- React Hook Form + Zod para formulários\n\nEstrutura de rotas (ARCHITECTURE.md seção 8):\n- / → landing ou redirect para /dashboard se autenticado\n- /login, /signup\n- /dashboard\n- /events/new\n- /events/[id]\n- /events/[id]/availability\n- /events/[id]/host\n- /invite/[token]\n- /public\n\nLayout root com providers (auth context, toast, etc.)\nMobile-first por padrão.",
+        "testStrategy": "Rodar `pnpm dev` sem erros. Navegar para cada rota e verificar que não há 404. Verificar que fontes e cores do design system estão ativas.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Inicializar Next.js 15 com App Router e Tailwind",
+            "description": "Setup base com design-tokens integrado",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Configurar shadcn/ui e sobrescrever com design system Farmei",
+            "description": "Instalar shadcn, customizar tema para Farmei",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Criar estrutura de rotas com layouts e páginas placeholder",
+            "description": "Todas as rotas do ARCHITECTURE.md com loading states",
+            "status": "pending",
+            "dependencies": [1, 2]
+          },
+          {
+            "id": 4,
+            "title": "Configurar fontes e providers globais",
+            "description": "next/font para Bricolage Grotesque, Geist e JetBrains Mono",
+            "status": "pending",
+            "dependencies": [1]
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Web: componentes base do design system (packages/ui)",
+        "description": "Criar os componentes reutilizáveis base em packages/ui refletindo o design system Farmei sobre shadcn/ui.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [13],
+        "details": "Componentes a criar baseados nos ui_kits existentes:\n- Button: variantes primary (stamp shadow), secondary, ghost, danger\n- Input, TextArea: com label, helper text e error state\n- Card: com variante de sombra stamp\n- Avatar: circular com fallback de inicial\n- Badge: status de evento (OPEN, CONFIRMED, CANCELLED)\n- AvailabilityButton: os três estados YES/MAYBE/NO com as cores corretas\n- ProgressBar: barra de lotação de evento público\n- EventCard: card de preview de evento (privado e público)\n- AppHeader: header mobile com back, title e action\n- BottomSheet / Modal: para confirmações\n\nCada componente deve:\n- Usar tokens do design system (sem cores hardcoded)\n- Ter variantes conforme design\n- Ser acessível (aria-labels, focus visible)\n- Não usar emojis em controles (conforme guia de marca)",
+        "testStrategy": "Storybook ou página de preview estática mostrando todos os componentes. Verificar visualmente contra os ui_kits de referência.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Button, Input, TextArea com variantes e estados",
+            "description": "Componentes de formulário base",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Card, Badge, Avatar, ProgressBar",
+            "description": "Componentes de exibição de dados",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 3,
+            "title": "AvailabilityButton e EventCard",
+            "description": "Componentes específicos do domínio Farmei",
+            "status": "pending",
+            "dependencies": [1, 2]
+          },
+          {
+            "id": 4,
+            "title": "AppHeader e BottomSheet/Modal",
+            "description": "Componentes de layout e navegação",
+            "status": "pending",
+            "dependencies": [1, 2]
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Web: fluxo de autenticação",
+        "description": "Implementar as páginas de login, signup e recuperação de senha, com integração à API, proteção de rotas e contexto de autenticação.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [7, 13, 14],
+        "details": "Páginas:\n- /signup: form com nome, email, senha. POST /auth/signup → redireciona para /dashboard\n- /login: form com email, senha. POST /auth/login → salva JWT, redireciona para /dashboard\n- /login?recovery: form de recuperação via Supabase Auth (fora do MVP crítico — tela simples)\n\nContexto de autenticação (AuthContext ou Zustand):\n- Armazena { user, token, isLoading }\n- Persiste token em cookie httpOnly (preferível) ou localStorage\n- Expõe login(), logout(), user\n\nProteção de rotas:\n- Middleware Next.js (middleware.ts) que verifica token e redireciona /login se necessário\n- Rotas públicas: /, /login, /signup, /public, /invite/[token]\n\nFeedback de UX:\n- Loading state nos botões durante submit\n- Erros da API exibidos no form (email já cadastrado, senha incorreta)",
+        "testStrategy": "Signup com email novo → redirecionar para dashboard. Login com credenciais corretas → dashboard. Login com senha errada → erro no form. Acessar /dashboard sem auth → redirect /login.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Criar AuthContext e hook useAuth",
+            "description": "Gerenciamento de estado de autenticação com persistência",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Implementar middleware de proteção de rotas",
+            "description": "middleware.ts no Next.js com redirect para /login",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Criar páginas /signup e /login com forms validados",
+            "description": "React Hook Form + Zod + integração com API",
+            "status": "pending",
+            "dependencies": [1, 2]
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "title": "Web: dashboard e criação de evento privado",
+        "description": "Implementar o dashboard do usuário com lista de eventos e o fluxo de criação de evento privado.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [8, 15],
+        "details": "Páginas:\n\n/dashboard:\n- Lista eventos privados do usuário (owner e participante)\n- Lista eventos públicos criados (host)\n- Botão de criar novo evento\n- Empty state caloroso quando sem eventos\n\n/events/new:\n- Step 1: Tipo de evento (privado ou público)\n- Step 2 (privado): título, descrição?, local?, janela de datas (date range picker), key person? (dropdown de usuários já convidados — pode ser deixado para depois de adicionar convidados)\n- Step 2 (público): redirecionado para fluxo da task 18\n- POST /private-events → redireciona para /events/[id]\n\nReferência visual: HomeScreen e CreateScreen dos ui_kits/mobile",
+        "testStrategy": "Criar evento privado, verificar redirecionamento para detalhe. Dashboard mostra o evento criado. Campos obrigatórios validados antes de submit.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implementar página /dashboard",
+            "description": "Lista de eventos com empty state e botão de criar",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Implementar formulário de criação de evento privado",
+            "description": "Form multi-step com date range picker e validação",
+            "status": "pending",
+            "dependencies": [1]
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "title": "Web: detalhe de evento privado, convites e disponibilidade",
+        "description": "Implementar a página de detalhe do evento privado, o fluxo de convite de participantes e a tela de marcação de disponibilidade.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [9, 10, 16],
+        "details": "Páginas:\n\n/events/[id] (owner view):\n- Dados do evento\n- Status (DRAFT / OPEN / CONFIRMED)\n- Lista de participantes com invite_status\n- Campo para adicionar convidado (por email)\n- Link de convite gerado para compartilhar\n- Botão 'Ver sugestão' quando há respostas suficientes\n- Botão 'Confirmar data' após ver sugestão\n\n/events/[id]/availability (participante view):\n- Grade de datas da janela\n- Para cada dia: botões YES/MAYBE/NO (AvailabilityButton component)\n- Salvar automaticamente no blur ou com botão explícito\n- Mostrar resumo de quantos marcaram cada dia (opcional no MVP)\n\n/invite/[token]:\n- Exibe dados do evento\n- Se não autenticado: prompt de criar conta ou continuar sem conta\n- Redireciona para /events/[id]/availability após aceitar\n\nSugestão de data:\n- Tela com a data sugerida, confidence score e reasoning em português\n- CTA de confirmar com feedback visual (spark yellow)\n\nReferência visual: InviteScreen, AvailabilityScreen, AIPickScreen dos ui_kits/mobile",
+        "testStrategy": "Adicionar participante → verificar link gerado. Acessar /invite/[token] sem conta → marcar disponibilidade. Ver sugestão → confirmar → evento passa para CONFIRMED.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implementar página de detalhe do evento privado (owner view)",
+            "description": "Dados, participantes, link de convite e ações do owner",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Implementar página /events/[id]/availability",
+            "description": "Grade de disponibilidade com AvailabilityButton",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Implementar página /invite/[token]",
+            "description": "Acesso via token com ou sem conta",
+            "status": "pending",
+            "dependencies": [2]
+          },
+          {
+            "id": 4,
+            "title": "Implementar tela de sugestão de data e confirmação",
+            "description": "Exibição do resultado do algoritmo e CTA de confirmar",
+            "status": "pending",
+            "dependencies": [1, 2]
+          }
+        ]
+      },
+      {
+        "id": 18,
+        "title": "Web: criação, listagem e detalhe de eventos públicos",
+        "description": "Implementar o fluxo de host para criar eventos públicos, o feed público de descoberta de eventos e a tela de detalhe com inscrição.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [11, 12, 15],
+        "details": "Páginas:\n\n/events/new (fluxo público, step 2):\n- Título, descrição?, local (texto), data, horário?, capacidade máxima, categoria?\n- POST /public-events → redireciona para /events/[id]/host\n\n/public:\n- Feed de eventos públicos com cards\n- Filtros: data, categoria (MVP básico)\n- Paginação ou scroll infinito\n- Barra de lotação visual (ProgressBar component)\n- Sem geolocalização no MVP (ADR decisão pendente P2)\n\n/events/[id] (público, visitante view):\n- Dados do evento\n- Barra de lotação\n- Lista de quem vai (avatares)\n- Botão 'Entrar' → POST /registrations (exige auth)\n- Se lotado: mensagem clara, sem waitlist (ADR-010)\n- Se já inscrito: botão 'Cancelar inscrição'\n\nReferência visual: PublicFeedScreen, PublicEventDetailScreen, SignupSuccessScreen dos ui_kits/mobile",
+        "testStrategy": "Criar evento público como host. Ver no feed /public. Inscrever como outro usuário. Verificar barra de lotação atualiza. Lotar evento e verificar botão desabilitado com mensagem.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implementar formulário de criação de evento público",
+            "description": "Form com data fixa e capacidade",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Implementar página /public com feed e filtros",
+            "description": "Listagem pública com cards e paginação",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Implementar detalhe de evento público com inscrição",
+            "description": "Barra de lotação, lista de inscritos e CTA de inscrição",
+            "status": "pending",
+            "dependencies": [2]
+          }
+        ]
+      },
+      {
+        "id": 19,
+        "title": "Web: painel do host",
+        "description": "Implementar a página de painel do host com lista de inscritos, métricas básicas e exportação CSV.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [12, 18],
+        "details": "Página /events/[id]/host:\n- Dados do evento\n- Métricas: total de inscritos, vagas disponíveis, % de ocupação\n- Tabela de inscritos: nome, email, data de inscrição, status\n- Filtrar por status (REGISTERED / CANCELLED)\n- Botão 'Exportar CSV' → GET /registrations?format=csv → download\n- Botão de editar evento\n- Botão de cancelar evento (com confirmação)\n\nAcesso: apenas owner do evento. Usuário não-owner → redirect /events/[id].\n\nReferência visual: HostDashboardScreen dos ui_kits/mobile",
+        "testStrategy": "Acessar painel como owner com inscritos. Verificar contagens corretas. Exportar CSV e verificar que contém todos os campos esperados. Acessar como não-owner → redirect.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implementar página /events/[id]/host com métricas",
+            "description": "Painel com contagens e tabela de inscritos",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Implementar exportação CSV de inscritos",
+            "description": "Download via link com ?format=csv",
+            "status": "pending",
+            "dependencies": [1]
+          }
+        ]
+      },
+      {
+        "id": 20,
+        "title": "Deploy e CI/CD",
+        "description": "Configurar GitHub Actions para CI (lint, type-check, testes), deploy da web no Vercel e deploy da API.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [1, 13, 6],
+        "details": "GitHub Actions:\n- CI: roda em todo PR e push para main\n  - pnpm install\n  - tsc --noEmit (type-check todos os packages)\n  - eslint em todos os packages\n  - pnpm test (se houver testes)\n- Deploy web: Vercel via GitHub integration (automático em merge para main)\n- Deploy API: a definir — opções: Fly.io, Railway, Render ou Cloudflare Workers\n\nVariáveis de ambiente no Vercel:\n- NEXT_PUBLIC_API_URL\n- NEXT_PUBLIC_SUPABASE_URL\n- NEXT_PUBLIC_SUPABASE_ANON_KEY\n\nVariáveis no deploy da API:\n- DATABASE_URL\n- SUPABASE_URL\n- SUPABASE_SERVICE_ROLE_KEY\n- PORT\n- CORS_ORIGIN\n\n.env.example documentado com todas as vars necessárias.",
+        "testStrategy": "Abrir PR e verificar que CI passa. Merge para main e verificar que Vercel deploy dispara e conclui. Acessar URL de produção e testar fluxo de login.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Criar GitHub Actions workflow de CI",
+            "description": "type-check, lint e testes em todo PR",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Configurar deploy da web no Vercel",
+            "description": "Integração GitHub + Vercel + variáveis de ambiente",
+            "status": "pending",
+            "dependencies": [1]
+          },
+          {
+            "id": 3,
+            "title": "Configurar deploy da API",
+            "description": "Escolher plataforma e configurar pipeline de deploy",
+            "status": "pending",
+            "dependencies": [1]
+          }
+        ]
+      },
+      {
+        "id": 21,
+        "title": "Rebrand: migrar referências Vamointao → Farmei no código",
+        "description": "Localizar e substituir todas as referências ao nome Vamointao no código, comentários e documentação legada.",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [],
+        "details": "Conforme ADR-008, fazer uma varredura completa e substituir:\n- Nome 'Vamointao' ou 'vamointao' em comentários, strings e docs\n- Prefixo de CSS var '--vmt-' pode ser mantido como alias por ora (não quebra visual)\n- Classe CSS '.vmt' pode ser mantida como alias\n- SKILL.md: atualizar nome do produto\n- README.md raiz: atualizar nome\n- Comentários nos ui_kits/*.jsx\n- Verificar nomes de packages no package.json se houver @vamointao/*\n\nUsar grep case-insensitive para localizar todas as ocorrências antes de substituir.\nEstimar ~15 ocorrências conforme CLAUDE.md.",
+        "testStrategy": "grep -ri 'vamointao' . (excluindo node_modules e .git) deve retornar zero resultados após a migração.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Mapear todas as ocorrências de Vamointao",
+            "description": "grep completo para inventário antes de alterar",
+            "status": "pending",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Substituir nos arquivos de documentação e comentários",
+            "description": "README.md, SKILL.md, ui_kits, etc.",
+            "status": "pending",
+            "dependencies": [1]
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "projectName": "Farmei",
+      "created": "2026-05-16T00:00:00.000Z",
+      "updated": "2026-05-16T00:00:00.000Z",
+      "description": "Plataforma de eventos sociais — eventos privados com sugestão de data e eventos públicos com inscrição.",
+      "version": "1.0.0"
+    }
+  }
+}

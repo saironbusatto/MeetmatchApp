@@ -1,0 +1,25 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;background:var(--bg-page);}
+  body{font-family:var(--font-body);color:var(--fg-1);padding:24px 28px;}
+  .row{display:flex;gap:10px;}
+  .sw{flex:1;border-radius:14px;height:90px;display:flex;flex-direction:column;justify-content:flex-end;padding:10px 12px;color:#fff;border:1px solid rgba(0,0,0,0.06);}
+  .sw .name{font:600 12px/1 var(--font-body);}
+  .sw .hex{font:var(--t-mono);font-size:11px;opacity:0.85;margin-top:2px;}
+  .sw.dark .name,.sw.dark .hex{color:#fff;}
+  .sw.light .name,.sw.light .hex{color:var(--ink-900);}
+</style></head>
+<body>
+  <div class="row">
+    <div class="sw light" style="background:#FFF1EE;"><div class="name">50</div><div class="hex">#FFF1EE</div></div>
+    <div class="sw light" style="background:#FFD9D2;"><div class="name">100</div><div class="hex">#FFD9D2</div></div>
+    <div class="sw light" style="background:#FFB1A4;"><div class="name">200</div><div class="hex">#FFB1A4</div></div>
+    <div class="sw light" style="background:#FF8674;"><div class="name">300</div><div class="hex">#FF8674</div></div>
+    <div class="sw dark" style="background:#FF5A42;"><div class="name">400</div><div class="hex">#FF5A42</div></div>
+    <div class="sw dark" style="background:#FF3B2E;outline:2px solid var(--ink-900);outline-offset:-2px;"><div class="name">500 ★</div><div class="hex">#FF3B2E</div></div>
+    <div class="sw dark" style="background:#E92518;"><div class="name">600</div><div class="hex">#E92518</div></div>
+    <div class="sw dark" style="background:#BC1809;"><div class="name">700</div><div class="hex">#BC1809</div></div>
+    <div class="sw dark" style="background:#8E1408;"><div class="name">800</div><div class="hex">#8E1408</div></div>
+  </div>
+</body></html>

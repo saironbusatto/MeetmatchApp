@@ -1,0 +1,17 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;background:var(--bg-page);}
+  body{font-family:var(--font-body);color:var(--fg-1);padding:36px;display:flex;gap:34px;align-items:center;justify-content:center;}
+  .card{width:140px;height:84px;background:var(--bg-surface);border:2px solid var(--ink-900);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--ink-900);font:var(--t-mono);font-size:11px;}
+  .s1{box-shadow:2px 2px 0 var(--ink-900);}
+  .s2{box-shadow:4px 4px 0 var(--ink-900);}
+  .s3{background:var(--vermillion-500);color:#fff;box-shadow:2px 2px 0 var(--vermillion-700);}
+  .label{font:600 12px/1 var(--font-body);text-align:center;margin-top:10px;color:var(--fg-3);}
+  .col{display:flex;flex-direction:column;align-items:center;}
+</style></head>
+<body>
+  <div class="col"><div class="card s1">--stamp</div><div class="label">2px ink offset</div></div>
+  <div class="col"><div class="card s2">--stamp-lg</div><div class="label">4px ink offset</div></div>
+  <div class="col"><div class="card s3">--stamp-brand</div><div class="label">on vermillion</div></div>
+</body></html>

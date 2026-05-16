@@ -1,0 +1,21 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;background:var(--bg-page);}
+  body{font-family:var(--font-body);color:var(--fg-1);padding:30px;display:flex;flex-direction:column;gap:18px;align-items:flex-start;}
+  .row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+  .meta{font:var(--t-mono);font-size:10px;color:var(--fg-3);min-width:80px;}
+  .btn{font:600 15px/1 var(--font-body);padding:14px 22px;border-radius:14px;cursor:pointer;border:2px solid var(--ink-900);background:var(--vermillion-500);color:#fff;box-shadow:2px 2px 0 var(--ink-900);transition:transform 120ms,box-shadow 120ms;}
+  .btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink-900);}
+  .btn.lg{font-size:17px;padding:18px 28px;border-radius:18px;box-shadow:3px 3px 0 var(--ink-900);}
+  .btn.sm{font-size:13px;padding:9px 14px;border-radius:10px;box-shadow:2px 2px 0 var(--ink-900);}
+  .btn[disabled]{background:var(--ink-200);color:var(--ink-500);box-shadow:none;border-color:var(--ink-300);cursor:not-allowed;}
+</style></head>
+<body>
+  <div class="row"><span class="meta">PRIMARY</span>
+    <button class="btn sm">Send the ping</button>
+    <button class="btn">Send the ping</button>
+    <button class="btn lg">Send the ping</button>
+    <button class="btn" disabled>Send the ping</button>
+  </div>
+</body></html>
