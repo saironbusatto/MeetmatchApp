@@ -12,11 +12,17 @@ O backlog está organizado em 6 fases sequenciais com dependências explícitas.
 | Milestone | Entrega | Status |
 |-----------|---------|--------|
 | M0 — Documentação | PRD, ARCHITECTURE, TASKS, DECISIONS, wiki | ✅ Concluído |
-| M1 — Foundation | Monorepo, scaffold, tokens, auth | ⬜ Próximo |
-| M2 — Banco + algoritmo | Schema, migrations, date-suggestion | ⬜ |
-| M3 — Fluxo privado | Criar → convidar → disponibilidade → sugestão → confirmar | ⬜ |
-| M4 — Fluxo público | Criar → listar → inscrever → painel host | ⬜ |
-| M5 — Qualidade | Testes, erros, a11y, limpeza | ⬜ |
+| M1 — Foundation | Monorepo, scaffold, tokens, auth | ✅ Concluído |
+| M2 — Banco + algoritmo | Schema, migrations, date-suggestion | ✅ Concluído |
+| M3 — Fluxo privado (web) | Criar → convidar → disponibilidade → sugestão → confirmar | ✅ Concluído |
+| M4 — Fluxo público (web) | Criar → listar → inscrever → painel host | ✅ Concluído |
+| M5 — Qualidade (web) | Testes, erros, a11y, limpeza | ✅ Concluído |
+| M1 Mobile — Foundation | Scaffold Expo Router, tokens, NativeWind, CI básico | ⬜ Próximo |
+| M2 Mobile — Auth & Shell | Supabase + SecureStore, tab bar, onboarding | ⬜ |
+| M3 Mobile — Fluxo privado | Home → Confirmed (com AICard hero) | ⬜ |
+| M4 Mobile — Fluxo público | Feed → Detail → Create → Host | ⬜ |
+| M5 Mobile — Convites & Push | `/invite/[token]` + expo-notifications | ⬜ |
+| M6 Mobile — Qualidade | Maestro flows, a11y, EAS + stores | ⬜ |
 
 ## Fase 1 — Foundation do monorepo (próxima)
 
@@ -105,8 +111,44 @@ Fase 4 → Fase 5 (infra de eventos pronta)
 Fase 6 (incremental durante fases anteriores)
 ```
 
+## Fase mobile (tag `mobile` no Task Master)
+
+Backlog isolado em `.taskmaster/tasks/tasks.json` na tag `mobile`. Detalhes em [Mobile Architecture](../architecture/mobile-architecture.md) e no PRD `.taskmaster/docs/mobile-prd.md`.
+
+**M1 Mobile · Foundation**
+- 1 Scaffold Expo Router + TypeScript (✅ scaffold inicial criado)
+- 2 NativeWind + design tokens compartilhados
+- 3 Cliente HTTP + Supabase Auth com SecureStore
+
+**M2 Mobile · App shell**
+- 4 Tab bar + onboarding + login/signup
+
+**M3 Mobile · Privado**
+- 5 Home, Create, Invite, Availability, Result (AICard hero), Confirmed
+
+**M4 Mobile · Público**
+- 6 Feed, Detail, CreatePublic, HostPanel + export CSV
+
+**M5 Mobile · Convites & Push**
+- 7 Deeplink `/invite/[token]`
+- 8 Push (registro + handler; novo endpoint `POST /users/me/devices` na API)
+
+**M6 Mobile · Qualidade & release**
+- 9 Maestro flows, a11y, estados de erro
+- 10 EAS Build + TestFlight + Internal Track
+- 11 README + atualização de CLAUDE.md
+
+Dependências:
+```
+M1 → M2 → M3 e M4
+M5.7 depende de M3
+M5.8 depende de M2 (e cria endpoint na API)
+M6 incremental
+```
+
 ## See Also
 
 - [System Design](../architecture/system-design.md)
 - [Architectural Decisions](../architecture/architectural-decisions.md)
+- [Mobile Architecture](../architecture/mobile-architecture.md)
 - [Business Rules](../product/business-rules.md)

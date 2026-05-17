@@ -72,3 +72,55 @@ Evidência bruta: - raw/wiki-ingest/2026-05-17_11-52-24.md
 ## [2026-05-17] ingest | Fechamento de pendências
 
 - Evidência bruta: raw/wiki-ingest/2026-05-17_11-52-44.md
+
+## [2026-05-17] plan | Mobile app planning + scaffold
+
+- Criado: PRD do mobile em `.taskmaster/docs/mobile-prd.md`
+- Criado: tag `mobile` no Task Master com 11 tasks (fases M1–M6 mobile)
+- Criado: artigo `architecture/mobile-architecture.md`
+- Atualizado: `architecture/architectural-decisions.md` (ADR-001 reativada como decisão de implementação)
+- Atualizado: `backlog/mvp-backlog.md` com fase mobile
+- Atualizado: `index.md` com nova entrada de arquitetura
+- Scaffold em `apps/mobile/` (Expo Router v3 + NativeWind + Supabase)
+
+## [2026-05-17] ingest | Mobile continuation executed
+
+- Fontes baixadas em apps/mobile/assets/fonts
+- Ícones placeholders criados em apps/mobile/assets/icons
+- Taskmaster tag mobile ativa e task #1 em in-progress
+- Evidência: raw/wiki-ingest/2026-05-17_14-56-38.md
+
+## [2026-05-17] ingest | Mobile continuation executed (correction)
+
+- Fontes baixadas em apps/mobile/assets/fonts
+- Ícones placeholders criados em apps/mobile/assets/icons
+- Tag mobile ativa no Taskmaster e task #1 em in-progress
+- Evidência: raw/wiki-ingest/2026-05-17_14-56-38.md
+
+## [2026-05-17] ingest | Mobile one-shot completion
+
+- Tasks mobile (#22..#32) concluídas no Taskmaster
+- API ganhou endpoint 
+- Mobile recebeu push registration, handler de deep link por notificação, Maestro flows e EAS/workflow
+- Evidência: raw/wiki-ingest/2026-05-17_15-09-48.md
+
+## [2026-05-17] ingest | Mobile one-shot completion (correction)
+
+- Tasks mobile (#22..#32) concluídas no Taskmaster
+- API ganhou endpoint POST /users/me/devices
+- Mobile recebeu push registration, handler de deep link por notificação, Maestro flows e EAS/workflow
+- Evidência: raw/wiki-ingest/2026-05-17_15-09-48.md
+
+## [2026-05-17] ingest | Task #33 user_devices persistence
+
+- Drizzle schema ganhou enum/table de devices e índices de unicidade
+- upsertUserDevice migrou para query real com fallback local
+- migration gerada; execução bloqueada localmente por DATABASE_URL ausente
+- Evidência: raw/wiki-ingest/2026-05-17_15-33-11.md
+
+## [2026-05-17] ingest | Task #33 user_devices persistence (correction)
+
+- Drizzle schema ganhou enum/table de devices e índices de unicidade
+- upsertUserDevice migrou para query real com fallback local
+- migration gerada; execução bloqueada localmente por DATABASE_URL ausente
+- Evidência: raw/wiki-ingest/2026-05-17_15-33-11.md

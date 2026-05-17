@@ -1,4 +1,7 @@
 import { randomUUID } from "node:crypto";
+import { and, eq } from "drizzle-orm";
+import { getDb } from "./db/client";
+import { userDevices as userDevicesTable } from "./db/schema";
 
 export type EventType = "PRIVATE" | "PUBLIC";
 export type EventStatus = "DRAFT" | "OPEN" | "CONFIRMED" | "CANCELLED";
@@ -73,6 +76,18 @@ export interface PublicRegistrationRecord {
   createdAt: string;
 }
 
+export interface UserDeviceRecord {
+  id: string;
+  userId: string;
+  platform: "ios" | "android" | "web";
+  token: string;
+  pushEnabled: boolean;
+  quietHoursStart: string | null;
+  quietHoursEnd: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 const users = new Map<string, UserRecord>();
 const usersByEmail = new Map<string, string>();
 const sessions = new Map<string, string>();
@@ -85,6 +100,7 @@ const availability = new Map<string, AvailabilityRecord>();
 
 const publicSettings = new Map<string, PublicEventSettingsRecord>();
 const registrations = new Map<string, PublicRegistrationRecord>();
+const userDevices = new Map<string, UserDeviceRecord>();
 
 export function nowIso() {
   return new Date().toISOString();
@@ -137,6 +153,118 @@ export function updateUser(id: string, input: { name?: string; avatarUrl?: strin
   return updated;
 }
 
+export async function upsertUserDevice(
+  userId: string,
+  input: {
+    token: string;
+    platform: "ios" | "android" | "web";
+    pushEnabled?: boolean;
+    quietHoursStart?: string | null;
+    quietHoursEnd?: string | null;
+  }
+) {
+  const dbClient = getDb();
+  if (dbClient) {
+    const existingRows = await dbClient
+      .select()
+      .from(userDevicesTable)
+      .where(and(eq(userDevicesTable.userId, userId), eq(userDevicesTable.token, input.token)))
+      .limit(1);
+    const existing = existingRows[0];
+
+    if (existing) {
+      const [updated] = await dbClient
+        .update(userDevicesTable)
+        .set({
+          platform: input.platform,
+          pushEnabled: input.pushEnabled ?? existing.pushEnabled,
+          quietHoursStart: input.quietHoursStart ?? existing.quietHoursStart,
+          quietHoursEnd: input.quietHoursEnd ?? existing.quietHoursEnd,
+          updatedAt: new Date()
+        })
+        .where(eq(userDevicesTable.id, existing.id))
+        .returning();
+
+      if (!updated) {
+        throw new Error("Failed to update user device");
+      }
+
+      return {
+        id: updated.id,
+        userId: updated.userId,
+        platform: updated.platform,
+        token: updated.token,
+        pushEnabled: updated.pushEnabled,
+        quietHoursStart: updated.quietHoursStart,
+        quietHoursEnd: updated.quietHoursEnd,
+        createdAt: updated.createdAt.toISOString(),
+        updatedAt: updated.updatedAt.toISOString()
+      } satisfies UserDeviceRecord;
+    }
+
+    const [created] = await dbClient
+      .insert(userDevicesTable)
+      .values({
+        id: randomUUID(),
+        userId,
+        token: input.token,
+        platform: input.platform,
+        pushEnabled: input.pushEnabled ?? true,
+        quietHoursStart: input.quietHoursStart ?? null,
+        quietHoursEnd: input.quietHoursEnd ?? null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      .returning();
+
+    if (!created) {
+      throw new Error("Failed to create user device");
+    }
+
+    return {
+      id: created.id,
+      userId: created.userId,
+      platform: created.platform,
+      token: created.token,
+      pushEnabled: created.pushEnabled,
+      quietHoursStart: created.quietHoursStart,
+      quietHoursEnd: created.quietHoursEnd,
+      createdAt: created.createdAt.toISOString(),
+      updatedAt: created.updatedAt.toISOString()
+    } satisfies UserDeviceRecord;
+  }
+
+  const existing = [...userDevices.values()].find((item) => item.userId === userId && item.token === input.token);
+
+  if (existing) {
+    const updated: UserDeviceRecord = {
+      ...existing,
+      platform: input.platform,
+      pushEnabled: input.pushEnabled ?? existing.pushEnabled,
+      quietHoursStart: input.quietHoursStart ?? existing.quietHoursStart,
+      quietHoursEnd: input.quietHoursEnd ?? existing.quietHoursEnd,
+      updatedAt: nowIso()
+    };
+    userDevices.set(existing.id, updated);
+    return updated;
+  }
+
+  const created: UserDeviceRecord = {
+    id: randomUUID(),
+    userId,
+    token: input.token,
+    platform: input.platform,
+    pushEnabled: input.pushEnabled ?? true,
+    quietHoursStart: input.quietHoursStart ?? null,
+    quietHoursEnd: input.quietHoursEnd ?? null,
+    createdAt: nowIso(),
+    updatedAt: nowIso()
+  };
+
+  userDevices.set(created.id, created);
+  return created;
+}
+
 export function createSession(userId: string) {
   const token = `dev_${randomUUID()}`;
   sessions.set(token, userId);
@@ -151,92 +279,6 @@ export function revokeSession(token: string) {
   return sessions.delete(token);
 }
 
-export function createPrivateEvent(input: {
-  ownerId: string;
-  title: string;
-  description?: string;
-  locationText?: string;
-  dateWindowStart: string;
-  dateWindowEnd: string;
-  keyPersonUserId?: string;
-  keyPersonWeight?: number;
-}) {
-  const event: EventRecord = {
-    id: randomUUID(),
-    ownerId: input.ownerId,
-    type: "PRIVATE",
-    title: input.title,
-    description: input.description ?? null,
-    locationText: input.locationText ?? null,
-    status: "DRAFT",
-    confirmedDate: null,
-    createdAt: nowIso(),
-    updatedAt: nowIso()
-  };
-
-  const settings: PrivateEventSettingsRecord = {
-    eventId: event.id,
-    dateWindowStart: input.dateWindowStart,
-    dateWindowEnd: input.dateWindowEnd,
-    keyPersonUserId: input.keyPersonUserId ?? null,
-    keyPersonWeight: input.keyPersonWeight ?? 3
-  };
-
-  const ownerParticipant: EventParticipantRecord = {
-    id: randomUUID(),
-    eventId: event.id,
-    userId: input.ownerId,
-    email: null,
-    nameSnapshot: null,
-    role: "OWNER",
-    inviteStatus: "ACCEPTED",
-    inviteToken: randomUUID()
-  };
-
-  events.set(event.id, event);
-  privateSettings.set(event.id, settings);
-  participants.set(ownerParticipant.id, ownerParticipant);
-  participantsByInviteToken.set(ownerParticipant.inviteToken, ownerParticipant.id);
-
-  return { event, settings };
-}
-
-export function createPublicEvent(input: {
-  ownerId: string;
-  title: string;
-  description?: string;
-  locationText?: string;
-  eventDate: string;
-  eventTime?: string;
-  capacity: number;
-  category?: string;
-}) {
-  const event: EventRecord = {
-    id: randomUUID(),
-    ownerId: input.ownerId,
-    type: "PUBLIC",
-    title: input.title,
-    description: input.description ?? null,
-    locationText: input.locationText ?? null,
-    status: "OPEN",
-    confirmedDate: input.eventDate,
-    createdAt: nowIso(),
-    updatedAt: nowIso()
-  };
-
-  const settings: PublicEventSettingsRecord = {
-    eventId: event.id,
-    eventDate: input.eventDate,
-    eventTime: input.eventTime ?? null,
-    capacity: input.capacity,
-    category: input.category ?? null
-  };
-
-  events.set(event.id, event);
-  publicSettings.set(event.id, settings);
-  return { event, settings };
-}
-
 export const db = {
   users,
   sessions,
@@ -246,5 +288,6 @@ export const db = {
   participantsByInviteToken,
   availability,
   publicSettings,
-  registrations
+  registrations,
+  userDevices
 };

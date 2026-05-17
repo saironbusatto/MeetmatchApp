@@ -212,3 +212,37 @@ Cached:    6 cached, 6 total
 - API/Web/CI/deploy docs atualizados.
 - Validação: pnpm typecheck/build/test.
 - Raw ingest evidence: raw/wiki-ingest/2026-05-17_11-52-44.md
+
+## 2026-05-17
+- Mobile: ativada tag  no Taskmaster e task #1 marcada como in-progress.
+- Executado setup operacional: install, fonts, typecheck e  com Metro em localhost:8081.
+- Raw ingest evidence: raw/wiki-ingest/2026-05-17_14-56-38.md
+
+## 2026-05-17
+- Mobile: tag mobile ativada no Taskmaster e task #1 marcada como in-progress.
+- Setup operacional executado: install, fonts, typecheck e start do app mobile (Metro em localhost:8081).
+- Raw ingest evidence: raw/wiki-ingest/2026-05-17_14-56-38.md
+
+## 2026-05-17
+- Conclusão one-shot da trilha mobile (tasks 22..32).
+- Endpoint de devices para push adicionado na API.
+- EAS config + workflow mobile release adicionados.
+- Validação executada via typecheck API/mobile e startup command do Expo.
+- Raw ingest evidence: raw/wiki-ingest/2026-05-17_15-09-48.md
+
+## 2026-05-17
+- Conclusão one-shot da trilha mobile (tasks 22..32).
+- Endpoint de devices para push adicionado na API.
+- EAS config + workflow mobile release adicionados.
+- Validação executada via typecheck API/mobile e startup command do Expo.
+- Raw ingest evidence: raw/wiki-ingest/2026-05-17_15-09-48.md
+
+## 2026-05-17
+- Task #33 concluída: persistência de  em PostgreSQL via Drizzle.
+- Gerada migration SQL para devices; aplicação no banco depende de  no ambiente.
+- Raw ingest evidence: raw/wiki-ingest/2026-05-17_15-33-11.md
+
+## 2026-05-17
+- Task #33 concluída: persistência de user_devices em PostgreSQL via Drizzle.
+- Gerada migration SQL para devices; aplicação no banco depende de DATABASE_URL no ambiente.
+- Raw ingest evidence: raw/wiki-ingest/2026-05-17_15-33-11.md

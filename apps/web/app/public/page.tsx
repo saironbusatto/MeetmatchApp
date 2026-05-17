@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api/v1";
 
-export default function PublicPage() {
+export default function PublicPage(): JSX.Element {
   const { token } = useAuth();
   const [events, setEvents] = useState<any[]>([]);
 

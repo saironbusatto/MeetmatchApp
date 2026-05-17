@@ -112,13 +112,13 @@ Não precisa de modelo de ML — é matemática simples. Mas se quiser "AI verda
 
 ---
 
-## 6. Stack sugerido
+## 6. Stack adotado
 
-**Esse é um sugestão, não obrigação.** Tudo aqui é compatível com o design system.
+**Stack adotado no repo atual** (web + api + mobile).
 
 ### Frontend
 - **Web**: Next.js 15 + React 19 + Tailwind CSS + shadcn/ui
-- **Mobile**: Expo (React Native) + NativeWind (Tailwind pra mobile) + Expo Router
+- **Mobile**: Expo (React Native) + NativeWind + Expo Router (implementado em `apps/mobile`)
 - **Tokens de design**: copia `colors_and_type.css` e adapta pra Tailwind config
 
 ### Backend

@@ -1,4 +1,16 @@
-import { pgEnum, pgTable, text, timestamp, uuid, date, numeric, integer, time } from "drizzle-orm/pg-core";
+import {
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  date,
+  numeric,
+  integer,
+  time,
+  boolean,
+  uniqueIndex
+} from "drizzle-orm/pg-core";
 
 export const eventTypeEnum = pgEnum("event_type", ["PRIVATE", "PUBLIC"]);
 export const eventStatusEnum = pgEnum("event_status", ["DRAFT", "OPEN", "CONFIRMED", "CANCELLED"]);
@@ -6,6 +18,7 @@ export const participantRoleEnum = pgEnum("participant_role", ["OWNER", "INVITEE
 export const inviteStatusEnum = pgEnum("invite_status", ["PENDING", "ACCEPTED", "DECLINED"]);
 export const availabilityResponseEnum = pgEnum("availability_response", ["YES", "MAYBE", "NO"]);
 export const registrationStatusEnum = pgEnum("registration_status", ["REGISTERED", "CANCELLED"]);
+export const devicePlatformEnum = pgEnum("device_platform", ["ios", "android", "web"]);
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey(),
@@ -71,3 +84,22 @@ export const publicEventRegistrations = pgTable("public_event_registrations", {
   status: registrationStatusEnum("status").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull()
 });
+
+export const userDevices = pgTable(
+  "user_devices",
+  {
+    id: uuid("id").primaryKey(),
+    userId: uuid("user_id").notNull(),
+    token: text("token").notNull(),
+    platform: devicePlatformEnum("platform").notNull(),
+    pushEnabled: boolean("push_enabled").notNull().default(true),
+    quietHoursStart: time("quiet_hours_start"),
+    quietHoursEnd: time("quiet_hours_end"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull()
+  },
+  (table) => ({
+    tokenUnique: uniqueIndex("user_devices_token_unique").on(table.token),
+    userTokenUnique: uniqueIndex("user_devices_user_token_unique").on(table.userId, table.token)
+  })
+);

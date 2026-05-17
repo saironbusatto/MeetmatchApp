@@ -6,7 +6,7 @@ import { useState } from "react";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api/v1";
 
-export default function NewEventPage() {
+export default function NewEventPage(): JSX.Element {
   const router = useRouter();
   const { token } = useAuth();
   const [type, setType] = useState<"PRIVATE" | "PUBLIC">("PRIVATE");

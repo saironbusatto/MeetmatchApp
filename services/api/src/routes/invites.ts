@@ -24,5 +24,5 @@ export const invitesRouter = new Hono().post("/:token/accept", async (c) => {
   };
 
   db.participants.set(next.id, next);
-  return c.json({ participant: next }, 200);
+  return c.json({ participant: next, eventId: next.eventId, participantId: next.id }, 200);
 });

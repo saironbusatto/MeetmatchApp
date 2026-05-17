@@ -1,0 +1,30 @@
+name: Mobile Release
+
+on:
+  push:
+    tags:
+      - 'mobile-*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @farmei/mobile typecheck
+      - uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: eas build --platform all --profile production --non-interactive --auto-submit
+        working-directory: apps/mobile
+      - run: eas update --channel stable --message "mobile tag release ${{ github.ref_name }}" --non-interactive
+        working-directory: apps/mobile

@@ -188,3 +188,20 @@ Each `ui_kit` has its own `README.md`, an `index.html` showing the kit's flagshi
 - **No source brand assets were provided.** The wordmark, logomark, palette, and type pairings are all original choices. Treat them as a strong proposal, not gospel.
 - **Phosphor is loaded from CDN** — bundle locally if shipping to production.
 - The grain texture is mentioned but not yet shipped — add `assets/grain.svg` if you want the warm-paper feel on hero panels.
+
+---
+
+## Mobile app (implemented)
+
+O app mobile real está em `apps/mobile` com:
+- Expo Router v3
+- NativeWind + tokens compartilhados (`@farmei/design-tokens`)
+- Supabase Auth + SecureStore
+- Deep links de convite (`farmei://invite/...` e `https://farmei.app/invite/...`)
+
+Comandos:
+
+```bash
+pnpm --filter @farmei/mobile dev
+pnpm --filter @farmei/mobile typecheck
+```

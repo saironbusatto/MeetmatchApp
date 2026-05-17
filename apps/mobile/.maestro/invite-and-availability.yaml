@@ -1,0 +1,6 @@
+appId: app.farmei.mobile
+---
+- launchApp
+- openLink: "farmei://invite/test-token"
+- tapOn: "Aceitar convite"
+- assertVisible: "Marque sua disponibilidade"

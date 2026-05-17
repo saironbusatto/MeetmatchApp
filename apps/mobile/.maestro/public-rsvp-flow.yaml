@@ -1,0 +1,7 @@
+appId: app.farmei.mobile
+---
+- launchApp
+- tapOn: "Public"
+- tapOn: "Futebol na quadra de salão"
+- tapOn: "Eu vou!"
+- assertVisible: "Inscrição confirmada"

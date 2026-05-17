@@ -895,12 +895,494 @@
             ]
           }
         ]
+      },
+      {
+        "id": 22,
+        "title": "Mobile · Scaffold Expo Router + TypeScript",
+        "description": "Criar apps/mobile com Expo Router v3, TypeScript strict e integração ao monorepo pnpm/Turbo. App roda em iOS Simulator, Android Emulator e Web.",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Stack: Expo SDK 51+, expo-router v3, TypeScript 5.6, React Native 0.74+.\nTarefas:\n- Criar apps/mobile/package.json (workspace:* deps + Expo).\n- app.json com slug 'farmei', scheme 'farmei', deeplinks farmei://, universal links farmei.app/invite.\n- tsconfig.json estendendo packages/config/tsconfig.base.json.\n- metro.config.js com resolver.unstable_enableSymlinks=true (workspace pnpm).\n- babel.config.js com expo-router/babel + nativewind/babel.\n- app/_layout.tsx + app/+not-found.tsx mínimos.\n- Adicionar 'expo' ao pipeline Turbo (build, lint, typecheck).\nCritério: `pnpm --filter @farmei/mobile dev` abre o app no Expo Go/Dev Client.",
+        "testStrategy": "Boot do app em iOS + Android + Web sem erros. `pnpm typecheck` verde.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Criar package.json e dependências Expo",
+            "description": "Workspace deps + expo, expo-router, react-native, NativeWind",
+            "status": "done",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Configurar app.json, scheme e deeplinks",
+            "description": "slug, scheme farmei://, intent filters",
+            "status": "done",
+            "dependencies": [
+              1
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Configurar metro.config.js e babel.config.js",
+            "description": "Symlinks pnpm + babel presets",
+            "status": "done",
+            "dependencies": [
+              1
+            ]
+          },
+          {
+            "id": 4,
+            "title": "Criar _layout.tsx raiz e fallback",
+            "description": "Stack + fonts placeholder + +not-found",
+            "status": "done",
+            "dependencies": [
+              2,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "id": 23,
+        "title": "Mobile · NativeWind + design tokens compartilhados",
+        "description": "Configurar NativeWind v4 consumindo packages/design-tokens/tailwind, carregar Bricolage Grotesque + Geist + JetBrains Mono via expo-font, garantir paper-and-ink theme.",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [
+          22
+        ],
+        "details": "tailwind.config.js do mobile importa `@farmei/design-tokens/tailwind` e estende.\nglobal.css com diretivas NativeWind, importado em app/_layout.tsx.\nassets/fonts/ com 3 famílias; expo-font + expo-splash-screen para evitar flicker.\nComponentes <Text>/<View> tipados aceitando className.\nProibido hardcode de cor do design system fora desses tokens.",
+        "testStrategy": "Tela de smoke com bg paper, headline display, body Geist e número em mono. Visualmente bate com o protótipo.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Instalar e configurar NativeWind v4",
+            "description": "tailwind.config.js + babel preset",
+            "status": "done",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Importar tokens do design system",
+            "description": "Spread de farmeiTokens via @farmei/design-tokens/tailwind",
+            "status": "done",
+            "dependencies": [
+              1
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Carregar fontes custom via expo-font",
+            "description": "Bricolage, Geist, JetBrains com splash-screen guard",
+            "status": "done",
+            "dependencies": [
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "id": 24,
+        "title": "Mobile · Cliente HTTP e camada Supabase Auth",
+        "description": "Camada lib/api.ts (fetch + Zod) + lib/auth.ts (Supabase + SecureStore). Sessão persistente, refresh automático e interceptor de Authorization.",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [
+          22
+        ],
+        "details": "Reusar @farmei/types para todos os DTOs.\nlib/api.ts: createApiClient(baseUrl, getToken) com métodos tipados; falha lança ApiError padronizado.\nlib/auth.ts: signIn, signUp, signOut, getSession, useAuth() hook.\nPersistência via expo-secure-store (não AsyncStorage — credenciais).\nEXPO_PUBLIC_API_URL, EXPO_PUBLIC_SUPABASE_URL, EXPO_PUBLIC_SUPABASE_ANON_KEY no app.json extra ou .env.",
+        "testStrategy": "Login + logout funcionam contra API local; token sobrevive a reload do app.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Cliente fetch tipado com Zod guards",
+            "description": "ApiError + retry simples",
+            "status": "done",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Supabase + SecureStore",
+            "description": "Auth client com persistência segura",
+            "status": "done",
+            "dependencies": [
+              1
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Hook useAuth e provider",
+            "description": "Sessão reativa em todo o app",
+            "status": "done",
+            "dependencies": [
+              2
+            ]
+          }
+        ]
+      },
+      {
+        "id": 25,
+        "title": "Mobile · App shell (tab bar + onboarding + login/signup)",
+        "description": "Estruturar grupos de rota (auth) e (tabs). Bottom navigation com 3 abas (Home | Public | Profile). Onboarding com headline 56px, login e signup.",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [
+          23,
+          24
+        ],
+        "details": "app/(auth)/_layout.tsx + onboarding.tsx + login.tsx + signup.tsx.\napp/(tabs)/_layout.tsx com paper@80% + backdrop-blur e ícones (ink400 inativo, vermillion ativo).\nRedirect: sessão presente → (tabs); ausente → (auth)/onboarding.\nCopy bilíngue conforme brand-voice-and-copy.md (saudação latina, hero em EN).",
+        "testStrategy": "Fluxo signup → tabs aparece. Logout → onboarding aparece. Tab bar persiste entre tabs.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Grupo (auth) com onboarding e formulários",
+            "description": "Tela 1 do private flow + login/signup",
+            "status": "done",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Grupo (tabs) com bottom nav",
+            "description": "Home/Public/Profile com estilo do design system",
+            "status": "done",
+            "dependencies": [
+              1
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Guard de sessão e redirect",
+            "description": "useAuth + Redirect do expo-router",
+            "status": "done",
+            "dependencies": [
+              2
+            ]
+          }
+        ]
+      },
+      {
+        "id": 26,
+        "title": "Mobile · Fluxo privado completo (Home → Confirmed)",
+        "description": "Implementar Home, Create, Invite, Availability, Result e Confirmed conforme wiki/ui-flows/private-event-flow.md. AICard com spark yellow + stamp-lg é o hero do produto.",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [
+          25
+        ],
+        "details": "Telas e arquivos:\n- app/(tabs)/index.tsx → Home com filtros e EventCards (status badges).\n- app/events/new-private.tsx → form (título, key person, janela de datas, duração).\n- app/events/[id]/index.tsx → detalhe + convites.\n- app/events/[id]/availability.tsx → grid 4col, ciclo yes/maybe/no, banner spark, AIButton.\n- app/events/[id]/result.tsx → AICard hero + rationale + conflict + alternatives.\n- app/events/[id]/confirmed.tsx → celebração.\nEstado: @tanstack/react-query para POST /private-events, /participants, /availability, /suggestion, /confirm.\nSpark yellow só nas telas 5 (banner) e 6 (AICard). Vermillion 5–10% dos pixels.",
+        "testStrategy": "Maestro flow: criar evento → convidar 2 → marcar disp → pedir sugestão → confirmar. Visual bate com ui_kits/mobile.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Home + EventCards (privado)",
+            "description": "Filtros, badges, FAB",
+            "status": "done",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Create + Invite",
+            "description": "Form e chips de convidados (KEY badge)",
+            "status": "done",
+            "dependencies": [
+              1
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Availability grid",
+            "description": "Yes/Maybe/No cycle + quick fills",
+            "status": "done",
+            "dependencies": [
+              2
+            ]
+          },
+          {
+            "id": 4,
+            "title": "Result hero (AICard + rationale + conflict)",
+            "description": "Tela 6 — diferencial visual",
+            "status": "done",
+            "dependencies": [
+              3
+            ]
+          },
+          {
+            "id": 5,
+            "title": "Confirmed",
+            "description": "Celebração com info rows",
+            "status": "done",
+            "dependencies": [
+              4
+            ]
+          }
+        ]
+      },
+      {
+        "id": 27,
+        "title": "Mobile · Fluxo público (feed, detalhe, criar, host)",
+        "description": "Implementar PublicHome, PublicDetails, CreatePublic e HostPanel. Barra de ocupação dinâmica é obrigatória; sem spark yellow.",
+        "status": "done",
+        "priority": "medium",
+        "dependencies": [
+          25
+        ],
+        "details": "Telas e arquivos:\n- app/(tabs)/public.tsx → feed com filtro por categoria (All|Sports|Music|Social|Food).\n- app/public/[id].tsx → detalhe com hero colorido por categoria, ocupação, 'quem já vai', CTA 'Eu vou!'.\n- app/events/new-public.tsx → form com capacidade obrigatória.\n- app/events/[id]/host.tsx → lista de inscritos, check-in, export CSV via expo-sharing.\nCores da barra: <50% success, <80% warn, >=80% vermillion. Lotado → CTA disabled + border vermillion.",
+        "testStrategy": "Listar/inscrever em evento público; exportar CSV abre share sheet. Cores da barra mudam corretamente.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Feed público + filtros",
+            "description": "EventCards públicos com ocupação",
+            "status": "done",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Detalhe público + inscrição",
+            "description": "Hero categoria + 'quem já vai'",
+            "status": "done",
+            "dependencies": [
+              1
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Criar público (host)",
+            "description": "Form com capacidade",
+            "status": "done",
+            "dependencies": []
+          },
+          {
+            "id": 4,
+            "title": "Host panel + export CSV",
+            "description": "Inscritos, check-in, share sheet",
+            "status": "done",
+            "dependencies": [
+              2,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "id": 28,
+        "title": "Mobile · Convites por link (deeplink /invite/[token])",
+        "description": "Implementar fluxo do convidado sem conta: abrir farmei://invite/:token ou universal link, mostrar evento e capturar disponibilidade.",
+        "status": "done",
+        "priority": "medium",
+        "dependencies": [
+          26
+        ],
+        "details": "app/invite/[token].tsx renderiza estado sem sessão.\nPersistir invite_token em SecureStore para retorno.\nPOST /invites/:token/accept → cria sessão efêmera ligada ao participante.\nApós aceitar, redireciona para availability daquele evento.\nTrabalhar com Apple Universal Links e Android App Links (AASA + assetlinks.json a configurar na API).",
+        "testStrategy": "Abrir link em iOS Simulator e Android Emulator abre direto o app. Marcação de disp persiste.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configurar scheme + universal links",
+            "description": "AASA / assetlinks + intent filters",
+            "status": "done",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Tela /invite/[token] e sessão efêmera",
+            "description": "Aceitar convite e levar a availability",
+            "status": "done",
+            "dependencies": [
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "id": 29,
+        "title": "Mobile · Notificações push (registro + handlers)",
+        "description": "Configurar expo-notifications, registrar device token na API (novo endpoint POST /users/me/devices) e tratar notificações de 'inscrição recebida' e 'evento amanhã'.",
+        "status": "done",
+        "priority": "medium",
+        "dependencies": [
+          25
+        ],
+        "details": "Pedido de permissão integrado ao onboarding (após signup).\nAdicionar endpoint POST /users/me/devices em services/api (tarefa de backend explicitamente nessa subtask).\nLambda/job para envio das notificações fica fora do escopo do mobile — só consumir.\nSuporte a quiet hours e preferência por canal (FCM/APNs).",
+        "testStrategy": "Token aparece no DB após signup. Push de teste do Expo aparece e abre o evento certo.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Adicionar POST /users/me/devices na API",
+            "description": "Schema + endpoint + middleware",
+            "status": "done",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Cliente expo-notifications",
+            "description": "Permissão, registro, listeners",
+            "status": "done",
+            "dependencies": [
+              1
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Deep link de notificação → tela alvo",
+            "description": "Mapear data payload",
+            "status": "done",
+            "dependencies": [
+              2
+            ]
+          }
+        ]
+      },
+      {
+        "id": 30,
+        "title": "Mobile · Qualidade (Maestro + a11y + estados de erro)",
+        "description": "Criar suite Maestro para os 3 fluxos críticos, garantir foco e contraste, e padronizar empty/loading/error com voz da marca.",
+        "status": "done",
+        "priority": "medium",
+        "dependencies": [
+          26,
+          27,
+          28
+        ],
+        "details": "Maestro flows: signup-and-create-private, invite-and-availability, public-rsvp-flow.\nA11y: roles, accessibilityLabel em ícones, contraste mínimo WCAG AA.\nEmpty states: copy com flavor latino quando couber.\nLoading: AI shimmer no Result; skeletons paper-and-ink no resto.\nErros: card vermillionSoft com mensagem warm, nunca alarme.",
+        "testStrategy": "Maestro CLI roda local; CI executa flows headless em build EAS Preview.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Maestro flows críticos",
+            "description": "3 jornadas principais",
+            "status": "done",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Auditoria de a11y",
+            "description": "Roles + contraste + labels",
+            "status": "done",
+            "dependencies": []
+          },
+          {
+            "id": 3,
+            "title": "Componentes de estado",
+            "description": "Empty/Loading/Error padronizados",
+            "status": "done",
+            "dependencies": []
+          }
+        ]
+      },
+      {
+        "id": 31,
+        "title": "Mobile · CI/CD (EAS Build + TestFlight + Internal Track)",
+        "description": "Configurar eas.json com perfis preview/production, GitHub Actions para `eas build --auto-submit` em tags `mobile-vX.Y.Z`, e gerar primeiro build interno.",
+        "status": "done",
+        "priority": "medium",
+        "dependencies": [
+          22
+        ],
+        "details": "eas.json com profiles development/preview/production.\nSecrets do workflow: EXPO_TOKEN, APPLE_ID, ASC_APP_ID, GOOGLE_SERVICE_ACCOUNT_KEY.\n.github/workflows/mobile-release.yml acionado em tag mobile-*.\nOTA updates configurados em production (canal stable).",
+        "testStrategy": "Build EAS local roda; preview channel publica OTA; tag dispara build no CI.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "eas.json + perfis",
+            "description": "development/preview/production",
+            "status": "done",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Workflow GitHub Actions",
+            "description": "Tag-based release",
+            "status": "done",
+            "dependencies": [
+              1
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Configurar OTA channels",
+            "description": "Canal stable + preview",
+            "status": "done",
+            "dependencies": [
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "id": 32,
+        "title": "Mobile · Documentação e rebranding do README",
+        "description": "Documentar como rodar/contribuir com apps/mobile, atualizar README raiz e CLAUDE.md mencionando o app mobile como concluído quando entregar.",
+        "status": "done",
+        "priority": "low",
+        "dependencies": [
+          30,
+          31
+        ],
+        "details": "apps/mobile/README.md com pré-reqs (Xcode, Android Studio, Watchman), scripts e troubleshooting.\nAtualizar wiki/architecture/mobile-architecture.md (já criado nesta sessão) com qualquer divergência de execução.\nAtualizar README raiz: seção 'Mobile app'.\nAtualizar CLAUDE.md: stack sugerido vira 'stack adotado'.",
+        "testStrategy": "Onboarding de um dev novo segue o README do mobile sem perguntas extras.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "README do apps/mobile",
+            "description": "Setup, scripts, troubleshooting",
+            "status": "done",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Atualizar README raiz + CLAUDE.md",
+            "description": "Refletir mobile concluído",
+            "status": "done",
+            "dependencies": [
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "id": 33,
+        "title": "Tech debt: persistir user_devices no PostgreSQL",
+        "description": "O endpoint POST /users/me/devices usa um Map em memória (store.ts). Device tokens somem a cada restart da API. Migrar para tabela user_devices no schema Drizzle com migration.",
+        "status": "done",
+        "priority": "medium",
+        "dependencies": [],
+        "details": "Criar tabela user_devices no schema Drizzle (services/api/src/db/schema.ts):\n  id          uuid PK\n  user_id     uuid FK → users.id\n  token       text UNIQUE\n  platform    enum (ios | android | web)\n  push_enabled boolean DEFAULT true\n  quiet_hours_start time NULL\n  quiet_hours_end   time NULL\n  created_at  timestamptz\n  updated_at  timestamptz\n\nSubstituir a implementação em-memória de upsertUserDevice (store.ts) por query Drizzle.\nGerar e rodar migration: drizzle-kit generate + drizzle-kit migrate.\nAtualizar seed de desenvolvimento se existir.\nGarantir UNIQUE(user_id, token) para upsert idempotente.",
+        "testStrategy": "Registrar device, reiniciar a API, registrar de novo — token ainda presente no banco. Upsert não cria duplicata.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Adicionar tabela user_devices ao schema Drizzle",
+            "description": "Schema + enum platform",
+            "status": "done",
+            "dependencies": []
+          },
+          {
+            "id": 2,
+            "title": "Gerar e executar migration",
+            "description": "drizzle-kit generate + migrate",
+            "status": "done",
+            "dependencies": [
+              1
+            ]
+          },
+          {
+            "id": 3,
+            "title": "Refatorar upsertUserDevice para usar Drizzle",
+            "description": "Substituir Map em-memória por query real",
+            "status": "done",
+            "dependencies": [
+              2
+            ]
+          }
+        ]
       }
     ],
     "metadata": {
       "projectName": "Farmei",
       "created": "2026-05-16T00:00:00.000Z",
-      "updated": "2026-05-17T14:52:10.036Z",
+      "updated": "2026-05-17T18:32:57.946Z",
       "description": "Plataforma de eventos sociais — eventos privados com sugestão de data e eventos públicos com inscrição.",
       "version": "1.0.0"
     }

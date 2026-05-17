@@ -17,7 +17,8 @@ Decisões técnicas, modelo de dados, contratos de API e design de sistema.
 |---------|---------|---------|
 | [System Design](architecture/system-design.md) | Monorepo, stack, módulos de domínio, estratégia de auth e convites | 2026-05-16 |
 | [Data Model](architecture/data-model.md) | Entidades, relações e contratos de API do Farmei | 2026-05-16 |
-| [Architectural Decisions](architecture/architectural-decisions.md) | ADRs: stack, auth, convites, ORM, waitlist, rebrand e decisões pendentes | 2026-05-16 |
+| [Architectural Decisions](architecture/architectural-decisions.md) | ADRs: stack, auth, convites, ORM, waitlist, rebrand e decisões pendentes | 2026-05-17 |
+| [Mobile Architecture](architecture/mobile-architecture.md) | Expo Router + NativeWind, integração com monorepo, sessão, deeplinks e push | 2026-05-17 |
 
 ## design-system
 
@@ -52,4 +53,4 @@ Planejamento de tarefas e milestones do MVP.
 
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [MVP Backlog](backlog/mvp-backlog.md) | Backlog em 6 fases com dependências, milestones e status atual | 2026-05-16 |
+| [MVP Backlog](backlog/mvp-backlog.md) | Backlog em 6 fases com dependências, milestones e status atual (+ fase mobile) | 2026-05-17 |

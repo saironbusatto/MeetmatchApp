@@ -1,0 +1,12 @@
+appId: app.farmei.mobile
+---
+- launchApp
+- tapOn: "Get started — it's free"
+- inputText: "Maria"
+- tapOn: "email@exemplo.com"
+- inputText: "maria@example.com"
+- tapOn: "senha"
+- inputText: "12345678"
+- tapOn: "Criar conta"
+- tapOn:
+    id: "Criar novo evento"

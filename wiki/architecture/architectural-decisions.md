@@ -21,10 +21,11 @@ Registro compilado dos ADRs do Farmei. Cada decisão inclui o raciocínio e o qu
 ### Produto e escopo
 | Decisão | Escolha | Razão |
 |---------|---------|-------|
-| ADR-001 | Web-first, mobile depois | Maior risco é domínio, não plataforma |
+| ADR-001 | Web-first, mobile depois (mobile **agora ativo**) | Maior risco era domínio, não plataforma — backend + web entregues; mobile entra em paralelo |
 | ADR-006 | Convites por link (sem email automático no MVP) | Email transacional não deve bloquear progresso |
 | ADR-007 | Algoritmo de data sem LLM | Lógica é matemática simples e testável; LLM é enriquecimento futuro |
 | ADR-010 | Sem waitlist no MVP | Aumenta complexidade do fluxo de inscrição desnecessariamente |
+| ADR-011 | Mobile com Expo Router + NativeWind | Stack única, OTA updates, reaproveita 100% dos packages e tokens. Descartados: bare RN (overhead), Flutter (sem compartilhamento de tipos), Tamagui (sem ganho sobre NativeWind). Detalhes em [Mobile Architecture](mobile-architecture.md). |
 
 ### Rebrand
 | Decisão | Regra |
@@ -56,5 +57,6 @@ Essas são intenções registradas — não features para implementar agora:
 
 - [System Design](system-design.md)
 - [Data Model](data-model.md)
+- [Mobile Architecture](mobile-architecture.md)
 - [Business Rules](../product/business-rules.md)
 - [MVP Backlog](../backlog/mvp-backlog.md)
