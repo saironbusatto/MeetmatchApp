@@ -1,6 +1,6 @@
 # Farmei Design System Guide (README.md)
 
-> Source: README.md (internal, era Vamointao — rebrand em andamento para Farmei)
+> Source: README.md (internal, era Farmei — rebrand em andamento para Farmei)
 > Collected: 2026-05-16
 > Published: 2026-05-16
 

@@ -85,7 +85,7 @@ Engenharia: tempo de carregamento inicial, taxa de erro em cálculo de disponibi
 
 - Dois produtos no mesmo app pode gerar confusão
 - Escopo social pode crescer antes do core funcionar
-- Rebrand incompleto Vamointao→Farmei pode poluir código
+- Rebrand incompleto Farmei→Farmei pode poluir código
 - Convites, auth e permissões precisam ser bem definidos desde o início
 
 ## Decisões pendentes

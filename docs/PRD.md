@@ -278,7 +278,7 @@ A implementação deve respeitar o design system existente:
 
 - Mistura de dois produtos em uma mesma experiência pode gerar confusão.
 - Escopo social pode crescer rápido demais antes do core funcionar.
-- Rebrand incompleto entre Vamointao e Farmei pode poluir código e documentação.
+- Rebrand incompleto entre Farmei e Farmei pode poluir código e documentação.
 - Convites, auth e permissões precisam ser bem definidos desde o início.
 
 ## 18. Decisões pendentes

@@ -1,4 +1,4 @@
-# Vamointao · Mobile UI kit
+# Farmei · Mobile UI kit
 
 Seven interactive screens in iOS frames, side-by-side in a horizontal rail. Tap any CTA on a phone to scroll the rail to the next screen — the whole flow is wired up.
 

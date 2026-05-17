@@ -1,0 +1,28 @@
+{
+  "name": "@farmei/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json --noEmit",
+    "dev": "tsx watch src/index.ts",
+    "lint": "eslint src --ext .ts",
+    "test": "echo 'no tests yet'",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "^0.4.3",
+    "@supabase/supabase-js": "^2.49.8",
+    "hono": "^4.6.10",
+    "zod": "^3.23.8",
+    "@hono/node-server": "^1.13.7",
+    "@farmei/utils": "workspace:*",
+    "drizzle-orm": "^0.44.2"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "drizzle-kit": "^0.31.5"
+  }
+}

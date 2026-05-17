@@ -1,4 +1,4 @@
-// Vamointao mobile — públic events screens
+// Farmei mobile — públic events screens
 // Depends on components.jsx
 
 // ─── Public Events Home ────────────────────────────────────────

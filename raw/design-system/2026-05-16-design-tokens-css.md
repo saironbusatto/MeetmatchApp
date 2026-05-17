@@ -4,7 +4,7 @@
 > Collected: 2026-05-16
 > Published: 2026-05-16
 
-Todos os tokens são CSS custom properties em :root. A classe wrapper é `.vmt` (legado Vamointao — rebrand em andamento).
+Todos os tokens são CSS custom properties em :root. A classe wrapper é `.vmt` (legado Farmei — rebrand em andamento).
 
 ## Fontes
 

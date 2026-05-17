@@ -1,4 +1,4 @@
-# Vamointao · Marketing site
+# Farmei · Marketing site
 
 Long-form marketing page: nav, hero, how-it-works, features grid, pricing, closing CTA, footer.
 

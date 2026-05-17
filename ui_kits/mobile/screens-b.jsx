@@ -1,4 +1,4 @@
-// Vamointao mobile UI kit — screens (b)
+// Farmei mobile UI kit — screens (b)
 // Invite, Availability, AI Result, Confirmed
 
 // ─── 4 · Invite people ─────────────────────────────────────────

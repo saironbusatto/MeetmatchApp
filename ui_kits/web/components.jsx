@@ -1,4 +1,4 @@
-// Vamointao web app — shared components
+// Farmei web app — shared components
 
 const VMT = {
   vermillion: '#FF3B2E', vermillionDark: '#E92518', vermillionSoft: '#FFF1EE',

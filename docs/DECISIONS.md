@@ -113,7 +113,7 @@
 **Data:** 2026-05-16  
 **Status:** Em andamento
 
-**Contexto:** O design system e documentação legada usam "Vamointao". O produto está sendo rebrandado para "Farmei".
+**Contexto:** O design system e documentação legada usam "Farmei". O produto está sendo rebrandado para "Farmei".
 
 **Decisão:**
 - Todo código novo usa "Farmei" (nomes de package, variáveis de ambiente, textos de UI)
@@ -122,7 +122,7 @@
 - Uma tarefa explícita de migração de naming será criada para não bloquear o MVP
 
 **Referências legadas a monitorar:**
-- `README.md` raiz (menciona Vamointao)
+- `README.md` raiz (menciona Farmei)
 - `colors_and_type.css` (classe `.vmt`)
 - `SKILL.md`
 - Comentários nos ui_kits

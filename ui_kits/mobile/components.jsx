@@ -1,4 +1,4 @@
-// Vamointao mobile UI kit — shared components
+// Farmei mobile UI kit — shared components
 // Loaded after React + ios-frame.jsx
 // All components written in JSX, exported to window for cross-file access.
 

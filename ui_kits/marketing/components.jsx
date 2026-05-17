@@ -1,4 +1,4 @@
-// Vamointao Marketing — shared building blocks
+// Farmei Marketing — shared building blocks
 // Same VMT tokens used in mobile kit, redeclared here so marketing/ can stand alone.
 
 const VMT = {

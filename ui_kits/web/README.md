@@ -1,4 +1,4 @@
-# Vamointao · Web app UI kit
+# Farmei · Web app UI kit
 
 Two-view desktop app with sidebar nav. The sidebar's "Calendar" item swaps the main content from the Dashboard to the Calendar view.
 

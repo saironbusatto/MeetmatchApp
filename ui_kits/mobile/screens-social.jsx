@@ -1,4 +1,4 @@
-// Vamointao mobile — host management + social features
+// Farmei mobile — host management + social features
 
 // ─── Host Dashboard (gerenciar evento público) ──────────────
 function HostDashboard({ event, onBack }) {

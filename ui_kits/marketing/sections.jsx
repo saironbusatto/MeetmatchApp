@@ -1,4 +1,4 @@
-// Vamointao marketing sections — Hero, Features, How it works, Pricing, CTA
+// Farmei marketing sections — Hero, Features, How it works, Pricing, CTA
 
 // ─── Hero ───────────────────────────────────────────────────────
 function Hero() {

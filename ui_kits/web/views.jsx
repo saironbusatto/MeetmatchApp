@@ -1,4 +1,4 @@
-// Vamointao web app — views: Dashboard, Calendar
+// Farmei web app — views: Dashboard, Calendar
 // Depends on components.jsx (loaded first)
 
 // ─── Dashboard ─────────────────────────────────────────────────

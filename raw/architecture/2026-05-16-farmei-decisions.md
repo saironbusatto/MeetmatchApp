@@ -39,7 +39,7 @@
 **Por quê:** "IA" é simplificação de marketing. Lógica é matemática simples e testável.
 **Evolução:** Campo reasoning pode ser preenchido por Claude em versão futura.
 
-## ADR-008 — Rebrand Vamointao → Farmei
+## ADR-008 — Rebrand Farmei → Farmei
 **Decisão:** Todo código novo usa "Farmei". CSS legado (.vmt-*) mantido como prefixo temporário. Migração controlada em tarefa separada.
 **Referências legadas:** README.md raiz, colors_and_type.css (.vmt), SKILL.md, comentários nos ui_kits.
 

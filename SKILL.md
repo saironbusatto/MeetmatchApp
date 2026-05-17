@@ -1,6 +1,6 @@
 ---
-name: vamointao-design
-description: Use this skill to generate well-branded interfaces and assets for Vamointao — a group scheduling app where AI finds the best date for a crew. Contains essential design guidelines, colors, type, fonts, assets, and UI kit components for prototyping.
+name: farmei-design
+description: Use this skill to generate well-branded interfaces and assets for Farmei — a group scheduling app where AI finds the best date for a crew. Contains essential design guidelines, colors, type, fonts, assets, and UI kit components for prototyping.
 user-invocable: true
 ---
 

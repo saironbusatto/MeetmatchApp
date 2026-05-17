@@ -125,18 +125,18 @@ Use-os como referência de fluxo e design.
 
 ## 5. Rebrand obrigatório
 
-Há um rebrand em andamento de **Vamointao** para **Farmei**.
+Há um rebrand em andamento de **Farmei** para **Farmei**.
 
 ### Regra
 
 - Nome visível do produto: **Farmei**
-- Código legado/documentação pode conter `vamointao`
+- Código legado/documentação pode conter `farmei`
 - Durante a estruturação do projeto real, trate isso conscientemente
 
 ### O que fazer
 
 - usar **Farmei** em interfaces, títulos, textos de produto e documentação nova;
-- identificar referências legadas a `vamointao` e planejar refactor controlado;
+- identificar referências legadas a `farmei` e planejar refactor controlado;
 - não quebrar o projeto por tentar renomear tudo de uma vez sem estratégia;
 - criar uma tarefa explícita de migração de naming.
 
@@ -873,7 +873,7 @@ Revise e confirme:
 - testes mínimos passaram?
 - erros básicos tratados?
 - sem secrets no código?
-- sem referências visíveis antigas a Vamointao onde já deveria ser Farmei?
+- sem referências visíveis antigas a Farmei onde já deveria ser Farmei?
 
 ---
 

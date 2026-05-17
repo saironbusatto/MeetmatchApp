@@ -42,7 +42,7 @@ Leitura de docs existentes, mapeamento de gaps, criação de PRD/ARCHITECTURE/TA
 6.1 Testes: unitários (algoritmo, capacidade), e2e Playwright (auth, fluxo privado completo, fluxo público)
 6.2 Estados e erros: empty states, loading states, tratamento erros API, mensagens com voz da marca
 6.3 Acessibilidade: foco visível, contraste, labels, navegação teclado nos fluxos críticos
-6.4 Limpeza: remover mocks no fluxo real, auditar referências Vamointao, README raiz, .env.example, logs
+6.4 Limpeza: remover mocks no fluxo real, auditar referências Farmei, README raiz, .env.example, logs
 
 ## Milestones
 

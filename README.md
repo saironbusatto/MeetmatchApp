@@ -1,8 +1,8 @@
-# Vamointao Design System
+# Farmei Design System
 
 > _vamo + into_ — "let's get into it." A warm, action-oriented nudge.
 
-**Vamointao** is a group scheduling app where an AI agent finds the best date that works for the most people in a group. Participants mark their availability; the AI weighs everyone's input — with extra weight for a designated **Key person** and respect for a defined window of dates — and proposes the optimal meeting day. Exceptions are explicit, not implicit.
+**Farmei** is a group scheduling app where an AI agent finds the best date that works for the most people in a group. Participants mark their availability; the AI weighs everyone's input — with extra weight for a designated **Key person** and respect for a defined window of dates — and proposes the optimal meeting day. Exceptions are explicit, not implicit.
 
 The product is **bright, playful, and human**, but anchored by a confident **paper-and-ink** base with a single hero color (vermillion) and one accent reserved for AI moments (spark yellow). It should feel like a friend handing you a sticker, not a calendar app from 2014.
 
@@ -41,7 +41,7 @@ The name itself is Latin-flavored, so a sprinkle of Spanish/Portuguese is **part
 | Invite CTA | "Send Invitations" | "Send the ping" |
 | Conflict warning | "Conflict detected" | "Heads up — Diego can't make Tuesday." |
 | Confirmed | "Event Confirmed Successfully" | "Locked in. ¡Vamos!" |
-| Onboarding | "Welcome to Vamointao" | "Hey — let's find a time." |
+| Onboarding | "Welcome to Farmei" | "Hey — let's find a time." |
 
 ### Emoji
 Used **sparingly** and **always with purpose**. Approved set, in order of preference:

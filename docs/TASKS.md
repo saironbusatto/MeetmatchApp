@@ -312,7 +312,7 @@
 - [ ] Navegação por teclado nos fluxos críticos (formulários, availability picker)
 
 ### 6.4 Limpeza e entrega
-- [ ] Auditoria de referências a "Vamointao" em todo código novo
+- [ ] Auditoria de referências a "Farmei" em todo código novo
 - [ ] Remover todos os `console.log` de desenvolvimento
 - [ ] Revisar `.env.example` — deve documentar todas as variáveis com descrição
 - [ ] Verificar que nenhum secret está hardcoded

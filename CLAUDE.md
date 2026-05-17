@@ -31,9 +31,9 @@ A diferença sutil mas importante: **eventos públicos não usam IA**. A data j�
 
 ⚠️ **Atenção ao rebrand:**
 - O nome **visual** do app é **Farmei** (aparece em logos, headers, telas, marketing)
-- O nome **interno do código/docs** ainda é "Vamointao" em vários lugares (README.md, comentários, SKILL.md, tokens CSS, etc.)
-- **Quando for renomear pra valer no código,** procure por `vamointao` (case-insensitive) e substitua. Aproximadamente 15 ocorrências em comentários e documentação.
-- O logomark (square mark com V estilizado) também é da era Vamointao — pode ser redesenhado pra refletir "Farmei" se quiser.
+- O nome **interno do código/docs** ainda é "Farmei" em vários lugares (README.md, comentários, SKILL.md, tokens CSS, etc.)
+- **Quando for renomear pra valer no código,** procure por `farmei` (case-insensitive) e substitua. Aproximadamente 15 ocorrências em comentários e documentação.
+- O logomark (square mark com V estilizado) também é da era Farmei — pode ser redesenhado pra refletir "Farmei" se quiser.
 
 ---
 

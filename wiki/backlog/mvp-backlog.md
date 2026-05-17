@@ -94,7 +94,7 @@ O backlog está organizado em 6 fases sequenciais com dependências explícitas.
 - Testes e2e Playwright: auth, fluxo privado completo, fluxo público
 - Empty states + loading states + error handling com voz da marca
 - Acessibilidade: foco visível, contraste, labels
-- Limpeza: mocks, referências Vamointao, README raiz, .env.example
+- Limpeza: mocks, referências Farmei, README raiz, .env.example
 
 ## Dependências críticas
 

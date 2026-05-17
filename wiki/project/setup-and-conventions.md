@@ -54,26 +54,26 @@ npx serve .
 | /ui_kits/marketing/index.html | Site de marketing |
 | /ui_kits/web/index.html | App web desktop |
 
-## Rebrand: Vamointao → Farmei
+## Rebrand: Farmei → Farmei
 
 **Estado atual:** rebrand em andamento.
 
 - Nome visual do app: **Farmei**
-- Código legado ainda usa "Vamointao" (~15 ocorrências)
+- Código legado ainda usa "Farmei" (~15 ocorrências)
 - CSS legado usa classe `.vmt` e prefixo `--vmt-*` em algumas variáveis
 
 **Regra para novas sessões:** Todo código novo usa "Farmei". Não renomear em massa sem estratégia — criará conflitos.
 
 **Localizar ocorrências legadas:**
 ```bash
-grep -ri "vamointao" . --include="*.{js,jsx,ts,tsx,css,md,html}"
+grep -ri "farmei" . --include="*.{js,jsx,ts,tsx,css,md,html}"
 ```
 
 **Arquivos com referências legadas conhecidas:**
-- `README.md` raiz (título "Vamointao Design System")
+- `README.md` raiz (título "Farmei Design System")
 - `colors_and_type.css` (classe `.vmt`)
 - `SKILL.md`
-- Comentários nos ui_kits (`// Vamointao mobile UI kit`)
+- Comentários nos ui_kits (`// Farmei mobile UI kit`)
 
 ## Prioridade de leitura para novas sessões
 

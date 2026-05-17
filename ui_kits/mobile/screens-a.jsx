@@ -1,4 +1,4 @@
-// Vamointao mobile UI kit — screens
+// Farmei mobile UI kit — screens
 // Depends on components.jsx (loaded before this file).
 
 // ─── Sample data ───────────────────────────────────────────────

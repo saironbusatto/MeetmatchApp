@@ -1,0 +1,11 @@
+:root {
+  --vmt-vermillion-500: #FF3B2E;
+  --vmt-spark-300: #FFD93D;
+  --vmt-ink-900: #0A0A0A;
+  --vmt-bg-page: #FAFAF7;
+  --vmt-bg-surface: #FFFFFF;
+  --vmt-font-display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --vmt-font-body: "Geist", system-ui, sans-serif;
+  --vmt-font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --vmt-shadow-stamp: 2px 2px 0 #0A0A0A;
+}

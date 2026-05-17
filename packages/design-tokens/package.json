@@ -1,0 +1,17 @@
+{
+  "name": "@farmei/design-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "files": ["src"],
+  "exports": {
+    "./tailwind": "./src/tailwind.config.ts",
+    "./global.css": "./src/global.css"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src --ext .ts,.css",
+    "test": "echo 'no tests yet'",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}
