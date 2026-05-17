@@ -124,3 +124,11 @@ Evidência bruta: - raw/wiki-ingest/2026-05-17_11-52-24.md
 - upsertUserDevice migrou para query real com fallback local
 - migration gerada; execução bloqueada localmente por DATABASE_URL ausente
 - Evidência: raw/wiki-ingest/2026-05-17_15-33-11.md
+
+## [2026-05-17] ingest | Security & dependency hardening (tasks #34 #35 #36 #44 #45)
+
+- Auth da API consolidado em Supabase JWT, removendo bypass local `dev_*`
+- Fluxo de invites agora exige Bearer válido e ignora `userId` arbitrário no body
+- Dependências atualizadas: `next@16.2.6`, `drizzle-orm@^0.45.2`, `drizzle-kit@^0.31.10`
+- Task Master atualizado: tasks 34, 35, 36, 44 e 45 marcadas como `done`
+- Evidência: raw/wiki-ingest/2026-05-17_15-49-50.md

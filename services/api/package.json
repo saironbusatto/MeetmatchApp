@@ -13,18 +13,18 @@
     "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
+    "@farmei/utils": "workspace:*",
+    "@hono/node-server": "^1.13.7",
     "@hono/zod-validator": "^0.4.3",
     "@supabase/supabase-js": "^2.49.8",
+    "drizzle-orm": "^0.45.2",
     "hono": "^4.6.10",
-    "zod": "^3.23.8",
-    "@hono/node-server": "^1.13.7",
-    "@farmei/utils": "workspace:*",
-    "drizzle-orm": "^0.44.2",
-    "pg": "^8.13.1"
+    "pg": "^8.13.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "tsx": "^4.19.2",
-    "drizzle-kit": "^0.31.5",
-    "@types/pg": "^8.11.10"
+    "@types/pg": "^8.11.10",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.19.2"
   }
 }

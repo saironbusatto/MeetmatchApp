@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api/v1";
 
-export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }): JSX.Element {
+export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { token } = useAuth();
   const [id, setId] = useState("");
   const [event, setEvent] = useState<any>(null);

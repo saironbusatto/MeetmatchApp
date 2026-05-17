@@ -1,7 +1,6 @@
 import type { MiddlewareHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { createSupabaseAdminClient } from "../lib/supabase";
-import { getSessionUserId } from "../store";
 
 export const requireAuth: MiddlewareHandler<{ Variables: { auth: { userId: string } } }> = async (
   c,
@@ -16,13 +15,6 @@ export const requireAuth: MiddlewareHandler<{ Variables: { auth: { userId: strin
   const token = authorization.replace("Bearer ", "").trim();
   if (!token) {
     throw new HTTPException(401, { message: "JWT token not provided" });
-  }
-
-  const devSessionUser = getSessionUserId(token);
-  if (devSessionUser) {
-    c.set("auth", { userId: devSessionUser });
-    await next();
-    return;
   }
 
   try {

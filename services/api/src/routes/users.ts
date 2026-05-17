@@ -2,7 +2,8 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
 import { requireAuth } from "../middleware/auth";
-import { findUserById, updateUser, upsertUserDevice } from "../store";
+import { findUserById, updateUser, upsertUserDevice, upsertUserFromAuth } from "../store";
+import { createSupabaseAdminClient } from "../lib/supabase";
 
 const updateMeSchema = z.object({
   name: z.string().min(1).optional(),
@@ -19,25 +20,60 @@ const upsertDeviceSchema = z.object({
 
 export const usersRouter = new Hono<{ Variables: { auth: { userId: string } } }>()
   .use("*", requireAuth)
-  .get("/me", (c) => {
+  .get("/me", async (c) => {
     const auth = c.get("auth");
-    const user = findUserById(auth.userId);
+    let user = findUserById(auth.userId);
+
+    if (!user) {
+      const authorization = c.req.header("Authorization") ?? "";
+      const token = authorization.replace("Bearer ", "").trim();
+      const supabase = createSupabaseAdminClient();
+      const { data } = await supabase.auth.getUser(token);
+      if (data.user?.email) {
+        user = upsertUserFromAuth({
+          id: data.user.id,
+          email: data.user.email,
+          name: (data.user.user_metadata?.name as string | undefined) ?? data.user.email
+        });
+      }
+    }
+
     if (!user) {
       return c.json({ message: "User not found" }, 404);
     }
 
-    return c.json({ user: { ...user, password: undefined } }, 200);
+    return c.json({ user }, 200);
   })
-  .put("/me", zValidator("json", updateMeSchema), (c) => {
+  .put("/me", zValidator("json", updateMeSchema), async (c) => {
     const auth = c.get("auth");
     const payload = c.req.valid("json");
+
+    let existing = findUserById(auth.userId);
+    if (!existing) {
+      const authorization = c.req.header("Authorization") ?? "";
+      const token = authorization.replace("Bearer ", "").trim();
+      const supabase = createSupabaseAdminClient();
+      const { data } = await supabase.auth.getUser(token);
+      if (data.user?.email) {
+        existing = upsertUserFromAuth({
+          id: data.user.id,
+          email: data.user.email,
+          name: (data.user.user_metadata?.name as string | undefined) ?? data.user.email
+        });
+      }
+    }
+
+    if (!existing) {
+      return c.json({ message: "User not found" }, 404);
+    }
+
     const updated = updateUser(auth.userId, payload);
 
     if (!updated) {
       return c.json({ message: "User not found" }, 404);
     }
 
-    return c.json({ user: { ...updated, password: undefined } }, 200);
+    return c.json({ user: updated }, 200);
   })
   .post("/me/devices", zValidator("json", upsertDeviceSchema), async (c) => {
     const auth = c.get("auth");

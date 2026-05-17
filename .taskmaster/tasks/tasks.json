@@ -1377,12 +1377,188 @@
             ]
           }
         ]
+      },
+      {
+        "id": 34,
+        "title": "P0-SEC: hashear senhas (bcrypt/argon2)",
+        "description": "services/api/src/store.ts:119 e routes/auth.ts:36 — senha em texto plano. Migrar para Supabase Auth nativo (já está parcialmente integrado) e remover createUser/findUserByEmail/password match local.",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Hoje a API tem 2 caminhos: Supabase Auth (middleware) e auth local em-memória que armazena senha plain. Manter apenas Supabase Auth. Remover routes/auth.ts (signup/login/logout/me) ou converter para wrappers Supabase com bcrypt no fallback dev.",
+        "testStrategy": "Tentar login com credenciais antigas deve falhar; sessões devem ser JWT Supabase válidos.",
+        "subtasks": []
+      },
+      {
+        "id": 35,
+        "title": "P0-SEC: remover dev-session bypass do middleware de auth",
+        "description": "services/api/src/middleware/auth.ts:21-26 deixa qualquer token \"dev_*\" no Map em-memória autenticar — funciona em produção também.",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Cercar com flag NODE_ENV === \"development\" OU remover completamente o branch getSessionUserId() e usar exclusivamente Supabase.",
+        "testStrategy": "Em build de produção, token dev_xxx retorna 401.",
+        "subtasks": []
+      },
+      {
+        "id": 36,
+        "title": "P0-SEC: corrigir aceitação de convite com userId arbitrário",
+        "description": "services/api/src/routes/invites.ts:18 aceita userId do body — qualquer dono do token vincula o convite a qualquer userId.",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Deve: (a) exigir Bearer válido nessa rota; (b) usar c.get(\"auth\").userId como dono do convite; OU (c) criar sessão efêmera ligada ao participant_id (não user_id) quando o convidado não tiver conta.",
+        "testStrategy": "POST /invites/:token/accept com body { userId: \"X\" } e Authorization de outro usuário não deve atribuir o convite a X.",
+        "subtasks": []
+      },
+      {
+        "id": 37,
+        "title": "P1-SEC: fix CORS wildcard fallback",
+        "description": "services/api/src/app.ts:13 cai pra origin \"*\" se CORS_ORIGIN não estiver setado. Em produção isso vira CSRF total.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [],
+        "details": "Trocar fallback por throw na inicialização se NODE_ENV === \"production\" e CORS_ORIGIN ausente. Em dev, allowlist explícita (localhost:3000, localhost:8081).",
+        "testStrategy": "Boot da API sem CORS_ORIGIN em prod falha; com lista, request de outra origem é bloqueada.",
+        "subtasks": []
+      },
+      {
+        "id": 38,
+        "title": "P1-SEC: error handler não vaza error.message ao cliente",
+        "description": "services/api/src/middleware/error-handler.ts:19 — devolve error.message cru (stack, SQL, etc).",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [],
+        "details": "Padronizar: 500 sempre como { message: \"Internal error\", traceId } e logar o erro original com pino/console. Apenas HTTPException pode vazar mensagem custom.",
+        "testStrategy": "Forçar erro 500 e ver que o body não contém detalhes internos.",
+        "subtasks": []
+      },
+      {
+        "id": 39,
+        "title": "P1-SEC: remover password do payload via destructuring",
+        "description": "routes/auth.ts:29,41,68 e users.ts:29,40 usam { ...user, password: undefined } — mantém chave password no JSON.",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [],
+        "details": "Trocar por: const { password, ...safe } = user; return c.json({ user: safe });",
+        "testStrategy": "Inspecionar resposta de /auth/me — chave password ausente do JSON.",
+        "subtasks": []
+      },
+      {
+        "id": 40,
+        "title": "P1-SEC: rate limit em /auth/login, /signup e /invites/:token/accept",
+        "description": "Hoje sem throttle — brute force livre.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [],
+        "details": "Adicionar hono-rate-limiter ou implementar com Redis/Upstash. Limites: 5 logins/min/IP, 3 signups/h/IP, 10 invite-accepts/min/token.",
+        "testStrategy": "Disparar 20 requests/seg ao /auth/login e verificar 429 após o limite.",
+        "subtasks": []
+      },
+      {
+        "id": 41,
+        "title": "P1-SEC: signup não revelar email já cadastrado",
+        "description": "routes/auth.ts:23 retorna 409 \"Email already registered\" — permite enumeração de contas.",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [],
+        "details": "Padronizar: signup sempre retorna 202 + envia email de \"reset/login\" se já existir. (Padrão Supabase nativo já faz isso quando configurado.)",
+        "testStrategy": "POST /auth/signup com email existente e novo retornam mesma resposta visível ao cliente.",
+        "subtasks": []
+      },
+      {
+        "id": 42,
+        "title": "P1-SEC: CSV injection em export de inscritos",
+        "description": "public-events.ts:159 monta CSV concatenando campos sem escape — abrir no Excel executa fórmulas se campo começa com =, +, -, @.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [],
+        "details": "Prefixar campos perigosos com aspas simples e escapar aspas duplas. Idealmente usar uma lib (papaparse, fast-csv).",
+        "testStrategy": "Criar evento com título \"=SUM(1+1)\", export CSV, abrir no Excel: célula deve mostrar texto literal, não resultado.",
+        "subtasks": []
+      },
+      {
+        "id": 43,
+        "title": "P1-SEC: pageSize sem cap permite DoS",
+        "description": "public-events.ts:53 aceita ?pageSize=1000000 — lê e serializa o Map inteiro.",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [],
+        "details": "Math.min(Number(query) || 10, 50). Mesmo cap em endpoints similares.",
+        "testStrategy": "GET /public-events?pageSize=999999 retorna no máximo 50 itens.",
+        "subtasks": []
+      },
+      {
+        "id": 44,
+        "title": "P0-DEPS: atualizar next para >= 15.5.16",
+        "description": "pnpm audit: 1 critical (RCE no React Flight) + ~10 high em next@15.3.3.",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [],
+        "details": "pnpm --filter @farmei/web add next@latest. Validar typecheck e build após. Re-rodar pnpm audit para confirmar 0 crit em next.",
+        "testStrategy": "pnpm audit --prod sem CRITICAL.",
+        "subtasks": []
+      },
+      {
+        "id": 45,
+        "title": "P0-DEPS: atualizar drizzle-orm (SQL injection)",
+        "description": "drizzle-orm@0.44.2 tem GHSA-gpj5-g38j-94v9 — SQL injection via escape inadequado.",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [],
+        "details": "pnpm --filter @farmei/api add drizzle-orm@latest. Re-rodar migrations e typecheck.",
+        "testStrategy": "pnpm audit --prod sem high em drizzle-orm.",
+        "subtasks": []
+      },
+      {
+        "id": 46,
+        "title": "P1-DEPS: alinhar Expo SDK (51 → 55 ou LTS)",
+        "description": "SDK 51 atrás 4 majors. xmldom/tar com vulns vêm de deps transitivas do Expo.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [],
+        "details": "Seguir guia oficial do upgrade. expo install --fix após. Re-rodar typecheck e dev.",
+        "testStrategy": "pnpm --filter @farmei/mobile typecheck verde + dev sobe sem deprecation warnings críticos.",
+        "subtasks": []
+      },
+      {
+        "id": 47,
+        "title": "P1-MOBILE: env.ts não deve fallback localhost em produção",
+        "description": "apps/mobile/lib/env.ts:23 cai pra http://localhost:3001 se EXPO_PUBLIC_API_URL ausente.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [],
+        "details": "Falhar duro quando __DEV__ === false; permitir fallback localhost somente em desenvolvimento.",
+        "testStrategy": "Build EAS preview/production falha se a env não foi injetada.",
+        "subtasks": []
+      },
+      {
+        "id": 48,
+        "title": "P1-MOBILE: invite token com TTL local no SecureStore",
+        "description": "apps/mobile/lib/auth.ts:34 persiste invite_token sem expiração.",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [],
+        "details": "Salvar { token, expiresAt } como JSON; readInviteToken retorna null se expirado.",
+        "testStrategy": "Manipular relógio do device — readInviteToken retorna null após expiry.",
+        "subtasks": []
+      },
+      {
+        "id": 49,
+        "title": "P1-MOBILE: AASA + assetlinks.json para Universal Links",
+        "description": "app.json:23 declara applinks:farmei.app mas falta hospedar AASA e assetlinks.json.",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [],
+        "details": "Servir /.well-known/apple-app-site-association (sem extensão, Content-Type application/json) e /.well-known/assetlinks.json no domínio farmei.app. Sem isso, o token de convite vaza pro browser.",
+        "testStrategy": "Tocar link farmei.app/invite/<token> em iOS/Android abre o app diretamente, não o browser.",
+        "subtasks": []
       }
     ],
     "metadata": {
       "projectName": "Farmei",
       "created": "2026-05-16T00:00:00.000Z",
-      "updated": "2026-05-17T18:32:57.946Z",
+      "updated": "2026-05-17T18:49:56.972Z",
       "description": "Plataforma de eventos sociais — eventos privados com sugestão de data e eventos públicos com inscrição.",
       "version": "1.0.0"
     }

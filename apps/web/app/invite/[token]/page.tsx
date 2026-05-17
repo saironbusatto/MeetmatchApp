@@ -4,7 +4,7 @@ import { useState } from "react";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api/v1";
 
-export default function InvitePage({ params }: { params: Promise<{ token: string }> }): JSX.Element {
+export default function InvitePage({ params }: { params: Promise<{ token: string }> }) {
   const [message, setMessage] = useState("");
 
   async function accept() {

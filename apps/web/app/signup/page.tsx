@@ -6,7 +6,7 @@ import { useState } from "react";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api/v1";
 
-export default function SignupPage(): JSX.Element {
+export default function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

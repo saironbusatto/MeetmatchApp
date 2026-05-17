@@ -14,7 +14,6 @@ export interface UserRecord {
   id: string;
   name: string;
   email: string;
-  password: string;
   avatarUrl: string | null;
   createdAt: string;
   updatedAt: string;
@@ -90,7 +89,6 @@ export interface UserDeviceRecord {
 
 const users = new Map<string, UserRecord>();
 const usersByEmail = new Map<string, string>();
-const sessions = new Map<string, string>();
 
 const events = new Map<string, EventRecord>();
 const privateSettings = new Map<string, PrivateEventSettingsRecord>();
@@ -106,30 +104,33 @@ export function nowIso() {
   return new Date().toISOString();
 }
 
-export function createUser(input: { name: string; email: string; password: string }) {
-  const email = input.email.toLowerCase().trim();
-  if (usersByEmail.has(email)) {
-    return null;
+export function upsertUserFromAuth(input: { id: string; email: string; name?: string | null; avatarUrl?: string | null }) {
+  const existing = users.get(input.id);
+  if (existing) {
+    const updated: UserRecord = {
+      ...existing,
+      email: input.email,
+      name: input.name ?? existing.name,
+      avatarUrl: input.avatarUrl ?? existing.avatarUrl,
+      updatedAt: nowIso()
+    };
+    users.set(updated.id, updated);
+    usersByEmail.set(updated.email.toLowerCase(), updated.id);
+    return updated;
   }
 
-  const user: UserRecord = {
-    id: randomUUID(),
-    name: input.name,
-    email,
-    password: input.password,
-    avatarUrl: null,
+  const created: UserRecord = {
+    id: input.id,
+    email: input.email,
+    name: input.name ?? input.email,
+    avatarUrl: input.avatarUrl ?? null,
     createdAt: nowIso(),
     updatedAt: nowIso()
   };
 
-  users.set(user.id, user);
-  usersByEmail.set(user.email, user.id);
-  return user;
-}
-
-export function findUserByEmail(email: string) {
-  const userId = usersByEmail.get(email.toLowerCase().trim());
-  return userId ? users.get(userId) ?? null : null;
+  users.set(created.id, created);
+  usersByEmail.set(created.email.toLowerCase(), created.id);
+  return created;
 }
 
 export function findUserById(id: string) {
@@ -150,6 +151,7 @@ export function updateUser(id: string, input: { name?: string; avatarUrl?: strin
   };
 
   users.set(id, updated);
+  usersByEmail.set(updated.email.toLowerCase(), updated.id);
   return updated;
 }
 
@@ -265,23 +267,9 @@ export async function upsertUserDevice(
   return created;
 }
 
-export function createSession(userId: string) {
-  const token = `dev_${randomUUID()}`;
-  sessions.set(token, userId);
-  return token;
-}
-
-export function getSessionUserId(token: string) {
-  return sessions.get(token) ?? null;
-}
-
-export function revokeSession(token: string) {
-  return sessions.delete(token);
-}
-
 export const db = {
   users,
-  sessions,
+  usersByEmail,
   events,
   privateSettings,
   participants,
