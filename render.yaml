@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: farmei-api
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: .
+    buildCommand: corepack enable && corepack prepare pnpm@9.12.2 --activate && pnpm install --frozen-lockfile
+    startCommand: pnpm --filter @farmei/api exec tsx src/index.ts
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CORS_ORIGIN
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: APP_BUNDLE_ID
+        value: app.farmei.mobile
+      - key: APPLE_TEAM_ID
+        value: TEAMID
+      - key: ANDROID_SHA256_CERT_FINGERPRINT
+        value: ""
