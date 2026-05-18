@@ -1,4 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
+import WebSocket from "ws";
+
+// Supabase JS instancia RealtimeClient mesmo quando só usamos Auth.
+// Em Node < 22 não existe WebSocket nativo — polyfill com ws.
+if (typeof globalThis.WebSocket === "undefined") {
+  (globalThis as unknown as { WebSocket: typeof WebSocket }).WebSocket = WebSocket;
+}
 
 function readSupabaseUrl() {
   const url = process.env.SUPABASE_URL;
