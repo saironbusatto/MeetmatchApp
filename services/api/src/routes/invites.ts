@@ -1,10 +1,18 @@
 import { Hono } from "hono";
 import { requireAuth } from "../middleware/auth";
+import { rateLimit } from "../middleware/rate-limit";
 import { db } from "../store";
+
+const inviteAcceptLimit = rateLimit({
+  scope: "invites:accept",
+  limit: 10,
+  windowMs: 60 * 1000,
+  keyFn: (c) => `invites:accept:${c.req.param("token") ?? "anon"}`
+});
 
 export const invitesRouter = new Hono<{ Variables: { auth: { userId: string } } }>()
   .use("*", requireAuth)
-  .post("/:token/accept", async (c) => {
+  .post("/:token/accept", inviteAcceptLimit, async (c) => {
     const token = c.req.param("token");
     const auth = c.get("auth");
     const participantId = db.participantsByInviteToken.get(token);

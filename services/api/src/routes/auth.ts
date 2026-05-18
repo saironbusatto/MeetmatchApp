@@ -2,6 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
 import { createSupabaseAdminClient, createSupabasePublicClient } from "../lib/supabase";
+import { rateLimit } from "../middleware/rate-limit";
 import { upsertUserFromAuth } from "../store";
 
 const signupSchema = z.object({
@@ -15,8 +16,11 @@ const loginSchema = z.object({
   password: z.string().min(1)
 });
 
+const signupLimit = rateLimit({ scope: "auth:signup", limit: 5, windowMs: 60 * 60 * 1000 });
+const loginLimit = rateLimit({ scope: "auth:login", limit: 10, windowMs: 60 * 1000 });
+
 export const authRouter = new Hono()
-  .post("/signup", zValidator("json", signupSchema), async (c) => {
+  .post("/signup", signupLimit, zValidator("json", signupSchema), async (c) => {
     const payload = c.req.valid("json");
 
     const admin = createSupabaseAdminClient();
@@ -56,7 +60,7 @@ export const authRouter = new Hono()
       201
     );
   })
-  .post("/login", zValidator("json", loginSchema), async (c) => {
+  .post("/login", loginLimit, zValidator("json", loginSchema), async (c) => {
     const payload = c.req.valid("json");
     const pub = createSupabasePublicClient();
 

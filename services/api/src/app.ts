@@ -1,5 +1,6 @@
 import { cors } from "hono/cors";
 import { Hono } from "hono";
+import { resolveCorsOrigins } from "./lib/cors";
 import { errorHandler } from "./middleware/error-handler";
 import { authRouter } from "./routes/auth";
 import { healthRouter } from "./routes/health";
@@ -10,7 +11,16 @@ import { usersRouter } from "./routes/users";
 
 const app = new Hono();
 
-app.use("*", cors({ origin: process.env.CORS_ORIGIN ?? "*" }));
+const allowedOrigins = resolveCorsOrigins();
+app.use(
+  "*",
+  cors({
+    origin: (origin) => (origin && allowedOrigins.includes(origin) ? origin : null),
+    credentials: true,
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["Authorization", "Content-Type"]
+  })
+);
 app.use("*", errorHandler);
 
 app.route("/api/v1", healthRouter);

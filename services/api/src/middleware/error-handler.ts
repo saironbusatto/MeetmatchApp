@@ -1,4 +1,6 @@
+import { randomUUID } from "node:crypto";
 import type { Context, Next } from "hono";
+import { HTTPException } from "hono/http-exception";
 import { ZodError } from "zod";
 
 export async function errorHandler(c: Context, next: Next) {
@@ -15,10 +17,14 @@ export async function errorHandler(c: Context, next: Next) {
       );
     }
 
-    if (error instanceof Error) {
-      return c.json({ message: error.message }, 500);
+    if (error instanceof HTTPException) {
+      return c.json({ message: error.message }, error.status);
     }
 
-    return c.json({ message: "Unknown error" }, 500);
+    const traceId = randomUUID();
+    const detail = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+    console.error(`[error ${traceId}]`, detail, error instanceof Error ? error.stack : undefined);
+
+    return c.json({ message: "Internal server error", traceId }, 500);
   }
 }

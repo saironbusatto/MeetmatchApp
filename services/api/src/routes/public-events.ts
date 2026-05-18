@@ -5,6 +5,19 @@ import { z } from "zod";
 import { requireAuth } from "../middleware/auth";
 import { db, nowIso } from "../store";
 
+const FORMULA_PREFIXES = new Set(["=", "+", "-", "@", "\t", "\r"]);
+
+function csvEscape(value: unknown): string {
+  const raw = value == null ? "" : String(value);
+  const needsQuoting = /[",\n\r]/.test(raw);
+  const firstChar = raw.charAt(0);
+  const guarded = FORMULA_PREFIXES.has(firstChar) ? `'${raw}` : raw;
+  if (needsQuoting || FORMULA_PREFIXES.has(firstChar)) {
+    return `"${guarded.replace(/"/g, '""')}"`;
+  }
+  return guarded;
+}
+
 const createSchema = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
@@ -156,7 +169,9 @@ export const publicEventsRouter = new Hono<{ Variables: { auth: { userId: string
 
     if (format === "csv") {
       const header = "registration_id,user_id,status,created_at";
-      const lines = rows.map((r) => `${r.id},${r.userId},${r.status},${r.createdAt}`);
+      const lines = rows.map((r) =>
+        [r.id, r.userId, r.status, r.createdAt].map(csvEscape).join(",")
+      );
       return c.body([header, ...lines].join("\n"), 200, {
         "Content-Type": "text/csv; charset=utf-8"
       });
