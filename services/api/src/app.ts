@@ -8,6 +8,7 @@ import { invitesRouter } from "./routes/invites";
 import { privateEventsRouter } from "./routes/private-events";
 import { publicEventsRouter } from "./routes/public-events";
 import { usersRouter } from "./routes/users";
+import { wellKnownRouter } from "./routes/well-known";
 
 const app = new Hono();
 
@@ -23,6 +24,7 @@ app.use(
 );
 app.use("*", errorHandler);
 
+app.route("/.well-known", wellKnownRouter);
 app.route("/api/v1", healthRouter);
 app.route("/api/v1/auth", authRouter);
 app.route("/api/v1/users", usersRouter);

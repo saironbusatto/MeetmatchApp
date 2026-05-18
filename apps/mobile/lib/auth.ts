@@ -30,13 +30,40 @@ export async function getAccessToken(): Promise<string | null> {
 }
 
 export const INVITE_TOKEN_KEY = "farmei.invite_token";
+const INVITE_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 dias
 
-export async function rememberInviteToken(token: string) {
-  await SecureStore.setItemAsync(INVITE_TOKEN_KEY, token);
+type StoredInvite = { token: string; expiresAt: number };
+
+function parseStored(raw: string | null): StoredInvite | null {
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as Partial<StoredInvite>;
+    if (typeof parsed.token === "string" && typeof parsed.expiresAt === "number") {
+      return { token: parsed.token, expiresAt: parsed.expiresAt };
+    }
+  } catch {
+    // formato antigo (string crua) — descartar
+  }
+  return null;
+}
+
+export async function rememberInviteToken(token: string, ttlMs: number = INVITE_TOKEN_TTL_MS) {
+  const payload: StoredInvite = { token, expiresAt: Date.now() + ttlMs };
+  await SecureStore.setItemAsync(INVITE_TOKEN_KEY, JSON.stringify(payload));
 }
 
 export async function readInviteToken(): Promise<string | null> {
-  return SecureStore.getItemAsync(INVITE_TOKEN_KEY);
+  const raw = await SecureStore.getItemAsync(INVITE_TOKEN_KEY);
+  const stored = parseStored(raw);
+  if (!stored) {
+    if (raw) await SecureStore.deleteItemAsync(INVITE_TOKEN_KEY).catch(() => undefined);
+    return null;
+  }
+  if (stored.expiresAt <= Date.now()) {
+    await SecureStore.deleteItemAsync(INVITE_TOKEN_KEY).catch(() => undefined);
+    return null;
+  }
+  return stored.token;
 }
 
 export async function clearInviteToken() {

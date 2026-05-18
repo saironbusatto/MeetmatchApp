@@ -62,8 +62,12 @@ export const publicEventsRouter = new Hono<{ Variables: { auth: { userId: string
     return c.json({ event }, 201);
   })
   .get("/", (c) => {
-    const page = Number(c.req.query("page") ?? 1);
-    const pageSize = Number(c.req.query("pageSize") ?? 10);
+    const rawPage = Number(c.req.query("page") ?? 1);
+    const rawPageSize = Number(c.req.query("pageSize") ?? 10);
+    const page = Number.isFinite(rawPage) && rawPage >= 1 ? Math.floor(rawPage) : 1;
+    const pageSize = Number.isFinite(rawPageSize) && rawPageSize >= 1
+      ? Math.min(Math.floor(rawPageSize), 50)
+      : 10;
     const category = c.req.query("category");
 
     const items = [...db.events.values()].filter((e) => e.type === "PUBLIC" && e.status !== "CANCELLED");

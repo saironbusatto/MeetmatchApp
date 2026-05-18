@@ -19,6 +19,10 @@ const loginSchema = z.object({
 const signupLimit = rateLimit({ scope: "auth:signup", limit: 5, windowMs: 60 * 60 * 1000 });
 const loginLimit = rateLimit({ scope: "auth:login", limit: 10, windowMs: 60 * 1000 });
 
+const GENERIC_SIGNUP_RESPONSE = {
+  message: "If this email is available, your account is being prepared. Check your inbox."
+};
+
 export const authRouter = new Hono()
   .post("/signup", signupLimit, zValidator("json", signupSchema), async (c) => {
     const payload = c.req.valid("json");
@@ -31,9 +35,10 @@ export const authRouter = new Hono()
       user_metadata: { name: payload.name }
     });
 
+    // Não vazar se o email já existe — qualquer erro do admin cai num 202 genérico.
     if (createError || !created.user) {
-      const status = createError?.status === 422 ? 409 : 400;
-      return c.json({ message: createError?.message ?? "Failed to create user" }, status);
+      if (createError) console.warn(`[signup] suppressed error: ${createError.message}`);
+      return c.json(GENERIC_SIGNUP_RESPONSE, 202);
     }
 
     const user = upsertUserFromAuth({
@@ -49,7 +54,7 @@ export const authRouter = new Hono()
     });
 
     if (signInError || !sessionData.session) {
-      return c.json({ message: signInError?.message ?? "User created but session failed" }, 201);
+      return c.json({ ...GENERIC_SIGNUP_RESPONSE, user }, 202);
     }
 
     return c.json(

@@ -1,2 +1,0 @@
--- Initial schema placeholder for Supabase/PostgreSQL dev
--- Generated manually for bootstrap; replace with drizzle-kit generate when DB is provisioned.
