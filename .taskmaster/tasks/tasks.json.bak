@@ -2,7 +2,7 @@
   "master": {
     "tasks": [
       {
-        "id": "1",
+        "id": 1,
         "title": "Setup do monorepo com pnpm workspaces",
         "description": "Inicializar a estrutura de monorepo com pnpm workspaces, configurar Turbo como task runner, e criar os packages compartilhados base.",
         "status": "done",
@@ -16,8 +16,7 @@
             "title": "Criar estrutura de pastas e pnpm-workspace.yaml",
             "description": "Scaffolding inicial do monorepo",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -26,8 +25,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -36,8 +34,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 4,
@@ -48,19 +45,18 @@
               1,
               2,
               3
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "2",
+        "id": 2,
         "title": "Package design-tokens: portar design system para Tailwind",
         "description": "Criar packages/design-tokens que exporta tailwind.config.ts e global.css com os tokens do design system Farmei.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "1"
+          1
         ],
         "details": "Fonte: colors_and_type.css na raiz do projeto.\n\nO package deve exportar:\n- tailwind.config.ts com cores (vermillion #FF3B2E, spark yellow #FFD93D, etc.), fontes (Bricolage Grotesque, Geist, JetBrains Mono), spacing e shadows customizadas\n- global.css com CSS variables\n\nNão alterar o colors_and_type.css original — apenas ler e traduzir os tokens.\nPrefixo CSS legado --vmt-* pode ser mantido como alias (ADR-008).\n\nO package deve ser consumível por apps/web e futuramente por mobile.",
         "testStrategy": "Importar tailwind.config.ts em apps/web e verificar que as classes utilitárias dos tokens estão disponíveis. Verificar visualmente que a cor primária e tipografia batem com o protótipo.",
@@ -70,8 +66,7 @@
             "title": "Mapear tokens do colors_and_type.css para objeto Tailwind",
             "description": "Extrair cores, fontes, shadows e spacing",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -80,8 +75,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -90,19 +84,18 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "3",
+        "id": 3,
         "title": "Package types: contratos compartilhados TypeScript",
         "description": "Criar packages/types com todas as interfaces, enums e tipos compartilhados entre API e web.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "1"
+          1
         ],
         "details": "Tipos a definir baseados no modelo de dados da ARCHITECTURE.md:\n\n- Enums: EventType (PRIVATE | PUBLIC), EventStatus (DRAFT | OPEN | CONFIRMED | CANCELLED), ParticipantRole (OWNER | INVITEE | KEY_PERSON), InviteStatus (PENDING | ACCEPTED | DECLINED), AvailabilityResponse (YES | MAYBE | NO), RegistrationStatus (REGISTERED | CANCELLED)\n\n- Interfaces: User, Event, PrivateEventSettings, PublicEventSettings, EventParticipant, AvailabilityResponse, PublicEventRegistration\n\n- DTOs de request/response para cada endpoint da API\n\nNão colocar lógica de negócio — apenas contratos de dados.",
         "testStrategy": "Verificar que a API e o web conseguem importar os tipos sem erro de compilação TypeScript.",
@@ -112,8 +105,7 @@
             "title": "Definir enums de domínio",
             "description": "EventType, EventStatus, ParticipantRole, etc.",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -122,8 +114,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -132,19 +123,18 @@
             "status": "done",
             "dependencies": [
               2
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "4",
+        "id": 4,
         "title": "Package utils: algoritmo de melhor data",
         "description": "Implementar em packages/utils/src/date-suggestion.ts a função pura de cálculo de melhor data com pesos, conforme especificado na ARCHITECTURE.md seção 5.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "3"
+          3
         ],
         "details": "Implementar:\n- scoreDay(responses, keyPersonId, keyPersonWeight): number\n- maxPossibleScore(participantCount, keyPersonId, keyPersonWeight): number\n- suggestDate(input: SuggestionInput): SuggestionResult\n\nRegras (ADR-007, PRD seção 9.1):\n- YES = peso 1.0, MAYBE = 0.5, NO = 0\n- Key person recebe multiplicador (default 3.0)\n- Melhor dia = maior soma; empate = data mais cedo\n- confidence = score_dia / max_possible_score\n- Explicação textual via template (sem LLM no MVP)\n\nExemplo de template: 'Terça, 4 de jun — 5 de 6 podem. A pessoa-chave está livre.'\n\nFunção deve ser puramente funcional e testável sem dependências externas.",
         "testStrategy": "Testes unitários cobrindo: todos YES sem key person, mix YES/MAYBE/NO, key person com MAYBE, empate de score (data mais cedo vence), todos NO (confidence = 0), janela de 1 dia.",
@@ -154,8 +144,7 @@
             "title": "Implementar scoreDay e maxPossibleScore",
             "description": "Funções de cálculo de peso por dia",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -164,8 +153,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -174,8 +162,7 @@
             "status": "done",
             "dependencies": [
               2
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 4,
@@ -186,19 +173,18 @@
               1,
               2,
               3
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "5",
+        "id": 5,
         "title": "Setup do Supabase: projeto, banco e autenticação",
         "description": "Criar projeto no Supabase, configurar banco PostgreSQL com o schema completo, e habilitar Supabase Auth com email/senha.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "1"
+          1
         ],
         "details": "Ações:\n1. Criar projeto no Supabase (ou usar Supabase local via CLI para dev)\n2. Habilitar Auth: email/senha, desativar confirmação de email no dev\n3. Criar schema com Drizzle ORM (ADR-004) em services/api/src/db:\n   - Tabelas: users, events, private_event_settings, event_participants, availability_responses, public_event_settings, public_event_registrations\n   - Enums PostgreSQL correspondentes\n   - Indexes: events.owner_id, event_participants.event_id, availability_responses.event_id+participant_id\n4. Configurar variáveis de ambiente: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, DATABASE_URL\n5. Criar migration inicial e rodar no banco dev\n\nNão usar Supabase como BaaS direto no frontend — toda lógica passa pela API Hono.",
         "testStrategy": "Conectar no banco via Drizzle Studio ou psql e verificar que todas as tabelas e enums foram criados. Testar signup/login via Supabase Auth dashboard.",
@@ -208,8 +194,7 @@
             "title": "Criar projeto Supabase e configurar Auth",
             "description": "Setup inicial do projeto e habilitação de email/senha",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -218,8 +203,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -228,8 +212,7 @@
             "status": "done",
             "dependencies": [
               2
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 4,
@@ -238,20 +221,19 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "6",
+        "id": 6,
         "title": "API Hono: setup base e middleware",
         "description": "Inicializar services/api com Hono, configurar middleware de autenticação JWT via Supabase, CORS, validação Zod e estrutura de roteamento.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "3",
-          "5"
+          3,
+          5
         ],
         "details": "Setup:\n- Hono app com TypeScript\n- Middleware de auth: extrai JWT do header Authorization, valida via Supabase SDK, injeta user_id no context\n- CORS configurado para o domínio do web app\n- Middleware de erro: retorna erros estruturados com status HTTP correto\n- Zod para validação de body, params e query em todos os endpoints\n- Estrutura de routers: /auth, /users, /private-events, /public-events\n- Health check: GET /health\n\nVariáveis de ambiente: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, PORT, CORS_ORIGIN\n\nEndpoint base: /api/v1",
         "testStrategy": "GET /health retorna 200. Request sem JWT em endpoint protegido retorna 401. Request com JWT inválido retorna 401. Request com body inválido retorna 400 com detalhes Zod.",
@@ -261,8 +243,7 @@
             "title": "Inicializar projeto Hono com TypeScript",
             "description": "Setup básico com tsup ou bun para build",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -271,8 +252,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -281,8 +261,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 4,
@@ -293,19 +272,18 @@
               1,
               2,
               3
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "7",
+        "id": 7,
         "title": "API: endpoints de Auth e Usuário",
         "description": "Implementar os endpoints de auth delegando para Supabase Auth, e os endpoints de perfil do usuário.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "6"
+          6
         ],
         "details": "Endpoints (ARCHITECTURE.md seção 4):\n- POST /auth/signup — cria conta no Supabase Auth + insere registro em users\n- POST /auth/login — autentica e retorna JWT\n- POST /auth/logout — invalida sessão\n- GET /auth/me — retorna dados do usuário autenticado\n- GET /users/me — perfil completo\n- PUT /users/me — atualizar nome, avatar_url\n\nSignup deve criar registro em `users` no banco próprio após criar conta no Supabase Auth.\nLogin retorna { access_token, user }.\nTodos os endpoints de /users/* exigem JWT válido.",
         "testStrategy": "Fluxo completo: signup → login → GET /auth/me → PUT /users/me → GET /users/me. Verificar que signup duplicado retorna 409. Verificar que login com senha errada retorna 401.",
@@ -315,16 +293,14 @@
             "title": "Implementar POST /auth/signup",
             "description": "Criar conta no Supabase Auth + inserir em users",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
             "title": "Implementar POST /auth/login e POST /auth/logout",
             "description": "Autenticação e invalidação de sessão",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 3,
@@ -334,20 +310,19 @@
             "dependencies": [
               1,
               2
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "8",
+        "id": 8,
         "title": "API: CRUD de eventos privados",
         "description": "Implementar endpoints de criação, leitura, edição e cancelamento de eventos privados, incluindo private_event_settings.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "6",
-          "7"
+          6,
+          7
         ],
         "details": "Endpoints:\n- POST /private-events — cria event (type=PRIVATE, status=DRAFT) + private_event_settings\n- GET /private-events/:id — retorna evento com settings e participantes\n- PUT /private-events/:id — edita título, descrição, local, janela de datas, key person\n- DELETE /private-events/:id — muda status para CANCELLED\n\nRegras de autorização:\n- Apenas o owner (owner_id == user_id do JWT) pode editar/cancelar\n- GET retorna para qualquer participante do evento\n\nBody de criação inclui: title, description?, location_text?, date_window_start, date_window_end, key_person_user_id?\n\nValidação Zod em todos os endpoints.",
         "testStrategy": "Criar evento, ler, editar, cancelar. Verificar que usuário não-owner recebe 403 ao tentar editar. Verificar que date_window_end >= date_window_start é validado.",
@@ -357,8 +332,7 @@
             "title": "Implementar POST /private-events",
             "description": "Criação do evento + settings em transação",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -367,8 +341,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -378,19 +351,18 @@
             "dependencies": [
               1,
               2
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "9",
+        "id": 9,
         "title": "API: participantes e convites",
         "description": "Implementar endpoints para convidar participantes, gerar tokens de convite e aceitar convites via link.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "8"
+          8
         ],
         "details": "Endpoints:\n- POST /private-events/:id/participants — adiciona convidado (por email ou user_id)\n- DELETE /private-events/:id/participants/:pid — remove convidado\n- POST /invites/:token/accept — aceita convite, vincula user_id ao participant\n\nLógica de convite (ADR-006 — sem email transacional no MVP):\n1. Ao adicionar participante, gera UUID opaco como invite_token\n2. Retorna link compartilhável: /invite/:token\n3. Organizador compartilha manualmente (WhatsApp, etc.)\n4. Ao acessar /invite/:token: convidado pode criar conta ou prosseguir sem conta\n5. POST /invites/:token/accept vincula user_id e muda invite_status para ACCEPTED\n\nConvidado sem conta pode marcar disponibilidade com o token — não precisa de JWT.\nOwner não pode ser removido como participante.",
         "testStrategy": "Adicionar participante, verificar token gerado, aceitar convite, verificar invite_status=ACCEPTED. Tentar remover owner deve retornar 400. Tentar aceitar token inválido deve retornar 404.",
@@ -400,8 +372,7 @@
             "title": "Implementar POST /private-events/:id/participants",
             "description": "Adicionar convidado e gerar invite token",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -410,8 +381,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -420,20 +390,19 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "10",
+        "id": 10,
         "title": "API: disponibilidade e sugestão de data",
         "description": "Implementar endpoints para registrar disponibilidade por participante, calcular e retornar a sugestão de melhor data, e confirmar a data final.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "4",
-          "9"
+          4,
+          9
         ],
         "details": "Endpoints:\n- POST /private-events/:id/availability — registra/atualiza respostas do participante (upsert por participant+date)\n- GET /private-events/:id/availability — retorna mapa de disponibilidade (todos os participantes × todos os dias)\n- GET /private-events/:id/suggestion — executa suggestDate() do package utils e retorna { date, score, confidence, reasoning }\n- POST /private-events/:id/confirm — define confirmed_date e muda status para CONFIRMED\n\nAutorização:\n- POST /availability: participante autenticado ou via invite token (sem conta)\n- GET /availability: qualquer participante do evento\n- GET /suggestion: apenas owner\n- POST /confirm: apenas owner\n\nO endpoint /suggestion não persiste nada — apenas calcula em tempo real.",
         "testStrategy": "Registrar disponibilidade para 3 participantes, chamar /suggestion e verificar que a data retornada bate com o cálculo esperado do algoritmo. Confirmar data e verificar status=CONFIRMED. Tentar confirmar evento já confirmado deve retornar 409.",
@@ -443,8 +412,7 @@
             "title": "Implementar POST /private-events/:id/availability (upsert)",
             "description": "Registro e atualização de disponibilidade",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -453,8 +421,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -464,8 +431,7 @@
             "dependencies": [
               1,
               2
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 4,
@@ -474,20 +440,19 @@
             "status": "done",
             "dependencies": [
               3
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "11",
+        "id": 11,
         "title": "API: CRUD de eventos públicos",
         "description": "Implementar endpoints de criação, listagem, detalhe, edição e cancelamento de eventos públicos, incluindo public_event_settings.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "6",
-          "7"
+          6,
+          7
         ],
         "details": "Endpoints:\n- POST /public-events — cria event (type=PUBLIC, status=OPEN) + public_event_settings\n- GET /public-events — lista eventos públicos com paginação (limit/offset), filtros por data e categoria (MVP: sem geo)\n- GET /public-events/:id — detalhe do evento com contagem de inscritos e vagas disponíveis\n- PUT /public-events/:id — editar (apenas owner)\n- DELETE /public-events/:id — cancelar (apenas owner)\n\nBody de criação inclui: title, description?, location_text, event_date, event_time?, capacity, category?\n\nA listagem é pública (sem JWT obrigatório). O detalhe calcula vagas_disponíveis = capacity - count(registrations where status=REGISTERED).",
         "testStrategy": "Criar evento público, verificar listagem, verificar detalhe com vagas corretas. Editar e cancelar. Verificar paginação com limit/offset.",
@@ -497,8 +462,7 @@
             "title": "Implementar POST /public-events",
             "description": "Criação do evento público + settings",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -507,8 +471,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -517,8 +480,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 4,
@@ -528,19 +490,18 @@
             "dependencies": [
               1,
               3
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "12",
+        "id": 12,
         "title": "API: inscrições em eventos públicos",
         "description": "Implementar endpoints de inscrição, cancelamento de inscrição e listagem de inscritos para o host.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "11"
+          11
         ],
         "details": "Endpoints:\n- POST /public-events/:id/registrations — inscrever usuário autenticado\n- DELETE /public-events/:id/registrations/me — cancelar própria inscrição\n- GET /public-events/:id/registrations — listar inscritos (apenas owner)\n\nRegras de negócio (PRD seção 9.2):\n- Não permitir inscrição se vagas_disponíveis == 0 → retornar 409 com mensagem clara\n- Não permitir inscrição duplicada → retornar 409\n- Cancelamento muda status para CANCELLED (não deleta — ADR-010: sem waitlist no MVP)\n- Listagem retorna: user_id, name_snapshot, email, created_at, status\n\nExportar inscritos (CSV) é feito no endpoint de listagem com query param ?format=csv.",
         "testStrategy": "Inscrever usuário, verificar vagas diminuíram. Inscrever além da capacidade deve retornar 409. Cancelar inscrição, verificar que vagas voltaram. Listar com owner e verificar que não-owner recebe 403.",
@@ -550,8 +511,7 @@
             "title": "Implementar POST /public-events/:id/registrations",
             "description": "Inscrição com verificação de capacidade e duplicidade",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -560,8 +520,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -570,20 +529,19 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "13",
+        "id": 13,
         "title": "Web app Next.js: setup base e roteamento",
         "description": "Inicializar apps/web com Next.js 15, App Router, Tailwind configurado com design-tokens, shadcn/ui e a estrutura de rotas do projeto.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "2",
-          "3"
+          2,
+          3
         ],
         "details": "Setup:\n- Next.js 15 com App Router e React 19\n- Tailwind CSS 4 integrado com packages/design-tokens\n- shadcn/ui instalado com tema base (ADR-009 — sem visual padrão, sobrescrever tudo)\n- Fontes: Bricolage Grotesque, Geist e JetBrains Mono via next/font\n- React Hook Form + Zod para formulários\n\nEstrutura de rotas (ARCHITECTURE.md seção 8):\n- / → landing ou redirect para /dashboard se autenticado\n- /login, /signup\n- /dashboard\n- /events/new\n- /events/[id]\n- /events/[id]/availability\n- /events/[id]/host\n- /invite/[token]\n- /public\n\nLayout root com providers (auth context, toast, etc.)\nMobile-first por padrão.",
         "testStrategy": "Rodar `pnpm dev` sem erros. Navegar para cada rota e verificar que não há 404. Verificar que fontes e cores do design system estão ativas.",
@@ -593,8 +551,7 @@
             "title": "Inicializar Next.js 15 com App Router e Tailwind",
             "description": "Setup base com design-tokens integrado",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -603,8 +560,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -614,8 +570,7 @@
             "dependencies": [
               1,
               2
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 4,
@@ -624,19 +579,18 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "14",
+        "id": 14,
         "title": "Web: componentes base do design system (packages/ui)",
         "description": "Criar os componentes reutilizáveis base em packages/ui refletindo o design system Farmei sobre shadcn/ui.",
         "status": "done",
         "priority": "medium",
         "dependencies": [
-          "13"
+          13
         ],
         "details": "Componentes a criar baseados nos ui_kits existentes:\n- Button: variantes primary (stamp shadow), secondary, ghost, danger\n- Input, TextArea: com label, helper text e error state\n- Card: com variante de sombra stamp\n- Avatar: circular com fallback de inicial\n- Badge: status de evento (OPEN, CONFIRMED, CANCELLED)\n- AvailabilityButton: os três estados YES/MAYBE/NO com as cores corretas\n- ProgressBar: barra de lotação de evento público\n- EventCard: card de preview de evento (privado e público)\n- AppHeader: header mobile com back, title e action\n- BottomSheet / Modal: para confirmações\n\nCada componente deve:\n- Usar tokens do design system (sem cores hardcoded)\n- Ter variantes conforme design\n- Ser acessível (aria-labels, focus visible)\n- Não usar emojis em controles (conforme guia de marca)",
         "testStrategy": "Storybook ou página de preview estática mostrando todos os componentes. Verificar visualmente contra os ui_kits de referência.",
@@ -646,16 +600,14 @@
             "title": "Button, Input, TextArea com variantes e estados",
             "description": "Componentes de formulário base",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
             "title": "Card, Badge, Avatar, ProgressBar",
             "description": "Componentes de exibição de dados",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 3,
@@ -665,8 +617,7 @@
             "dependencies": [
               1,
               2
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 4,
@@ -676,21 +627,20 @@
             "dependencies": [
               1,
               2
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "15",
+        "id": 15,
         "title": "Web: fluxo de autenticação",
         "description": "Implementar as páginas de login, signup e recuperação de senha, com integração à API, proteção de rotas e contexto de autenticação.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "7",
-          "13",
-          "14"
+          7,
+          13,
+          14
         ],
         "details": "Páginas:\n- /signup: form com nome, email, senha. POST /auth/signup → redireciona para /dashboard\n- /login: form com email, senha. POST /auth/login → salva JWT, redireciona para /dashboard\n- /login?recovery: form de recuperação via Supabase Auth (fora do MVP crítico — tela simples)\n\nContexto de autenticação (AuthContext ou Zustand):\n- Armazena { user, token, isLoading }\n- Persiste token em cookie httpOnly (preferível) ou localStorage\n- Expõe login(), logout(), user\n\nProteção de rotas:\n- Middleware Next.js (middleware.ts) que verifica token e redireciona /login se necessário\n- Rotas públicas: /, /login, /signup, /public, /invite/[token]\n\nFeedback de UX:\n- Loading state nos botões durante submit\n- Erros da API exibidos no form (email já cadastrado, senha incorreta)",
         "testStrategy": "Signup com email novo → redirecionar para dashboard. Login com credenciais corretas → dashboard. Login com senha errada → erro no form. Acessar /dashboard sem auth → redirect /login.",
@@ -700,8 +650,7 @@
             "title": "Criar AuthContext e hook useAuth",
             "description": "Gerenciamento de estado de autenticação com persistência",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -710,8 +659,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -721,20 +669,19 @@
             "dependencies": [
               1,
               2
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "16",
+        "id": 16,
         "title": "Web: dashboard e criação de evento privado",
         "description": "Implementar o dashboard do usuário com lista de eventos e o fluxo de criação de evento privado.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "8",
-          "15"
+          8,
+          15
         ],
         "details": "Páginas:\n\n/dashboard:\n- Lista eventos privados do usuário (owner e participante)\n- Lista eventos públicos criados (host)\n- Botão de criar novo evento\n- Empty state caloroso quando sem eventos\n\n/events/new:\n- Step 1: Tipo de evento (privado ou público)\n- Step 2 (privado): título, descrição?, local?, janela de datas (date range picker), key person? (dropdown de usuários já convidados — pode ser deixado para depois de adicionar convidados)\n- Step 2 (público): redirecionado para fluxo da task 18\n- POST /private-events → redireciona para /events/[id]\n\nReferência visual: HomeScreen e CreateScreen dos ui_kits/mobile",
         "testStrategy": "Criar evento privado, verificar redirecionamento para detalhe. Dashboard mostra o evento criado. Campos obrigatórios validados antes de submit.",
@@ -744,8 +691,7 @@
             "title": "Implementar página /dashboard",
             "description": "Lista de eventos com empty state e botão de criar",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -754,21 +700,20 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "17",
+        "id": 17,
         "title": "Web: detalhe de evento privado, convites e disponibilidade",
         "description": "Implementar a página de detalhe do evento privado, o fluxo de convite de participantes e a tela de marcação de disponibilidade.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "9",
-          "10",
-          "16"
+          9,
+          10,
+          16
         ],
         "details": "Páginas:\n\n/events/[id] (owner view):\n- Dados do evento\n- Status (DRAFT / OPEN / CONFIRMED)\n- Lista de participantes com invite_status\n- Campo para adicionar convidado (por email)\n- Link de convite gerado para compartilhar\n- Botão 'Ver sugestão' quando há respostas suficientes\n- Botão 'Confirmar data' após ver sugestão\n\n/events/[id]/availability (participante view):\n- Grade de datas da janela\n- Para cada dia: botões YES/MAYBE/NO (AvailabilityButton component)\n- Salvar automaticamente no blur ou com botão explícito\n- Mostrar resumo de quantos marcaram cada dia (opcional no MVP)\n\n/invite/[token]:\n- Exibe dados do evento\n- Se não autenticado: prompt de criar conta ou continuar sem conta\n- Redireciona para /events/[id]/availability após aceitar\n\nSugestão de data:\n- Tela com a data sugerida, confidence score e reasoning em português\n- CTA de confirmar com feedback visual (spark yellow)\n\nReferência visual: InviteScreen, AvailabilityScreen, AIPickScreen dos ui_kits/mobile",
         "testStrategy": "Adicionar participante → verificar link gerado. Acessar /invite/[token] sem conta → marcar disponibilidade. Ver sugestão → confirmar → evento passa para CONFIRMED.",
@@ -778,8 +723,7 @@
             "title": "Implementar página de detalhe do evento privado (owner view)",
             "description": "Dados, participantes, link de convite e ações do owner",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -788,8 +732,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -798,8 +741,7 @@
             "status": "done",
             "dependencies": [
               2
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 4,
@@ -809,21 +751,20 @@
             "dependencies": [
               1,
               2
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "18",
+        "id": 18,
         "title": "Web: criação, listagem e detalhe de eventos públicos",
         "description": "Implementar o fluxo de host para criar eventos públicos, o feed público de descoberta de eventos e a tela de detalhe com inscrição.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "11",
-          "12",
-          "15"
+          11,
+          12,
+          15
         ],
         "details": "Páginas:\n\n/events/new (fluxo público, step 2):\n- Título, descrição?, local (texto), data, horário?, capacidade máxima, categoria?\n- POST /public-events → redireciona para /events/[id]/host\n\n/public:\n- Feed de eventos públicos com cards\n- Filtros: data, categoria (MVP básico)\n- Paginação ou scroll infinito\n- Barra de lotação visual (ProgressBar component)\n- Sem geolocalização no MVP (ADR decisão pendente P2)\n\n/events/[id] (público, visitante view):\n- Dados do evento\n- Barra de lotação\n- Lista de quem vai (avatares)\n- Botão 'Entrar' → POST /registrations (exige auth)\n- Se lotado: mensagem clara, sem waitlist (ADR-010)\n- Se já inscrito: botão 'Cancelar inscrição'\n\nReferência visual: PublicFeedScreen, PublicEventDetailScreen, SignupSuccessScreen dos ui_kits/mobile",
         "testStrategy": "Criar evento público como host. Ver no feed /public. Inscrever como outro usuário. Verificar barra de lotação atualiza. Lotar evento e verificar botão desabilitado com mensagem.",
@@ -833,8 +774,7 @@
             "title": "Implementar formulário de criação de evento público",
             "description": "Form com data fixa e capacidade",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -843,8 +783,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -853,20 +792,19 @@
             "status": "done",
             "dependencies": [
               2
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "19",
+        "id": 19,
         "title": "Web: painel do host",
         "description": "Implementar a página de painel do host com lista de inscritos, métricas básicas e exportação CSV.",
         "status": "done",
         "priority": "medium",
         "dependencies": [
-          "12",
-          "18"
+          12,
+          18
         ],
         "details": "Página /events/[id]/host:\n- Dados do evento\n- Métricas: total de inscritos, vagas disponíveis, % de ocupação\n- Tabela de inscritos: nome, email, data de inscrição, status\n- Filtrar por status (REGISTERED / CANCELLED)\n- Botão 'Exportar CSV' → GET /registrations?format=csv → download\n- Botão de editar evento\n- Botão de cancelar evento (com confirmação)\n\nAcesso: apenas owner do evento. Usuário não-owner → redirect /events/[id].\n\nReferência visual: HostDashboardScreen dos ui_kits/mobile",
         "testStrategy": "Acessar painel como owner com inscritos. Verificar contagens corretas. Exportar CSV e verificar que contém todos os campos esperados. Acessar como não-owner → redirect.",
@@ -876,8 +814,7 @@
             "title": "Implementar página /events/[id]/host com métricas",
             "description": "Painel com contagens e tabela de inscritos",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -886,21 +823,20 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "20",
+        "id": 20,
         "title": "Deploy e CI/CD",
         "description": "Configurar GitHub Actions para CI (lint, type-check, testes), deploy da web no Vercel e deploy da API.",
         "status": "done",
         "priority": "medium",
         "dependencies": [
-          "1",
-          "13",
-          "6"
+          1,
+          13,
+          6
         ],
         "details": "GitHub Actions:\n- CI: roda em todo PR e push para main\n  - pnpm install\n  - tsc --noEmit (type-check todos os packages)\n  - eslint em todos os packages\n  - pnpm test (se houver testes)\n- Deploy web: Vercel via GitHub integration (automático em merge para main)\n- Deploy API: a definir — opções: Fly.io, Railway, Render ou Cloudflare Workers\n\nVariáveis de ambiente no Vercel:\n- NEXT_PUBLIC_API_URL\n- NEXT_PUBLIC_SUPABASE_URL\n- NEXT_PUBLIC_SUPABASE_ANON_KEY\n\nVariáveis no deploy da API:\n- DATABASE_URL\n- SUPABASE_URL\n- SUPABASE_SERVICE_ROLE_KEY\n- PORT\n- CORS_ORIGIN\n\n.env.example documentado com todas as vars necessárias.",
         "testStrategy": "Abrir PR e verificar que CI passa. Merge para main e verificar que Vercel deploy dispara e conclui. Acessar URL de produção e testar fluxo de login.",
@@ -910,8 +846,7 @@
             "title": "Criar GitHub Actions workflow de CI",
             "description": "type-check, lint e testes em todo PR",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -920,8 +855,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -930,13 +864,12 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "21",
+        "id": 21,
         "title": "Rebrand: migrar referências Vamointao → Farmei no código",
         "description": "Localizar e substituir todas as referências ao nome Vamointao no código, comentários e documentação legada.",
         "status": "done",
@@ -950,8 +883,7 @@
             "title": "Mapear todas as ocorrências de Vamointao",
             "description": "grep completo para inventário antes de alterar",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -960,13 +892,12 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "22",
+        "id": 22,
         "title": "Mobile · Scaffold Expo Router + TypeScript",
         "description": "Criar apps/mobile com Expo Router v3, TypeScript strict e integração ao monorepo pnpm/Turbo. App roda em iOS Simulator, Android Emulator e Web.",
         "status": "done",
@@ -980,8 +911,7 @@
             "title": "Criar package.json e dependências Expo",
             "description": "Workspace deps + expo, expo-router, react-native, NativeWind",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -990,8 +920,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -1000,8 +929,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 4,
@@ -1011,19 +939,18 @@
             "dependencies": [
               2,
               3
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "23",
+        "id": 23,
         "title": "Mobile · NativeWind + design tokens compartilhados",
         "description": "Configurar NativeWind v4 consumindo packages/design-tokens/tailwind, carregar Bricolage Grotesque + Geist + JetBrains Mono via expo-font, garantir paper-and-ink theme.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "22"
+          22
         ],
         "details": "tailwind.config.js do mobile importa `@farmei/design-tokens/tailwind` e estende.\nglobal.css com diretivas NativeWind, importado em app/_layout.tsx.\nassets/fonts/ com 3 famílias; expo-font + expo-splash-screen para evitar flicker.\nComponentes <Text>/<View> tipados aceitando className.\nProibido hardcode de cor do design system fora desses tokens.",
         "testStrategy": "Tela de smoke com bg paper, headline display, body Geist e número em mono. Visualmente bate com o protótipo.",
@@ -1033,8 +960,7 @@
             "title": "Instalar e configurar NativeWind v4",
             "description": "tailwind.config.js + babel preset",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -1043,8 +969,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -1053,19 +978,18 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "24",
+        "id": 24,
         "title": "Mobile · Cliente HTTP e camada Supabase Auth",
         "description": "Camada lib/api.ts (fetch + Zod) + lib/auth.ts (Supabase + SecureStore). Sessão persistente, refresh automático e interceptor de Authorization.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "22"
+          22
         ],
         "details": "Reusar @farmei/types para todos os DTOs.\nlib/api.ts: createApiClient(baseUrl, getToken) com métodos tipados; falha lança ApiError padronizado.\nlib/auth.ts: signIn, signUp, signOut, getSession, useAuth() hook.\nPersistência via expo-secure-store (não AsyncStorage — credenciais).\nEXPO_PUBLIC_API_URL, EXPO_PUBLIC_SUPABASE_URL, EXPO_PUBLIC_SUPABASE_ANON_KEY no app.json extra ou .env.",
         "testStrategy": "Login + logout funcionam contra API local; token sobrevive a reload do app.",
@@ -1075,8 +999,7 @@
             "title": "Cliente fetch tipado com Zod guards",
             "description": "ApiError + retry simples",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -1085,8 +1008,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -1095,20 +1017,19 @@
             "status": "done",
             "dependencies": [
               2
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "25",
+        "id": 25,
         "title": "Mobile · App shell (tab bar + onboarding + login/signup)",
         "description": "Estruturar grupos de rota (auth) e (tabs). Bottom navigation com 3 abas (Home | Public | Profile). Onboarding com headline 56px, login e signup.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "23",
-          "24"
+          23,
+          24
         ],
         "details": "app/(auth)/_layout.tsx + onboarding.tsx + login.tsx + signup.tsx.\napp/(tabs)/_layout.tsx com paper@80% + backdrop-blur e ícones (ink400 inativo, vermillion ativo).\nRedirect: sessão presente → (tabs); ausente → (auth)/onboarding.\nCopy bilíngue conforme brand-voice-and-copy.md (saudação latina, hero em EN).",
         "testStrategy": "Fluxo signup → tabs aparece. Logout → onboarding aparece. Tab bar persiste entre tabs.",
@@ -1118,8 +1039,7 @@
             "title": "Grupo (auth) com onboarding e formulários",
             "description": "Tela 1 do private flow + login/signup",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -1128,8 +1048,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -1138,19 +1057,18 @@
             "status": "done",
             "dependencies": [
               2
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "26",
+        "id": 26,
         "title": "Mobile · Fluxo privado completo (Home → Confirmed)",
         "description": "Implementar Home, Create, Invite, Availability, Result e Confirmed conforme wiki/ui-flows/private-event-flow.md. AICard com spark yellow + stamp-lg é o hero do produto.",
         "status": "done",
         "priority": "high",
         "dependencies": [
-          "25"
+          25
         ],
         "details": "Telas e arquivos:\n- app/(tabs)/index.tsx → Home com filtros e EventCards (status badges).\n- app/events/new-private.tsx → form (título, key person, janela de datas, duração).\n- app/events/[id]/index.tsx → detalhe + convites.\n- app/events/[id]/availability.tsx → grid 4col, ciclo yes/maybe/no, banner spark, AIButton.\n- app/events/[id]/result.tsx → AICard hero + rationale + conflict + alternatives.\n- app/events/[id]/confirmed.tsx → celebração.\nEstado: @tanstack/react-query para POST /private-events, /participants, /availability, /suggestion, /confirm.\nSpark yellow só nas telas 5 (banner) e 6 (AICard). Vermillion 5–10% dos pixels.",
         "testStrategy": "Maestro flow: criar evento → convidar 2 → marcar disp → pedir sugestão → confirmar. Visual bate com ui_kits/mobile.",
@@ -1160,8 +1078,7 @@
             "title": "Home + EventCards (privado)",
             "description": "Filtros, badges, FAB",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -1170,8 +1087,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -1180,8 +1096,7 @@
             "status": "done",
             "dependencies": [
               2
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 4,
@@ -1190,8 +1105,7 @@
             "status": "done",
             "dependencies": [
               3
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 5,
@@ -1200,19 +1114,18 @@
             "status": "done",
             "dependencies": [
               4
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "27",
+        "id": 27,
         "title": "Mobile · Fluxo público (feed, detalhe, criar, host)",
         "description": "Implementar PublicHome, PublicDetails, CreatePublic e HostPanel. Barra de ocupação dinâmica é obrigatória; sem spark yellow.",
         "status": "done",
         "priority": "medium",
         "dependencies": [
-          "25"
+          25
         ],
         "details": "Telas e arquivos:\n- app/(tabs)/public.tsx → feed com filtro por categoria (All|Sports|Music|Social|Food).\n- app/public/[id].tsx → detalhe com hero colorido por categoria, ocupação, 'quem já vai', CTA 'Eu vou!'.\n- app/events/new-public.tsx → form com capacidade obrigatória.\n- app/events/[id]/host.tsx → lista de inscritos, check-in, export CSV via expo-sharing.\nCores da barra: <50% success, <80% warn, >=80% vermillion. Lotado → CTA disabled + border vermillion.",
         "testStrategy": "Listar/inscrever em evento público; exportar CSV abre share sheet. Cores da barra mudam corretamente.",
@@ -1222,8 +1135,7 @@
             "title": "Feed público + filtros",
             "description": "EventCards públicos com ocupação",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -1232,16 +1144,14 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
             "title": "Criar público (host)",
             "description": "Form com capacidade",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 4,
@@ -1251,19 +1161,18 @@
             "dependencies": [
               2,
               3
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "28",
+        "id": 28,
         "title": "Mobile · Convites por link (deeplink /invite/[token])",
         "description": "Implementar fluxo do convidado sem conta: abrir farmei://invite/:token ou universal link, mostrar evento e capturar disponibilidade.",
         "status": "done",
         "priority": "medium",
         "dependencies": [
-          "26"
+          26
         ],
         "details": "app/invite/[token].tsx renderiza estado sem sessão.\nPersistir invite_token em SecureStore para retorno.\nPOST /invites/:token/accept → cria sessão efêmera ligada ao participante.\nApós aceitar, redireciona para availability daquele evento.\nTrabalhar com Apple Universal Links e Android App Links (AASA + assetlinks.json a configurar na API).",
         "testStrategy": "Abrir link em iOS Simulator e Android Emulator abre direto o app. Marcação de disp persiste.",
@@ -1273,8 +1182,7 @@
             "title": "Configurar scheme + universal links",
             "description": "AASA / assetlinks + intent filters",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -1283,19 +1191,18 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "29",
+        "id": 29,
         "title": "Mobile · Notificações push (registro + handlers)",
         "description": "Configurar expo-notifications, registrar device token na API (novo endpoint POST /users/me/devices) e tratar notificações de 'inscrição recebida' e 'evento amanhã'.",
         "status": "done",
         "priority": "medium",
         "dependencies": [
-          "25"
+          25
         ],
         "details": "Pedido de permissão integrado ao onboarding (após signup).\nAdicionar endpoint POST /users/me/devices em services/api (tarefa de backend explicitamente nessa subtask).\nLambda/job para envio das notificações fica fora do escopo do mobile — só consumir.\nSuporte a quiet hours e preferência por canal (FCM/APNs).",
         "testStrategy": "Token aparece no DB após signup. Push de teste do Expo aparece e abre o evento certo.",
@@ -1305,8 +1212,7 @@
             "title": "Adicionar POST /users/me/devices na API",
             "description": "Schema + endpoint + middleware",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -1315,8 +1221,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -1325,21 +1230,20 @@
             "status": "done",
             "dependencies": [
               2
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "30",
+        "id": 30,
         "title": "Mobile · Qualidade (Maestro + a11y + estados de erro)",
         "description": "Criar suite Maestro para os 3 fluxos críticos, garantir foco e contraste, e padronizar empty/loading/error com voz da marca.",
         "status": "done",
         "priority": "medium",
         "dependencies": [
-          "26",
-          "27",
-          "28"
+          26,
+          27,
+          28
         ],
         "details": "Maestro flows: signup-and-create-private, invite-and-availability, public-rsvp-flow.\nA11y: roles, accessibilityLabel em ícones, contraste mínimo WCAG AA.\nEmpty states: copy com flavor latino quando couber.\nLoading: AI shimmer no Result; skeletons paper-and-ink no resto.\nErros: card vermillionSoft com mensagem warm, nunca alarme.",
         "testStrategy": "Maestro CLI roda local; CI executa flows headless em build EAS Preview.",
@@ -1349,35 +1253,32 @@
             "title": "Maestro flows críticos",
             "description": "3 jornadas principais",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
             "title": "Auditoria de a11y",
             "description": "Roles + contraste + labels",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 3,
             "title": "Componentes de estado",
             "description": "Empty/Loading/Error padronizados",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           }
         ]
       },
       {
-        "id": "31",
+        "id": 31,
         "title": "Mobile · CI/CD (EAS Build + TestFlight + Internal Track)",
         "description": "Configurar eas.json com perfis preview/production, GitHub Actions para `eas build --auto-submit` em tags `mobile-vX.Y.Z`, e gerar primeiro build interno.",
         "status": "done",
         "priority": "medium",
         "dependencies": [
-          "22"
+          22
         ],
         "details": "eas.json com profiles development/preview/production.\nSecrets do workflow: EXPO_TOKEN, APPLE_ID, ASC_APP_ID, GOOGLE_SERVICE_ACCOUNT_KEY.\n.github/workflows/mobile-release.yml acionado em tag mobile-*.\nOTA updates configurados em production (canal stable).",
         "testStrategy": "Build EAS local roda; preview channel publica OTA; tag dispara build no CI.",
@@ -1387,8 +1288,7 @@
             "title": "eas.json + perfis",
             "description": "development/preview/production",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -1397,8 +1297,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -1407,20 +1306,19 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "32",
+        "id": 32,
         "title": "Mobile · Documentação e rebranding do README",
         "description": "Documentar como rodar/contribuir com apps/mobile, atualizar README raiz e CLAUDE.md mencionando o app mobile como concluído quando entregar.",
         "status": "done",
         "priority": "low",
         "dependencies": [
-          "30",
-          "31"
+          30,
+          31
         ],
         "details": "apps/mobile/README.md com pré-reqs (Xcode, Android Studio, Watchman), scripts e troubleshooting.\nAtualizar wiki/architecture/mobile-architecture.md (já criado nesta sessão) com qualquer divergência de execução.\nAtualizar README raiz: seção 'Mobile app'.\nAtualizar CLAUDE.md: stack sugerido vira 'stack adotado'.",
         "testStrategy": "Onboarding de um dev novo segue o README do mobile sem perguntas extras.",
@@ -1430,8 +1328,7 @@
             "title": "README do apps/mobile",
             "description": "Setup, scripts, troubleshooting",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -1440,13 +1337,12 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "33",
+        "id": 33,
         "title": "Tech debt: persistir user_devices no PostgreSQL",
         "description": "O endpoint POST /users/me/devices usa um Map em memória (store.ts). Device tokens somem a cada restart da API. Migrar para tabela user_devices no schema Drizzle com migration.",
         "status": "done",
@@ -1460,8 +1356,7 @@
             "title": "Adicionar tabela user_devices ao schema Drizzle",
             "description": "Schema + enum platform",
             "status": "done",
-            "dependencies": [],
-            "parentId": "undefined"
+            "dependencies": []
           },
           {
             "id": 2,
@@ -1470,8 +1365,7 @@
             "status": "done",
             "dependencies": [
               1
-            ],
-            "parentId": "undefined"
+            ]
           },
           {
             "id": 3,
@@ -1480,13 +1374,12 @@
             "status": "done",
             "dependencies": [
               2
-            ],
-            "parentId": "undefined"
+            ]
           }
         ]
       },
       {
-        "id": "34",
+        "id": 34,
         "title": "P0-SEC: hashear senhas (bcrypt/argon2)",
         "description": "services/api/src/store.ts:119 e routes/auth.ts:36 — senha em texto plano. Migrar para Supabase Auth nativo (já está parcialmente integrado) e remover createUser/findUserByEmail/password match local.",
         "status": "done",
@@ -1497,7 +1390,7 @@
         "subtasks": []
       },
       {
-        "id": "35",
+        "id": 35,
         "title": "P0-SEC: remover dev-session bypass do middleware de auth",
         "description": "services/api/src/middleware/auth.ts:21-26 deixa qualquer token \"dev_*\" no Map em-memória autenticar — funciona em produção também.",
         "status": "done",
@@ -1508,7 +1401,7 @@
         "subtasks": []
       },
       {
-        "id": "36",
+        "id": 36,
         "title": "P0-SEC: corrigir aceitação de convite com userId arbitrário",
         "description": "services/api/src/routes/invites.ts:18 aceita userId do body — qualquer dono do token vincula o convite a qualquer userId.",
         "status": "done",
@@ -1519,7 +1412,7 @@
         "subtasks": []
       },
       {
-        "id": "37",
+        "id": 37,
         "title": "P1-SEC: fix CORS wildcard fallback",
         "description": "services/api/src/app.ts:13 cai pra origin \"*\" se CORS_ORIGIN não estiver setado. Em produção isso vira CSRF total.",
         "status": "done",
@@ -1530,7 +1423,7 @@
         "subtasks": []
       },
       {
-        "id": "38",
+        "id": 38,
         "title": "P1-SEC: error handler não vaza error.message ao cliente",
         "description": "services/api/src/middleware/error-handler.ts:19 — devolve error.message cru (stack, SQL, etc).",
         "status": "done",
@@ -1541,7 +1434,7 @@
         "subtasks": []
       },
       {
-        "id": "39",
+        "id": 39,
         "title": "P1-SEC: remover password do payload via destructuring",
         "description": "routes/auth.ts:29,41,68 e users.ts:29,40 usam { ...user, password: undefined } — mantém chave password no JSON.",
         "status": "done",
@@ -1552,7 +1445,7 @@
         "subtasks": []
       },
       {
-        "id": "40",
+        "id": 40,
         "title": "P1-SEC: rate limit em /auth/login, /signup e /invites/:token/accept",
         "description": "Hoje sem throttle — brute force livre.",
         "status": "done",
@@ -1563,7 +1456,7 @@
         "subtasks": []
       },
       {
-        "id": "41",
+        "id": 41,
         "title": "P1-SEC: signup não revelar email já cadastrado",
         "description": "routes/auth.ts:23 retorna 409 \"Email already registered\" — permite enumeração de contas.",
         "status": "done",
@@ -1574,7 +1467,7 @@
         "subtasks": []
       },
       {
-        "id": "42",
+        "id": 42,
         "title": "P1-SEC: CSV injection em export de inscritos",
         "description": "public-events.ts:159 monta CSV concatenando campos sem escape — abrir no Excel executa fórmulas se campo começa com =, +, -, @.",
         "status": "done",
@@ -1585,7 +1478,7 @@
         "subtasks": []
       },
       {
-        "id": "43",
+        "id": 43,
         "title": "P1-SEC: pageSize sem cap permite DoS",
         "description": "public-events.ts:53 aceita ?pageSize=1000000 — lê e serializa o Map inteiro.",
         "status": "done",
@@ -1596,7 +1489,7 @@
         "subtasks": []
       },
       {
-        "id": "44",
+        "id": 44,
         "title": "P0-DEPS: atualizar next para >= 15.5.16",
         "description": "pnpm audit: 1 critical (RCE no React Flight) + ~10 high em next@15.3.3.",
         "status": "done",
@@ -1607,7 +1500,7 @@
         "subtasks": []
       },
       {
-        "id": "45",
+        "id": 45,
         "title": "P0-DEPS: atualizar drizzle-orm (SQL injection)",
         "description": "drizzle-orm@0.44.2 tem GHSA-gpj5-g38j-94v9 — SQL injection via escape inadequado.",
         "status": "done",
@@ -1618,7 +1511,7 @@
         "subtasks": []
       },
       {
-        "id": "46",
+        "id": 46,
         "title": "P1-DEPS: alinhar Expo SDK (51 → 55 ou LTS)",
         "description": "SDK 51 atrás 4 majors. xmldom/tar com vulns vêm de deps transitivas do Expo.",
         "status": "done",
@@ -1629,7 +1522,7 @@
         "subtasks": []
       },
       {
-        "id": "47",
+        "id": 47,
         "title": "P1-MOBILE: env.ts não deve fallback localhost em produção",
         "description": "apps/mobile/lib/env.ts:23 cai pra http://localhost:3001 se EXPO_PUBLIC_API_URL ausente.",
         "status": "done",
@@ -1640,7 +1533,7 @@
         "subtasks": []
       },
       {
-        "id": "48",
+        "id": 48,
         "title": "P1-MOBILE: invite token com TTL local no SecureStore",
         "description": "apps/mobile/lib/auth.ts:34 persiste invite_token sem expiração.",
         "status": "done",
@@ -1651,7 +1544,7 @@
         "subtasks": []
       },
       {
-        "id": "49",
+        "id": 49,
         "title": "P1-MOBILE: AASA + assetlinks.json para Universal Links",
         "description": "app.json:23 declara applinks:farmei.app mas falta hospedar AASA e assetlinks.json.",
         "status": "done",
@@ -1660,315 +1553,14 @@
         "details": "Servir /.well-known/apple-app-site-association (sem extensão, Content-Type application/json) e /.well-known/assetlinks.json no domínio farmei.app. Sem isso, o token de convite vaza pro browser.",
         "testStrategy": "Tocar link farmei.app/invite/<token> em iOS/Android abre o app diretamente, não o browser.",
         "subtasks": []
-      },
-      {
-        "id": "50",
-        "title": "Hook usePretext: wrapper de prepare/layout do @chenglou/pretext",
-        "description": "Criar um hook React reutilizável em apps/web que encapsula prepare() e layout() do pretext, memoizando resultados e re-rodando layout em resize.",
-        "status": "done",
-        "priority": "high",
-        "dependencies": [],
-        "details": "Local: apps/web/src/hooks/usePretext.ts\n\nAPI alvo:\n  const { height, lineCount, lines } = usePretext({ text, width, font?, lineHeight? });\n\nRequisitos:\n- Memoizar prepare(text, font) — só re-roda quando text ou font mudam (useMemo com dependências corretas).\n- Re-rodar layout(prepared, width) em mudança de width (passar width controlado pelo caller, normalmente via ResizeObserver no container).\n- Default font e lineHeight devem ler CSS variables do design system (--font-body, --leading-body). Permitir override via props.\n- Retornar { height: 0, lineCount: 0, lines: [] } quando text vazio sem chamar pretext.\n- TypeScript estrito: sem any.\n\nUtilidades auxiliares no mesmo arquivo:\n- useContainerWidth(ref): hook helper usando ResizeObserver para casos comuns.\n- Tipos exportados: UsePretextInput, UsePretextResult.\n\nNão criar componentes de UI aqui — apenas o hook puro. As 4 features de consumo (virtualização, ver mais, masonry, truncation) ficam em tasks separadas que dependem desta.",
-        "testStrategy": "Vitest + @testing-library/react: render hook com texts curto/longo, mudar width e checar que lineCount/height atualizam; passar string vazia e checar early return; mudar font e checar que prepare é chamado de novo (mock pretext).",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Definir tipos e API pública do hook",
-            "description": "Exportar UsePretextInput, UsePretextResult e a assinatura usePretext({ text, width, font?, lineHeight? })",
-            "dependencies": [],
-            "parentId": "undefined",
-            "status": "done",
-            "updatedAt": "2026-05-19T02:49:25.621Z"
-          },
-          {
-            "id": 2,
-            "title": "Implementar memoização de prepare()",
-            "description": "useMemo que só re-executa prepare(text, font) quando text ou font mudam",
-            "dependencies": [
-              1
-            ],
-            "parentId": "undefined",
-            "status": "done",
-            "updatedAt": "2026-05-19T02:49:25.633Z"
-          },
-          {
-            "id": 3,
-            "title": "Implementar re-layout em mudança de width",
-            "description": "useMemo de layout(prepared, width) dependente de width",
-            "dependencies": [
-              2
-            ],
-            "parentId": "undefined",
-            "status": "done",
-            "updatedAt": "2026-05-19T02:49:25.695Z"
-          },
-          {
-            "id": 4,
-            "title": "Ler font/lineHeight default das CSS variables do design system",
-            "description": "Resolver --font-body e --leading-body via getComputedStyle no client, com fallback SSR-safe",
-            "dependencies": [
-              1
-            ],
-            "parentId": "undefined",
-            "status": "done",
-            "updatedAt": "2026-05-19T02:49:25.759Z"
-          },
-          {
-            "id": 5,
-            "title": "Hook auxiliar useContainerWidth + testes",
-            "description": "ResizeObserver wrapper + bateria de testes Vitest cobrindo empty string, mudança de font, mudança de width",
-            "dependencies": [
-              3,
-              4
-            ],
-            "parentId": "undefined",
-            "status": "done",
-            "updatedAt": "2026-05-19T02:49:25.822Z"
-          }
-        ],
-        "updatedAt": "2026-05-19T02:49:25.822Z"
-      },
-      {
-        "id": "51",
-        "title": "Virtualização da lista de eventos públicos com pretext",
-        "description": "Implementar scroll virtualizado para a lista de eventos públicos usando usePretext para medir altura de cada card antes da renderização.",
-        "status": "done",
-        "priority": "medium",
-        "dependencies": [
-          "50"
-        ],
-        "details": "Local: apps/web/src/features/events/PublicEventList.tsx (criar se não existir).\n\nRequisitos:\n- Usar @tanstack/react-virtual para virtual scrolling.\n- Pré-calcular altura de cada card via usePretext somando: título + descrição + metadata (data, local, ocupação).\n- Lidar com descrições de tamanhos variados sem layout shift na carga inicial.\n- Fornecer estimateSize() preciso para o virtualizer, evitando jumps.\n- Re-medir em resize do container.\n\nConsiderações:\n- Adicionar @tanstack/react-virtual ao apps/web/package.json.\n- Carregar dados do endpoint GET /api/v1/events/public (mockado ou real conforme estado da API).\n- Manter accessibility: role=list, role=listitem.\n\nNão otimizar imagens aqui — escopo é só medição de texto.",
-        "testStrategy": "Playwright: renderizar lista com 100+ eventos mockados, scrollar até o fim, verificar que não há layout shift (CLS = 0) e que apenas itens visíveis estão no DOM.",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Adicionar @tanstack/react-virtual ao apps/web",
-            "description": "Instalar dependência e configurar tipos",
-            "dependencies": [],
-            "parentId": "undefined"
-          },
-          {
-            "id": 2,
-            "title": "Função measureEventCard(event, width) usando usePretext",
-            "description": "Soma altura de título + descrição + bloco de metadata para um width fixo",
-            "dependencies": [
-              1
-            ],
-            "parentId": "undefined"
-          },
-          {
-            "id": 3,
-            "title": "Componente PublicEventList virtualizado",
-            "description": "Integra useVirtualizer com estimateSize baseado em measureEventCard",
-            "dependencies": [
-              2
-            ],
-            "parentId": "undefined"
-          },
-          {
-            "id": 4,
-            "title": "Re-medição em resize do container",
-            "description": "ResizeObserver que invalida cache de medidas e força re-layout",
-            "dependencies": [
-              3
-            ],
-            "parentId": "undefined"
-          },
-          {
-            "id": 5,
-            "title": "Teste Playwright de CLS e DOM virtualizado",
-            "description": "Lista com 100+ items, asserts de CLS = 0 e apenas itens visíveis no DOM",
-            "dependencies": [
-              3,
-              4
-            ],
-            "parentId": "undefined"
-          }
-        ],
-        "updatedAt": "2026-05-19T03:07:34.044Z"
-      },
-      {
-        "id": "52",
-        "title": "Toggle 'ver mais' em descrição de evento (decisão pré-render via pretext)",
-        "description": "Usar pretext para decidir se a descrição de um evento ultrapassa 3 linhas antes de renderizar, evitando flash do texto completo.",
-        "status": "done",
-        "priority": "medium",
-        "dependencies": [
-          "50"
-        ],
-        "details": "Local: apps/web/src/components/EventDescription.tsx\n\nAPI:\n  <EventDescription text={event.description} maxLines={3} />\n\nRequisitos:\n- Medir altura do texto no width atual do container via usePretext.\n- Se height > 3 * lineHeight, renderizar versão truncada + botão 'ver mais' / 'ver menos'.\n- Caso contrário, renderizar texto inteiro sem botão.\n- Re-decidir em resize (width muda, threshold pode mudar).\n- Toggle controla apenas estado local de exibição.\n\nDetalhes:\n- O truncamento visual pode usar CSS line-clamp como fallback enquanto pretext mede no primeiro paint.\n- Animar transição entre estados com prefers-reduced-motion respeitado.\n- Suportar markdown básico no texto? Não — apenas plain text neste primeiro escopo.",
-        "testStrategy": "Storybook + visual diff: snapshots de descrição curta (sem botão), descrição longa (com botão), descrição borderline (3.2 linhas), e estado expandido. Teste unitário: assert que botão só aparece quando lineCount > 3.",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Componente EventDescription com props text e maxLines",
-            "description": "Esqueleto do componente recebendo text e maxLines (default 3)",
-            "dependencies": [],
-            "parentId": "undefined"
-          },
-          {
-            "id": 2,
-            "title": "Medir height via usePretext e decidir necessidade de toggle",
-            "description": "Comparar height retornado contra maxLines * lineHeight",
-            "dependencies": [
-              1
-            ],
-            "parentId": "undefined"
-          },
-          {
-            "id": 3,
-            "title": "Render truncado + botão 'ver mais/menos' com line-clamp",
-            "description": "CSS line-clamp como visual + estado local de expansão",
-            "dependencies": [
-              2
-            ],
-            "parentId": "undefined"
-          },
-          {
-            "id": 4,
-            "title": "Animação de expansão respeitando prefers-reduced-motion",
-            "description": "Transição de altura suave, desabilitada quando reduce motion ativo",
-            "dependencies": [
-              3
-            ],
-            "parentId": "undefined"
-          },
-          {
-            "id": 5,
-            "title": "Testes e stories",
-            "description": "Vitest para lógica do threshold + Storybook com 4 estados (curta, longa, borderline, expandida)",
-            "dependencies": [
-              3
-            ],
-            "parentId": "undefined"
-          }
-        ],
-        "updatedAt": "2026-05-19T03:07:34.098Z"
-      },
-      {
-        "id": "53",
-        "title": "Grid masonry de cards de evento com altura pré-calculada",
-        "description": "Implementar layout masonry para grade de cards de evento usando pretext para calcular alturas antes da inserção no DOM.",
-        "status": "done",
-        "priority": "medium",
-        "dependencies": [
-          "50"
-        ],
-        "details": "Local: apps/web/src/components/EventMasonryGrid.tsx\n\nRequisitos:\n- Calcular altura de cada card baseada em título + descrição + presença de imagem.\n- Distribuir cards em N colunas usando algoritmo masonry (coluna de menor altura recebe próximo card).\n- N colunas responsivo: 1 col mobile, 2 tablet, 3 desktop, 4 wide.\n- Recalcular em resize do viewport (debounced).\n- Cards de altura variável sem gaps verticais.\n\nDecisão:\n- Tentar primeiro CSS columns / grid-template-rows: masonry (Firefox) com fallback JS.\n- Se inadequado, implementar masonry JS-driven puro usando alturas do usePretext.\n\nPerformance:\n- Memoizar layout calculation por (width, count, hash do conteúdo).\n- Não medir item-por-item em cada render — batch de medições.",
-        "testStrategy": "Playwright: snapshot visual em viewports 360, 768, 1280, 1920. Verificar que não há gaps verticais grandes entre colunas. Teste de carga: 50 cards com conteúdo variado, layout deve estabilizar em < 200ms.",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Tentar masonry CSS-native com fallback detection",
-            "description": "Detectar suporte a grid-template-rows: masonry e usar CSS columns como fallback inicial",
-            "dependencies": [],
-            "parentId": "undefined"
-          },
-          {
-            "id": 2,
-            "title": "Função measureCard(event, columnWidth)",
-            "description": "Calcula altura completa do card baseado em texto + presença de imagem usando usePretext",
-            "dependencies": [],
-            "parentId": "undefined"
-          },
-          {
-            "id": 3,
-            "title": "Algoritmo masonry JS-driven (coluna de menor altura)",
-            "description": "Distribui cards N colunas escolhendo sempre a coluna mais curta",
-            "dependencies": [
-              2
-            ],
-            "parentId": "undefined"
-          },
-          {
-            "id": 4,
-            "title": "Responsividade: 1/2/3/4 colunas por breakpoint",
-            "description": "Recalcula layout em resize com debounce de 100ms",
-            "dependencies": [
-              3
-            ],
-            "parentId": "undefined"
-          },
-          {
-            "id": 5,
-            "title": "Memoização do layout e snapshots visuais",
-            "description": "Cache do layout por (width, count, content hash) + Playwright snapshots em 4 viewports",
-            "dependencies": [
-              3,
-              4
-            ],
-            "parentId": "undefined"
-          }
-        ],
-        "updatedAt": "2026-05-19T03:07:34.165Z"
-      },
-      {
-        "id": "54",
-        "title": "Truncamento de nomes em invite card (X, Y, Z +N)",
-        "description": "Usar pretext para medir quantos nomes de convidados cabem em uma linha do preview do invite card, com overflow no formato 'João, Maria, Pedro +5'.",
-        "status": "done",
-        "priority": "medium",
-        "dependencies": [
-          "50"
-        ],
-        "details": "Local: apps/web/src/components/InviteeNamesPreview.tsx\n\nAPI:\n  <InviteeNamesPreview names={['João Silva', 'Maria Santos', ...]} />\n\nRequisitos:\n- Medir largura individual de cada nome (com separadores ', ') via usePretext em modo single-line.\n- Calcular quantos cabem antes de exceder width do container, reservando espaço para o sufixo '+N'.\n- Renderizar: 'João, Maria, Pedro +5'.\n- Se um único nome não couber sozinho, mostrar primeiro nome truncado com ellipsis + contagem.\n- Atualizar em resize.\n\nAcessibilidade:\n- aria-label deve listar todos os nomes ('14 convidados: João Silva, Maria Santos, ...') para screen readers.\n- O '+5' visual deve ter title/tooltip com os nomes restantes.\n\nFontes: respeitar tokens do design system para o contexto onde o componente é usado (pode ser body ou caption).",
-        "testStrategy": "Vitest: dado um width fixo e fonte conhecida, asserts de quais nomes aparecem e qual contagem fica no overflow. Storybook: stories com 1, 3, 10, 50 nomes em widths variados.",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Componente InviteeNamesPreview com props names",
-            "description": "Esqueleto recebendo lista de nomes e width do container",
-            "dependencies": [],
-            "parentId": "undefined"
-          },
-          {
-            "id": 2,
-            "title": "Função fitNames(names, width) usando usePretext single-line",
-            "description": "Mede cada nome + separador e decide quantos cabem reservando espaço para sufixo '+N'",
-            "dependencies": [
-              1
-            ],
-            "parentId": "undefined"
-          },
-          {
-            "id": 3,
-            "title": "Render visual: 'João, Maria, Pedro +5'",
-            "description": "Renderização final + edge case de primeiro nome sozinho com ellipsis",
-            "dependencies": [
-              2
-            ],
-            "parentId": "undefined"
-          },
-          {
-            "id": 4,
-            "title": "Acessibilidade: aria-label completo e tooltip no '+N'",
-            "description": "aria-label com todos nomes para SR + title/tooltip com nomes restantes",
-            "dependencies": [
-              3
-            ],
-            "parentId": "undefined"
-          },
-          {
-            "id": 5,
-            "title": "Testes e stories com widths variados",
-            "description": "Vitest para fitNames + Storybook com 1, 3, 10, 50 nomes em 3 widths diferentes",
-            "dependencies": [
-              3
-            ],
-            "parentId": "undefined"
-          }
-        ],
-        "updatedAt": "2026-05-19T03:07:34.223Z"
       }
     ],
     "metadata": {
-      "version": "1.0.0",
-      "lastModified": "2026-05-19T03:07:34.223Z",
-      "taskCount": 54,
-      "completedCount": 54,
-      "tags": [
-        "master"
-      ]
+      "projectName": "Farmei",
+      "created": "2026-05-16T00:00:00.000Z",
+      "updated": "2026-05-18T00:20:09.862Z",
+      "description": "Plataforma de eventos sociais — eventos privados com sugestão de data e eventos públicos com inscrição.",
+      "version": "1.0.0"
     }
   }
 }
