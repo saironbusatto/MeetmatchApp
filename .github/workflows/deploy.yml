@@ -20,6 +20,6 @@ jobs:
           script: |
             cd ~/Farmei
             git pull origin main
-            docker compose down
-            docker compose up -d --build
-            docker image prune -f
+            sg docker -c 'docker compose down'
+            sg docker -c 'docker compose up -d --build'
+            sg docker -c 'docker image prune -f'
