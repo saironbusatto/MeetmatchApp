@@ -14,7 +14,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/apps/web/node_modules apps/web/node_modules
 COPY --from=deps /app/packages/ packages/
 COPY . .
-RUN pnpm build
+RUN pnpm turbo run build --filter=@farmei/web
 
 FROM node:20-alpine AS runner
 WORKDIR /app
