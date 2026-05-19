@@ -47,6 +47,14 @@ Convenções operacionais, setup local, rebrand e histórico de sessões.
 |---------|---------|---------|
 | [Setup & Conventions](project/setup-and-conventions.md) | O que existe, o que falta, como rodar, regras de rebrand e prioridade de leitura | 2026-05-16 |
 
+## pretext
+
+Bibliotecas e ferramentas de medição de texto para performance no browser.
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [Text Measurement with Pretext](pretext/text-measurement.md) | Medição de texto sem DOM reflow via canvas, API two-phase prepare/layout, integração com React | 2026-05-19 |
+
 ## backlog
 
 Planejamento de tarefas e milestones do MVP.

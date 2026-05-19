@@ -132,3 +132,9 @@ Evidência bruta: - raw/wiki-ingest/2026-05-17_11-52-24.md
 - Dependências atualizadas: `next@16.2.6`, `drizzle-orm@^0.45.2`, `drizzle-kit@^0.31.10`
 - Task Master atualizado: tasks 34, 35, 36, 44 e 45 marcadas como `done`
 - Evidência: raw/wiki-ingest/2026-05-17_15-49-50.md
+
+## [2026-05-19] ingest | Pretext text measurement library
+
+- Created: raw/pretext/2026-05-19-pretext-text-measurement.md
+- Created: pretext/text-measurement.md (new topic)
+- Updated: index.md with pretext section
