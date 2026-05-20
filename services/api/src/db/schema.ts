@@ -29,6 +29,13 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull()
 });
 
+export const userAuthCredentials = pgTable("user_auth_credentials", {
+  userId: uuid("user_id").primaryKey(),
+  passwordHash: text("password_hash").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull()
+});
+
 export const events = pgTable("events", {
   id: uuid("id").primaryKey(),
   ownerId: uuid("owner_id").notNull(),

@@ -1,10 +1,35 @@
 services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - CORS_ORIGIN=http://137.131.255.5:3000
+      - JWT_SECRET=farmei_dev_change_me_now
+      - JWT_EXPIRES_IN=8h
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3001/api/v1/health >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
   web:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://137.131.255.5:3001/api/v1
     ports:
       - "3000:3000"
     restart: unless-stopped
     environment:
       - NODE_ENV=production
+    depends_on:
+      api:
+        condition: service_healthy

@@ -40,14 +40,14 @@ O contexto Host/Organizer é um overlay sobre Private e Public — não tem enti
 | Forms | React Hook Form + Zod | Validação tipada, performance |
 | API | Hono | Leve, edge-compatible, TypeScript first |
 | ORM | Drizzle | SQL explícito, type-safe, migrations controladas |
-| DB | PostgreSQL (Supabase/Neon) | Relacional, robusto, compatível com Drizzle |
-| Auth | Supabase Auth | JWT gerenciado, sem infra própria |
+| DB | Oracle (fonte primária) | Banco oficial do ambiente de produção |
+| Auth | JWT emitido pelo backend Oracle | Fluxo único de identidade sem dependência externa |
 | Datas | date-fns | Tree-shakeable, sem side effects |
 | Testes | Vitest (unit) + Playwright (e2e) | |
 
 ## Estratégia de autenticação
 
-Supabase Auth gerencia identidades. O JWT é enviado no header `Authorization: Bearer <token>`. A API valida via Supabase SDK e extrai o `user_id` para ownership checks. A API nunca toca em senhas — fluxo completo delegado ao Supabase.
+O backend Oracle gerencia identidades e emite JWT. O token é enviado no header `Authorization: Bearer <token>`. A API valida assinatura/expiração e extrai `user_id` para ownership checks.
 
 Convidados sem conta recebem um **token opaco (UUID)** por link. Esse token não codifica dados — é mapeado em `event_participants` para buscar o evento e o participante.
 

@@ -61,7 +61,7 @@ O backlog está organizado em 6 fases sequenciais com dependências explícitas.
 - Migrations + seed de desenvolvimento
 
 **2.2 Autenticação**
-- Supabase Auth configurado
+- Auth Oracle/JWT configurado
 - Endpoints auth (signup, login, logout, me)
 - Middleware de sessão no Next.js
 - Páginas `/login` e `/signup`

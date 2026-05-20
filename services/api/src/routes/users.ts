@@ -2,8 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
 import { requireAuth } from "../middleware/auth";
-import { findUserById, updateUser, upsertUserDevice, upsertUserFromAuth } from "../store";
-import { createSupabaseAdminClient } from "../lib/supabase";
+import { findUserById, updateUser, upsertUserDevice } from "../store";
 
 const updateMeSchema = z.object({
   name: z.string().min(1).optional(),
@@ -22,21 +21,7 @@ export const usersRouter = new Hono<{ Variables: { auth: { userId: string } } }>
   .use("*", requireAuth)
   .get("/me", async (c) => {
     const auth = c.get("auth");
-    let user = findUserById(auth.userId);
-
-    if (!user) {
-      const authorization = c.req.header("Authorization") ?? "";
-      const token = authorization.replace("Bearer ", "").trim();
-      const supabase = createSupabaseAdminClient();
-      const { data } = await supabase.auth.getUser(token);
-      if (data.user?.email) {
-        user = upsertUserFromAuth({
-          id: data.user.id,
-          email: data.user.email,
-          name: (data.user.user_metadata?.name as string | undefined) ?? data.user.email
-        });
-      }
-    }
+    const user = await findUserById(auth.userId);
 
     if (!user) {
       return c.json({ message: "User not found" }, 404);
@@ -47,27 +32,13 @@ export const usersRouter = new Hono<{ Variables: { auth: { userId: string } } }>
   .put("/me", zValidator("json", updateMeSchema), async (c) => {
     const auth = c.get("auth");
     const payload = c.req.valid("json");
-
-    let existing = findUserById(auth.userId);
-    if (!existing) {
-      const authorization = c.req.header("Authorization") ?? "";
-      const token = authorization.replace("Bearer ", "").trim();
-      const supabase = createSupabaseAdminClient();
-      const { data } = await supabase.auth.getUser(token);
-      if (data.user?.email) {
-        existing = upsertUserFromAuth({
-          id: data.user.id,
-          email: data.user.email,
-          name: (data.user.user_metadata?.name as string | undefined) ?? data.user.email
-        });
-      }
-    }
+    const existing = await findUserById(auth.userId);
 
     if (!existing) {
       return c.json({ message: "User not found" }, 404);
     }
 
-    const updated = updateUser(auth.userId, payload);
+    const updated = await updateUser(auth.userId, payload);
 
     if (!updated) {
       return c.json({ message: "User not found" }, 404);

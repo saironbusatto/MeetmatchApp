@@ -1,11 +1,12 @@
 "use client";
 
 import { useAuth } from "@/lib/auth";
+import { getApiBaseUrl } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { VirtualizedEventList } from "@/components/VirtualizedEventList";
 import { MasonryEventGrid } from "@/components/MasonryEventGrid";
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api/v1";
+const API = getApiBaseUrl();
 
 export default function PublicPage() {
   const { token } = useAuth();

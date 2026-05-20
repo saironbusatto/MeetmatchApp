@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { getApiBaseUrl } from "@/lib/api";
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api/v1";
+const API = getApiBaseUrl();
 
 export default function InvitePage({ params }: { params: Promise<{ token: string }> }) {
   const [message, setMessage] = useState("");

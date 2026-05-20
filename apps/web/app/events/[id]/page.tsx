@@ -1,10 +1,11 @@
 "use client";
 
 import { useAuth } from "@/lib/auth";
+import { getApiBaseUrl } from "@/lib/api";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api/v1";
+const API = getApiBaseUrl();
 
 export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { token } = useAuth();

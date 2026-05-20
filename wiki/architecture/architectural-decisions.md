@@ -13,7 +13,7 @@ Registro compilado dos ADRs do Farmei. Cada decisão inclui o raciocínio e o qu
 | Decisão | Escolha | Principal alternativa descartada |
 |---------|---------|----------------------------------|
 | ADR-002 | pnpm workspaces (monorepo) | Nx (complexidade desnecessária para este estágio) |
-| ADR-003 | Supabase Auth | Clerk (billing desde cedo), NextAuth (acoplado ao Next.js) |
+| ADR-003 | Auth/Identity no backend Oracle (JWT próprio) | Supabase Auth (lock-in e divergência com infra atual) |
 | ADR-004 | Drizzle ORM | Prisma (schema próprio, runtime mais pesado) |
 | ADR-005 | Hono (API) | Express (legado, sem suporte nativo a TS/edge) |
 | ADR-009 | shadcn/ui (base técnica) | Radix puro (menos conveniente), Material UI (visual incompatível) |
@@ -31,6 +31,8 @@ Registro compilado dos ADRs do Farmei. Cada decisão inclui o raciocínio e o qu
 | Decisão | Regra |
 |---------|-------|
 | ADR-008 | Todo código novo usa "Farmei". CSS legado (.vmt-*) mantido como prefixo temporário. Migração controlada em tarefa separada. |
+| ADR-012 | Migração operacional Supabase → Oracle como fonte única de verdade | Elimina dualidade de auth/dados e reduz falhas de integração em produção. |
+| ADR-013 | SQLAlchemy + Alembic em trilho paralelo ao Drizzle | Permite governança de migração (heads/current/sql offline) sem interromper o deploy atual. |
 
 ## Pontos de evolução documentados
 
@@ -41,6 +43,7 @@ Essas são intenções registradas — não features para implementar agora:
 - **Mobile:** `packages/ui` deve ter componentes headless para Expo reutilizar (ADR-001)
 - **Geolocalização:** colunas lat/lng podem ser adicionadas ao schema sem breaking change (ARCHITECTURE.md §10)
 - **Waitlist:** tabela `public_event_waitlist` adicionável independentemente (ADR-010)
+- **Migração DB (Alembic Pro mindset):** mudanças de schema no backend Oracle seguem rotina de migração versionada, revisão obrigatória e rollout seguro (ADR-012).
 
 ## Decisões pendentes
 

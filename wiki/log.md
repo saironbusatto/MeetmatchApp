@@ -138,3 +138,29 @@ Evidência bruta: - raw/wiki-ingest/2026-05-17_11-52-24.md
 - Created: raw/pretext/2026-05-19-pretext-text-measurement.md
 - Created: pretext/text-measurement.md (new topic)
 - Updated: index.md with pretext section
+
+## [2026-05-20] ingest | Sprint plan Postgres/API migration + Alembic governance
+
+- Created: `docs/SPRINTS_POSTGRES_API_MIGRATION.md`
+- Conteúdo inclui:
+  - plano de sprints com deliverables por fase
+  - tasks com skill obrigatória antes de execução
+  - fechamento técnico de cada sprint com `debugger` e `alembic-pro`
+  - diretriz de adoção de SQLAlchemy + Alembic para migrações futuras
+- Objetivo operacional: migração suave de auth/infra para backend próprio com PostgreSQL
+
+## [2026-05-20] ingest | Sprint 4 execution (parallel Alembic track) + wiki correction
+
+- Created: `services/api/python-requirements.txt`
+- Created: SQLAlchemy model layer for auth
+  - `services/api/sqlalchemy_models/base.py`
+  - `services/api/sqlalchemy_models/auth_models.py`
+- Created: Alembic parallel scaffold
+  - `services/api/alembic.ini`
+  - `services/api/alembic_py/env.py`
+  - `services/api/alembic_py/script.py.mako`
+  - `services/api/alembic_py/versions/20260520_0001_baseline_auth.py`
+- Created: operational runbook for Sprint 4
+  - `docs/SPRINT4_ALEMBIC_PARALLEL_RUNBOOK.md`
+- Corrected architecture decisions:
+  - Added `ADR-013` (SQLAlchemy + Alembic parallel to Drizzle) in `wiki/architecture/architectural-decisions.md`

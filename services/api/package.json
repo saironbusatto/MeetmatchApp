@@ -16,16 +16,16 @@
     "@farmei/utils": "workspace:*",
     "@hono/node-server": "^1.13.7",
     "@hono/zod-validator": "^0.4.3",
-    "@supabase/supabase-js": "^2.49.8",
+    "bcryptjs": "^3.0.2",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.6.10",
+    "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.1",
-    "ws": "^8.18.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/pg": "^8.11.10",
-    "@types/ws": "^8.5.13",
     "drizzle-kit": "^0.31.10",
     "tsx": "^4.19.2"
   }

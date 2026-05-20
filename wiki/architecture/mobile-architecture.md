@@ -16,7 +16,7 @@ O app mobile (`apps/mobile`) é um app Expo (React Native + Expo Router v3 + Typ
 | Estilo | NativeWind v4 + `@farmei/design-tokens/tailwind` | Tokens já existentes, sem fork. |
 | Estado | Zustand + `@tanstack/react-query` | Sessão local + cache assíncrono. |
 | API client | `fetch` + `@farmei/types` | Contratos versionados, sem geração extra. |
-| Auth | `@supabase/supabase-js` + `expo-secure-store` | Reusa a infra Supabase do web; tokens em SecureStore (nunca AsyncStorage). |
+| Auth | JWT do backend Oracle + `expo-secure-store` | Fluxo único com web/backend e persistência segura de sessão no dispositivo. |
 | Notificações | `expo-notifications` (APNs/FCM) | Push para "alguém se inscreveu", "evento amanhã". |
 | Mapas | `react-native-maps` (Google) | Flag `featureMaps` no MVP. Habilita junto com P2. |
 | Testes | Vitest (lógica) + Maestro (e2e device) | Maestro alinha bem com Expo. |

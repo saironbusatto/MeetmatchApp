@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { and, eq } from "drizzle-orm";
 import { getDb } from "./db/client";
-import { userDevices as userDevicesTable } from "./db/schema";
+import { userDevices as userDevicesTable, users as usersTable } from "./db/schema";
 
 export type EventType = "PRIVATE" | "PUBLIC";
 export type EventStatus = "DRAFT" | "OPEN" | "CONFIRMED" | "CANCELLED";
@@ -87,8 +87,16 @@ export interface UserDeviceRecord {
   updatedAt: string;
 }
 
+export interface UserAuthCredentialRecord {
+  userId: string;
+  passwordHash: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 const users = new Map<string, UserRecord>();
 const usersByEmail = new Map<string, string>();
+const authCredentials = new Map<string, UserAuthCredentialRecord>();
 
 const events = new Map<string, EventRecord>();
 const privateSettings = new Map<string, PrivateEventSettingsRecord>();
@@ -133,11 +141,50 @@ export function upsertUserFromAuth(input: { id: string; email: string; name?: st
   return created;
 }
 
-export function findUserById(id: string) {
+export async function findUserById(id: string) {
+  const dbClient = getDb();
+  if (dbClient) {
+    const found = await dbClient.select().from(usersTable).where(eq(usersTable.id, id)).limit(1);
+    const row = found[0];
+    if (!row) return null;
+    return {
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      avatarUrl: row.avatarUrl,
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString()
+    } satisfies UserRecord;
+  }
+
   return users.get(id) ?? null;
 }
 
-export function updateUser(id: string, input: { name?: string; avatarUrl?: string | null }) {
+export async function updateUser(id: string, input: { name?: string; avatarUrl?: string | null }) {
+  const dbClient = getDb();
+  if (dbClient) {
+    const now = new Date();
+    const [updated] = await dbClient
+      .update(usersTable)
+      .set({
+        ...(input.name !== undefined ? { name: input.name } : {}),
+        ...(input.avatarUrl !== undefined ? { avatarUrl: input.avatarUrl } : {}),
+        updatedAt: now
+      })
+      .where(eq(usersTable.id, id))
+      .returning();
+
+    if (!updated) return null;
+    return {
+      id: updated.id,
+      name: updated.name,
+      email: updated.email,
+      avatarUrl: updated.avatarUrl,
+      createdAt: updated.createdAt.toISOString(),
+      updatedAt: updated.updatedAt.toISOString()
+    } satisfies UserRecord;
+  }
+
   const existing = users.get(id);
   if (!existing) {
     return null;
@@ -270,6 +317,7 @@ export async function upsertUserDevice(
 export const db = {
   users,
   usersByEmail,
+  authCredentials,
   events,
   privateSettings,
   participants,

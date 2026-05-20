@@ -1,6 +1,6 @@
 import type { MiddlewareHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
-import { createSupabaseAdminClient } from "../lib/supabase";
+import { verifyAccessToken } from "../utils/jwt";
 
 export const requireAuth: MiddlewareHandler<{ Variables: { auth: { userId: string } } }> = async (
   c,
@@ -18,14 +18,8 @@ export const requireAuth: MiddlewareHandler<{ Variables: { auth: { userId: strin
   }
 
   try {
-    const supabase = createSupabaseAdminClient();
-    const { data, error } = await supabase.auth.getUser(token);
-
-    if (error || !data.user) {
-      throw new HTTPException(401, { message: "Invalid JWT" });
-    }
-
-    c.set("auth", { userId: data.user.id });
+    const decoded = verifyAccessToken(token);
+    c.set("auth", { userId: decoded.sub });
     await next();
   } catch {
     throw new HTTPException(401, { message: "Invalid JWT" });

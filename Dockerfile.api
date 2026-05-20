@@ -1,0 +1,15 @@
+FROM node:20-alpine AS base
+RUN corepack enable && corepack prepare pnpm@9.12.2 --activate
+
+WORKDIR /app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY services/api/package.json services/api/
+COPY packages/ packages/
+
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+
+EXPOSE 3001
+CMD ["pnpm", "--filter", "@farmei/api", "dev"]
+
