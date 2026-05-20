@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<title>Auth · Mobile — Farmei</title>
+<link rel="stylesheet" href="colors_and_type.css"/>
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+  html, body { margin: 0; background: #f0eee9; }
+  body { font-family: var(--font-body); color: var(--ink-900); }
+
+  /* caret blink for OTP */
+  @keyframes caret { 50% { opacity: 0; } }
+
+  /* intro card */
+  .intro {
+    position: absolute;
+    top: 60px;
+    left: 60px;
+    width: 520px;
+    background: var(--bg-page);
+    border: 2px solid var(--ink-900);
+    border-radius: var(--r-xl);
+    padding: 26px 28px;
+    box-shadow: var(--stamp-lg);
+    z-index: 100;
+  }
+  .intro .kicker {
+    font: 700 10px/1 var(--font-mono);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--vermillion-500);
+    margin-bottom: 8px;
+  }
+  .intro h1 {
+    font: 700 30px/1.05 var(--font-display);
+    letter-spacing: -0.03em;
+    margin: 0 0 10px 0;
+  }
+  .intro p {
+    font: 500 14px/1.45 var(--font-body);
+    color: var(--ink-700);
+    margin: 0 0 12px 0;
+  }
+  .intro .legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--ink-100);
+  }
+  .intro .legend > div {
+    font: 500 12px/1.35 var(--font-body);
+    color: var(--ink-800);
+  }
+  .intro .legend b {
+    display: block;
+    font: 700 12px/1 var(--font-display);
+    color: var(--ink-900);
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+  .intro .legend .tag {
+    display: inline-block;
+    font: 700 9px/1 var(--font-mono);
+    letter-spacing: 0.1em;
+    padding: 2px 5px;
+    border-radius: 4px;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+  .intro .legend .tag.a { background: var(--bg-page); border: 1px solid var(--ink-900); color: var(--ink-900); }
+  .intro .legend .tag.b { background: var(--vermillion-500); color: #fff; }
+  .intro .legend .tag.c { background: var(--ink-900); color: var(--spark-300); }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <div class="kicker">Auth · Mobile · Farmei</div>
+  <h1>Login, signup, verificar, enviado</h1>
+  <p>4 telas × 3 variantes. OAuth-only — Google, Apple, Instagram. Sem senha. Copy em PT-BR coloquial.</p>
+  <div class="legend">
+    <div><b><span class="tag a">A</span> Minimal paper</b>Paper limpo, mark no topo, tons de respiro.</div>
+    <div><b><span class="tag b">B</span> Hero vermillion</b>Topo vermelho com headline reversed, form embaixo.</div>
+    <div><b><span class="tag c">C</span> Sticker card</b>Full-bleed vermelho com card branco flutuando.</div>
+  </div>
+</div>
+
+<div id="auth-root"></div>
+
+<!-- React + Babel -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="farmei-marks.jsx"></script>
+<script type="text/babel" src="phone-frame.jsx"></script>
+<script type="text/babel" src="auth-mobile.jsx"></script>
+</body>
+</html>

@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<title>App icons & favicon · Farmei</title>
+<link rel="stylesheet" href="colors_and_type.css"/>
+<style>
+  html, body { margin: 0; background: var(--ink-50); }
+  body { font-family: var(--font-body); color: var(--ink-900); padding: 48px 24px 120px; }
+  .page { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+
+  /* ── header card ──────────────────────────── */
+  .head {
+    background: var(--bg-page);
+    border: 2px solid var(--ink-900);
+    border-radius: var(--r-xl);
+    padding: 32px 36px;
+    box-shadow: var(--stamp-lg);
+  }
+  .head .kicker {
+    font: 700 11px/1 var(--font-mono);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--vermillion-500);
+    margin-bottom: 10px;
+  }
+  .head h1 {
+    font: 700 40px/1.02 var(--font-display);
+    letter-spacing: -0.03em;
+    margin: 0 0 10px 0;
+  }
+  .head p {
+    font: 500 15px/1.45 var(--font-body);
+    color: var(--ink-700);
+    margin: 0;
+    max-width: 640px;
+  }
+
+  /* ── section card ─────────────────────────── */
+  .sec {
+    background: var(--bg-page);
+    border: 1px solid var(--ink-100);
+    border-radius: var(--r-xl);
+    padding: 32px;
+  }
+  .sec h2 {
+    font: 700 24px/1.05 var(--font-display);
+    letter-spacing: -0.02em;
+    margin: 0 0 6px 0;
+  }
+  .sec .sub {
+    font: 500 14px/1.4 var(--font-body);
+    color: var(--ink-500);
+    margin: 0 0 24px 0;
+  }
+  .sec .body { display: flex; flex-direction: column; gap: 24px; }
+
+  /* ── app icon grid ────────────────────────── */
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .icon-card {
+    border: 1px solid var(--ink-100);
+    border-radius: var(--r-lg);
+    padding: 28px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    background: var(--bg-surface);
+  }
+  .ios-icon {
+    width: 200px;
+    height: 200px;
+    border-radius: 46px; /* iOS continuous-ish */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06), 0 16px 40px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 220px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-optical-sizing: auto;
+  }
+  .ios-icon span { transform: translateY(8px); }
+  .ios-icon.verm  { background: var(--vermillion-500); color: #FAFAF7; }
+  .ios-icon.paper { background: var(--bg-page); color: var(--ink-900); }
+  .ios-icon.ink   { background: var(--ink-900); color: var(--bg-page); }
+  .icon-meta { text-align: center; }
+  .icon-meta b { display: block; font: 700 14px/1 var(--font-display); margin-bottom: 4px; }
+  .icon-meta span { font: 600 11px/1 var(--font-mono); color: var(--ink-500); letter-spacing: 0.04em; }
+  .badge.primary {
+    display: inline-block;
+    font: 700 9px/1 var(--font-mono);
+    background: var(--vermillion-500);
+    color: #fff;
+    padding: 3px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.1em;
+    margin-left: 6px;
+    vertical-align: 2px;
+  }
+
+  /* ── iOS home screen mock ─────────────────── */
+  .ios-home {
+    background: linear-gradient(160deg, #f3a988 0%, #d97455 50%, #8c4438 100%);
+    border-radius: 36px;
+    padding: 60px 32px 48px;
+    position: relative;
+    color: #fff;
+    overflow: hidden;
+  }
+  .ios-home::before {
+    content: "";
+    position: absolute;
+    top: 14px; left: 50%; transform: translateX(-50%);
+    width: 110px; height: 30px;
+    background: #000;
+    border-radius: 18px;
+  }
+  .ios-time {
+    text-align: center;
+    font: 700 12px/1 var(--font-body);
+    letter-spacing: 0.04em;
+    margin-bottom: 28px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+  .home-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px 14px;
+  }
+  .home-app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .home-app .ic {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: var(--ink-200);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-700);
+    font: 700 26px/1 var(--font-display);
+  }
+  .home-app .lbl { font: 500 11px/1.1 var(--font-body); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+  .home-app.farmei .ic {
+    background: var(--vermillion-500);
+    color: #FAFAF7;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 64px;
+    letter-spacing: -0.04em;
+    box-shadow: 0 4px 16px rgba(255,59,46,0.45);
+    position: relative;
+  }
+  .home-app.farmei .ic span { transform: translateY(4px); display: block; line-height: 1; }
+  .ios-dock {
+    margin-top: 32px;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 12px 16px;
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+  }
+  .dock-app { width: 48px; height: 48px; border-radius: 12px; background: var(--ink-300); }
+
+  /* ── android adaptive ─────────────────────── */
+  .android-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .a-shape {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background: var(--vermillion-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FAFAF7;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 140px;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    overflow: hidden;
+  }
+  .a-shape span { transform: translateY(5px); }
+  .a-shape.circle   { border-radius: 50%; }
+  .a-shape.squircle { border-radius: 28%; }
+  .a-shape.rounded  { border-radius: 16%; }
+  .a-shape.square   { border-radius: 0; }
+  .a-card { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  .a-card .lbl { font: 600 11px/1 var(--font-mono); color: var(--ink-500); letter-spacing: 0.06em; }
+
+  /* ── browser tab mock ─────────────────────── */
+  .browser {
+    background: #e8e6e0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+  }
+  .browser-bar {
+    background: #dad7d0;
+    padding: 10px 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+  }
+  .browser-bar .lights { display: flex; gap: 6px; }
+  .browser-bar .lights span { width: 12px; height: 12px; border-radius: 50%; background: #c9c5be; }
+  .tabs { display: flex; gap: 4px; flex: 1; margin-left: 16px; }
+  .tab {
+    background: #f4f2ec;
+    padding: 8px 14px 10px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font: 500 13px/1 var(--font-body);
+    color: var(--ink-700);
+    max-width: 240px;
+  }
+  .tab.active { background: var(--bg-page); color: var(--ink-900); font-weight: 600; }
+  .tab .fav {
+    width: 16px; height: 16px;
+    border-radius: 4px;
+    background: var(--vermillion-500);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #FAFAF7;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 17px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    flex: none;
+  }
+  .tab .fav span { transform: translateY(1px); }
+  .tab .x { color: var(--ink-400); margin-left: 4px; font-size: 14px; }
+  .browser-url {
+    background: var(--bg-page);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font: 500 13px/1 var(--font-mono);
+    color: var(--ink-700);
+    border-bottom: 1px solid var(--ink-100);
+  }
+  .browser-url .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success-500); }
+  .browser-body {
+    background: var(--bg-page);
+    padding: 28px 20px 32px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 500 13px/1.4 var(--font-body);
+    color: var(--ink-400);
+  }
+
+  /* favicon sizes row */
+  .fav-sizes { display: flex; gap: 28px; align-items: flex-end; padding-top: 16px; }
+  .fav-sizes .col { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  .fav-sizes .col .ic {
+    background: var(--vermillion-500);
+    color: #FAFAF7;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  }
+  .fav-sizes .col .ic span { display: block; transform: translateY(0.5px); }
+  .fav-sizes .col .ic.s16 { width: 16px; height: 16px; font-size: 17px; border-radius: 3px; }
+  .fav-sizes .col .ic.s32 { width: 32px; height: 32px; font-size: 36px; border-radius: 5px; }
+  .fav-sizes .col .ic.s48 { width: 48px; height: 48px; font-size: 53px; border-radius: 8px; }
+  .fav-sizes .col .ic.s180 { width: 180px; height: 180px; font-size: 195px; border-radius: 36px; }
+  .fav-sizes .col .ic.s192 { width: 192px; height: 192px; font-size: 210px; border-radius: 38px; }
+  .fav-sizes .col .ic.s512 { width: 512px; height: 512px; font-size: 560px; border-radius: 100px; }
+  .fav-sizes .col .ic.s180 span,
+  .fav-sizes .col .ic.s192 span,
+  .fav-sizes .col .ic.s512 span { transform: translateY(8px); }
+  .fav-sizes .col .lbl { font: 600 10px/1 var(--font-mono); color: var(--ink-500); letter-spacing: 0.04em; }
+
+  .pwa-row { display: flex; gap: 32px; align-items: flex-end; flex-wrap: wrap; }
+
+  /* ── OG link preview ──────────────────────── */
+  .og-stack { display: flex; flex-direction: column; gap: 24px; }
+  .og-image {
+    width: 100%;
+    max-width: 600px;
+    aspect-ratio: 1200 / 630;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    position: relative;
+    background: var(--vermillion-500);
+    color: #FAFAF7;
+    padding: 38px 44px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .og-image .kick {
+    font: 700 11px/1 var(--font-mono);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.92;
+  }
+  .og-image .word {
+    font: 800 132px/0.95 var(--font-display);
+    letter-spacing: -0.045em;
+    font-optical-sizing: auto;
+    position: relative;
+    display: inline-flex;
+    margin: 8px 0 4px;
+  }
+  .og-image .word .idot {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--spark-300);
+    border: 4px solid var(--ink-900);
+    top: 4px;
+    left: 305px;
+  }
+  .og-image .tag {
+    font: 600 22px/1.3 var(--font-body);
+    letter-spacing: -0.01em;
+    max-width: 80%;
+    opacity: 0.95;
+  }
+  .og-image .pill {
+    align-self: flex-start;
+    background: var(--ink-900);
+    color: var(--spark-300);
+    padding: 8px 14px;
+    border-radius: 100px;
+    font: 700 11px/1 var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .og-image .spark-stamp {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--spark-300);
+    opacity: 0.35;
+  }
+  .og-image .spark-stamp.a { top: 32px; right: 38px; width: 10px; height: 10px; }
+  .og-image .spark-stamp.b { bottom: 80px; right: 24px; width: 16px; height: 16px; }
+
+  /* iMessage-style preview card */
+  .imessage {
+    background: #ecebeb;
+    border-radius: 18px;
+    padding: 24px;
+    max-width: 360px;
+  }
+  .imessage-bubble {
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+  .imessage-img {
+    width: 100%;
+    aspect-ratio: 1200 / 630;
+    background: var(--vermillion-500);
+    position: relative;
+    color: #FAFAF7;
+    padding: 18px 22px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .imessage-img .word-sm {
+    font: 800 56px/0.95 var(--font-display);
+    letter-spacing: -0.04em;
+    font-optical-sizing: auto;
+    position: relative;
+    display: inline-flex;
+  }
+  .imessage-img .word-sm .idot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--spark-300);
+    border: 2px solid var(--ink-900);
+    top: 2px;
+    left: 130px;
+  }
+  .imessage-img .tag-sm {
+    font: 600 11px/1.3 var(--font-body);
+    opacity: 0.95;
+  }
+  .imessage-img .kick-sm {
+    font: 700 7px/1 var(--font-mono);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .imessage-meta {
+    padding: 10px 14px 14px;
+    border-top: 1px solid #eee;
+  }
+  .imessage-meta .url { font: 500 11px/1 var(--font-body); color: #8e8e93; }
+  .imessage-meta .ti { font: 600 14px/1.3 var(--font-body); color: #1c1c1e; margin-top: 4px; }
+  .imessage-meta .desc { font: 500 12px/1.4 var(--font-body); color: #636366; margin-top: 4px; }
+
+  /* ── files list ───────────────────────────── */
+  .files {
+    background: var(--ink-900);
+    color: #fff;
+    border-radius: var(--r-lg);
+    padding: 24px 28px;
+  }
+  .files h3 {
+    font: 700 11px/1 var(--font-mono);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--spark-300);
+    margin: 0 0 14px 0;
+  }
+  .files ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+  .files li {
+    font: 500 13px/1.4 var(--font-mono);
+    color: var(--ink-100);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .files li b { color: #fff; font-weight: 700; min-width: 220px; }
+  .files li em { color: var(--ink-300); font-style: normal; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ── header ─────────────────────────────── -->
+  <div class="head">
+    <div class="kicker">Sistema · Farmei</div>
+    <h1>App icon, favicon &amp; OG</h1>
+    <p>Tudo derivado do mark: vermillion + "f" paper da Bricolage. Mesma marca em todos os tamanhos, do favicon 16px ao billboard. SVGs salvos em <code>assets/farmei/</code>.</p>
+  </div>
+
+  <!-- ── 1. App icon ────────────────────────── -->
+  <div class="sec">
+    <h2>App icon — 3 fundos</h2>
+    <p class="sub">Vermillion é o primário. Paper e ink são alternativas pra dark mode / theming.</p>
+    <div class="body">
+      <div class="icon-grid">
+        <div class="icon-card">
+          <div class="ios-icon verm"><span>f</span></div>
+          <div class="icon-meta"><b>Vermillion<span class="badge primary">primário</span></b><span>FF3B2E · paper f</span></div>
+        </div>
+        <div class="icon-card">
+          <div class="ios-icon paper"><span>f</span></div>
+          <div class="icon-meta"><b>Paper</b><span>FAFAF7 · ink f</span></div>
+        </div>
+        <div class="icon-card">
+          <div class="ios-icon ink"><span>f</span></div>
+          <div class="icon-meta"><b>Ink</b><span>0A0A0A · paper f</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 2. iOS home screen mock ────────────── -->
+  <div class="sec">
+    <h2>Em uso · iOS home screen</h2>
+    <p class="sub">Como o ícone vive entre os outros apps na tela inicial.</p>
+    <div class="body">
+      <div class="ios-home">
+        <div class="ios-time">14:32 · ter, 4 jun</div>
+        <div class="home-grid">
+          <div class="home-app"><div class="ic" style="background:#3478F6;color:#fff;">M</div><div class="lbl">Mensagens</div></div>
+          <div class="home-app"><div class="ic" style="background:#34C759;color:#fff;">T</div><div class="lbl">Telefone</div></div>
+          <div class="home-app"><div class="ic" style="background:#000;color:#fff;">𝕏</div><div class="lbl">X</div></div>
+          <div class="home-app farmei"><div class="ic"><span>f</span></div><div class="lbl">Farmei</div></div>
+          <div class="home-app"><div class="ic" style="background:#E1306C;color:#fff;">📷</div><div class="lbl">Instagram</div></div>
+          <div class="home-app"><div class="ic" style="background:#1DB954;color:#fff;">♫</div><div class="lbl">Spotify</div></div>
+          <div class="home-app"><div class="ic" style="background:#000;color:#fff;">▶</div><div class="lbl">Netflix</div></div>
+          <div class="home-app"><div class="ic" style="background:#FFCC00;color:#000;">📅</div><div class="lbl">Calendário</div></div>
+        </div>
+        <div class="ios-dock">
+          <div class="dock-app" style="background:#007AFF;"></div>
+          <div class="dock-app" style="background:#FF9500;"></div>
+          <div class="dock-app" style="background:#5856D6;"></div>
+          <div class="dock-app" style="background:#34C759;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 3. Android adaptive ────────────────── -->
+  <div class="sec">
+    <h2>Android · adaptive icon</h2>
+    <p class="sub">O launcher mascara o ícone em diferentes formas. O <em>f</em> fica dentro da safe zone (66%), aguentando todas.</p>
+    <div class="body">
+      <div class="android-row">
+        <div class="a-card"><div class="a-shape circle"><span>f</span></div><span class="lbl">Circle</span></div>
+        <div class="a-card"><div class="a-shape squircle"><span>f</span></div><span class="lbl">Squircle</span></div>
+        <div class="a-card"><div class="a-shape rounded"><span>f</span></div><span class="lbl">Rounded sq</span></div>
+        <div class="a-card"><div class="a-shape square"><span>f</span></div><span class="lbl">Square</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 4. Favicon ─────────────────────────── -->
+  <div class="sec">
+    <h2>Favicon · browser tab</h2>
+    <p class="sub">Mesma lógica em tamanhos minúsculos. Render real no browser:</p>
+    <div class="body">
+      <div class="browser">
+        <div class="browser-bar">
+          <div class="lights"><span></span><span></span><span></span></div>
+          <div class="tabs">
+            <div class="tab active"><span class="fav"><span>f</span></span>farmei · agenda c/ a galera<span class="x">×</span></div>
+            <div class="tab">📧 Inbox (3)<span class="x">×</span></div>
+          </div>
+        </div>
+        <div class="browser-url"><span class="dot"></span>https://farmei.app</div>
+        <div class="browser-body">página do app</div>
+      </div>
+
+      <div class="fav-sizes">
+        <div class="col"><div class="ic s16"><span>f</span></div><span class="lbl">16</span></div>
+        <div class="col"><div class="ic s32"><span>f</span></div><span class="lbl">32</span></div>
+        <div class="col"><div class="ic s48"><span>f</span></div><span class="lbl">48</span></div>
+        <div class="col"><div class="ic s180"><span>f</span></div><span class="lbl">180 · apple-touch</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 5. PWA ─────────────────────────────── -->
+  <div class="sec">
+    <h2>PWA · 192 &amp; 512</h2>
+    <p class="sub">Pra add-to-home-screen no Android, e o splash screen.</p>
+    <div class="body">
+      <div class="pwa-row">
+        <div class="col" style="display:flex;flex-direction:column;gap:8px;align-items:center;">
+          <div class="ic s192" style="background:var(--vermillion-500);color:#FAFAF7;border-radius:38px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:210px;letter-spacing:-0.04em;line-height:1;width:192px;height:192px;"><span style="transform:translateY(8px);">f</span></div>
+          <span class="lbl" style="font:600 11px/1 var(--font-mono);color:var(--ink-500);">192 × 192</span>
+        </div>
+        <div class="col" style="display:flex;flex-direction:column;gap:8px;align-items:center;">
+          <div class="ic" style="background:var(--vermillion-500);color:#FAFAF7;border-radius:60px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:310px;letter-spacing:-0.04em;line-height:1;width:280px;height:280px;"><span style="transform:translateY(12px);">f</span></div>
+          <span class="lbl" style="font:600 11px/1 var(--font-mono);color:var(--ink-500);">512 × 512 (mostrado 280)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 6. Open Graph ──────────────────────── -->
+  <div class="sec">
+    <h2>Open Graph · link preview</h2>
+    <p class="sub">A imagem que aparece quando alguém manda <code>farmei.app</code> no WhatsApp, iMessage, Twitter, Slack.</p>
+    <div class="body og-stack">
+      <!-- the OG image itself -->
+      <div class="og-image">
+        <span class="spark-stamp a"></span>
+        <span class="spark-stamp b"></span>
+        <div class="kick">Farmei · agenda c/ a galera</div>
+        <div>
+          <div class="word">
+            farmei
+            <span class="idot"></span>
+          </div>
+          <div class="tag">A IA acha o dia da galera. Bora marcar?</div>
+        </div>
+        <div class="pill">farmei.app</div>
+      </div>
+
+      <!-- iMessage-style link card preview -->
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;">
+        <div class="imessage">
+          <div style="font:500 10px/1 var(--font-body);color:#8e8e93;text-align:center;margin-bottom:8px;">domingo · 22:14</div>
+          <div class="imessage-bubble">
+            <div class="imessage-img">
+              <div class="kick-sm">Farmei</div>
+              <div>
+                <div class="word-sm">farmei<span class="idot"></span></div>
+                <div class="tag-sm">A IA acha o dia da galera</div>
+              </div>
+              <div></div>
+            </div>
+            <div class="imessage-meta">
+              <div class="url">farmei.app</div>
+              <div class="ti">Farmei — agenda c/ a galera</div>
+              <div class="desc">Bora marcar? A gente acha o dia que rola pra todo mundo.</div>
+            </div>
+          </div>
+        </div>
+        <p style="font:500 13px/1.5 var(--font-body);color:var(--ink-500);max-width:280px;margin:0;align-self:center;">
+          Como o link aparece compartilhado no iMessage / WhatsApp. Mesma OG funciona pro Twitter, Slack, LinkedIn.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 7. Files list ──────────────────────── -->
+  <div class="files">
+    <h3>SVGs prontos · assets/farmei/</h3>
+    <ul>
+      <li><b>app-icon.svg</b><em>1024 × 1024 · iOS master</em></li>
+      <li><b>app-icon-fg.svg</b><em>432 × 432 · Android foreground (paper f)</em></li>
+      <li><b>app-icon-bg.svg</b><em>432 × 432 · Android background (solid vermillion)</em></li>
+      <li><b>apple-touch-icon.svg</b><em>180 × 180 · &lt;link rel="apple-touch-icon"&gt;</em></li>
+      <li><b>favicon.svg</b><em>64 × 64 · &lt;link rel="icon"&gt;</em></li>
+      <li><b>og.svg</b><em>1200 × 630 · &lt;meta property="og:image"&gt;</em></li>
+      <li><b>mark.svg</b><em>200 × 200 · standalone f mark</em></li>
+    </ul>
+  </div>
+
+</div>
+
+</body>
+</html>

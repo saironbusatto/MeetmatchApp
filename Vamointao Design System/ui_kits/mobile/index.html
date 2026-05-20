@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Farmei · Mobile UI kit</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; background: var(--bg-page); }
+  body {
+    font-family: var(--font-body); color: var(--fg-1);
+    min-height: 100vh; padding: 28px 32px 40px;
+  }
+  .kit-hdr { display: flex; align-items: baseline; gap: 16px; margin-bottom: 6px; }
+  .kit-hdr h1 { font: 700 38px/1 var(--font-display); letter-spacing: -0.03em; margin: 0; }
+  .kit-hdr .tag { font: var(--t-mono); color: var(--fg-3); }
+  .kit-sub  { font: 400 16px/1.5 var(--font-body); color: var(--fg-2); max-width: 720px; margin: 6px 0 24px; }
+  .rail { display: flex; gap: 28px; overflow-x: auto; padding: 12px 0 24px; align-items: flex-start; scroll-snap-type: x mandatory; }
+  .rail > .slot { scroll-snap-align: start; }
+  .label {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 4px; margin-top: 14px; min-width: 360px;
+  }
+  .label .step { font: var(--t-mono); font-size: 11px; color: var(--fg-3); letter-spacing: 0.08em; text-transform: uppercase; }
+  .label .name { font: 600 16px/1 var(--font-display); letter-spacing: -0.01em; color: var(--fg-1); }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="ios-frame.jsx"></script>
+  <script type="text/babel" src="components.jsx"></script>
+  <script type="text/babel" src="screens-a.jsx"></script>
+  <script type="text/babel" src="screens-b.jsx"></script>
+
+  <script type="text/babel">
+    const SCREENS = [
+      { key: 'onboarding',   name: 'Onboarding',   Comp: OnboardingScreen,   props: { onContinue: () => focusOn(1) } },
+      { key: 'home',         name: 'Home · events', Comp: HomeScreen,        props: { onNewEvent: () => focusOn(2), onOpen: () => focusOn(6) } },
+      { key: 'create',       name: 'New event',     Comp: CreateScreen,      props: { onBack: () => focusOn(1), onNext: () => focusOn(3) } },
+      { key: 'invite',       name: 'Invite people', Comp: InviteScreen,      props: { onBack: () => focusOn(2), onNext: () => focusOn(4) } },
+      { key: 'availability', name: 'Availability',  Comp: AvailabilityScreen,props: { onBack: () => focusOn(3), onNext: () => focusOn(5) } },
+      { key: 'result',       name: 'AI suggestion', Comp: ResultScreen,      props: { onBack: () => focusOn(4), onLock: () => focusOn(6) } },
+      { key: 'confirmed',    name: 'Locked in',     Comp: ConfirmedScreen,   props: { onBack: () => focusOn(5), onHome: () => focusOn(1) } },
+    ];
+
+    function focusOn(idx) {
+      const el = document.querySelector(`[data-slot="${idx}"]`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+
+    function MobileKit() {
+      return (
+        <div data-screen-label="Mobile UI kit">
+          <div className="kit-hdr">
+            <h1>Mobile UI kit</h1>
+            <span className="tag">7 screens · iOS</span>
+          </div>
+          <p className="kit-sub">Click any CTA to jump between screens. The flow runs onboarding → home → create → invite → availability → AI pick → confirmed.</p>
+
+          <div className="rail">
+            {SCREENS.map((s, i) => (
+              <div key={s.key} className="slot" data-slot={i} data-screen-label={`${String(i+1).padStart(2,'0')} ${s.name}`}>
+                <IOSDevice width={380} height={820}>
+                  <s.Comp {...s.props}/>
+                </IOSDevice>
+                <div className="label">
+                  <span className="step">Screen {String(i+1).padStart(2,'0')} / 07</span>
+                  <span className="name">{s.name}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<MobileKit/>);
+  </script>
+</body>
+</html>

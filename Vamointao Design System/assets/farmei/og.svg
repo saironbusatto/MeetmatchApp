@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  
+  
+
+  
+  <rect width="1200" height="630" fill="#FF3B2E"></rect>
+
+  
+  <g opacity="0.18">
+    <circle cx="80" cy="80" r="18" fill="#FFD93D"></circle>
+    <circle cx="1140" cy="540" r="14" fill="#FFD93D"></circle>
+    <circle cx="1080" cy="100" r="10" fill="#FFD93D"></circle>
+  </g>
+
+  
+  <text x="100" y="155" class="kick" fill="#FAFAF7">Farmei · agenda c/ a galera</text>
+
+  
+  <g>
+    <text x="100" y="400" class="word" fill="#FAFAF7">farmei</text>
+    
+    <circle cx="765" cy="183" r="42" fill="#FFD93D" stroke="#0A0A0A" stroke-width="8"></circle>
+  </g>
+
+  
+  <text x="100" y="490" class="tag" fill="#FAFAF7">A IA acha o dia da galera. Bora marcar?</text>
+
+  
+  <g transform="translate(840, 540)">
+    <rect x="0" y="0" width="280" height="56" rx="28" fill="#0A0A0A"></rect>
+    <text x="140" y="38" class="kick" fill="#FFD93D" text-anchor="middle">farmei.app</text>
+  </g>
+</svg>
