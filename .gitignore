@@ -28,3 +28,9 @@ pnpm-debug.log*
 
 # Credentials
 Credenciais.md
+
+# Local/private runbooks
+docs/RUNBOOK_LOCAL*
+docs/*LOCAL*.md
+docs/private/
+wiki/private/

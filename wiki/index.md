@@ -46,6 +46,7 @@ Convenções operacionais, setup local, rebrand e histórico de sessões.
 | Article | Summary | Updated |
 |---------|---------|---------|
 | [Setup & Conventions](project/setup-and-conventions.md) | O que existe, o que falta, como rodar, regras de rebrand e prioridade de leitura | 2026-05-16 |
+| [Ops Runbook (Sanitized)](project/ops-runbook-sanitized.md) | Runbook operacional sem segredos: deploy, portas, DB, validação, backup e segurança | 2026-05-20 |
 
 ## pretext
 

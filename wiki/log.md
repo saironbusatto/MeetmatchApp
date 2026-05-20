@@ -164,3 +164,15 @@ Evidência bruta: - raw/wiki-ingest/2026-05-17_11-52-24.md
   - `docs/SPRINT4_ALEMBIC_PARALLEL_RUNBOOK.md`
 - Corrected architecture decisions:
   - Added `ADR-013` (SQLAlchemy + Alembic parallel to Drizzle) in `wiki/architecture/architectural-decisions.md`
+
+## [2026-05-20] ingest | Ops runbook sanitized + local private runbooks ignored
+
+- Created: `wiki/project/ops-runbook-sanitized.md`
+  - Deployment and operations baseline without real IPs, keys, OCIDs, usernames or secrets
+  - Includes service topology, ingress policy, DB/migration flow, verification checklist, backup baseline
+- Updated: `wiki/index.md` with runbook article entry under `project`
+- Updated: `.gitignore` to keep private runbooks out of Git
+  - `docs/RUNBOOK_LOCAL*`
+  - `docs/*LOCAL*.md`
+  - `docs/private/`
+  - `wiki/private/`
