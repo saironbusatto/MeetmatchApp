@@ -15,14 +15,14 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@clerk/expo": "^3.2.15",
     "@farmei/design-tokens": "workspace:*",
     "@farmei/types": "workspace:*",
     "@farmei/utils": "workspace:*",
-    "@supabase/supabase-js": "^2.49.8",
     "@tanstack/react-query": "^5.59.0",
     "expo": "~55.0.0",
-    "expo-dev-client": "~55.0.0",
     "expo-constants": "~55.0.0",
+    "expo-dev-client": "~55.0.0",
     "expo-font": "~55.0.0",
     "expo-linking": "~55.0.0",
     "expo-notifications": "~0.32.0",
@@ -48,8 +48,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@types/react": "~19.1.0",
     "@expo/metro-runtime": "~55.0.11",
+    "@types/react": "~19.1.0",
     "tailwindcss": "^3.4.14",
     "typescript": "^5.6.3"
   }

@@ -1,20 +1,39 @@
 import "../global.css";
 
+import { ClerkProvider, useAuth } from "@clerk/expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
-import { Slot, SplashScreen, useRouter } from "expo-router";
+import { Slot, SplashScreen, useRouter, useSegments } from "expo-router";
 import * as Notifications from "expo-notifications";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { useSession } from "~/lib/store";
-import { getSupabase } from "~/lib/auth";
+import { clerkTokenCache } from "~/lib/auth";
+import { env } from "~/lib/env";
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
 const queryClient = new QueryClient();
 
-export default function RootLayout() {
+function AuthGuard() {
+  const { isSignedIn, isLoaded } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    const inAuth = segments[0] === "(auth)";
+    if (isSignedIn && inAuth) {
+      router.replace("/(tabs)");
+    } else if (!isSignedIn && !inAuth) {
+      router.replace("/(auth)/login");
+    }
+  }, [isSignedIn, isLoaded, segments]);
+
+  return null;
+}
+
+function AppLayout() {
   const router = useRouter();
   const [fontsLoaded] = useFonts({
     "BricolageGrotesque-Regular": require("../assets/fonts/BricolageGrotesque-Regular.ttf"),
@@ -23,11 +42,8 @@ export default function RootLayout() {
     "Geist-Medium": require("../assets/fonts/Geist-Medium.ttf"),
     "Geist-SemiBold": require("../assets/fonts/Geist-SemiBold.ttf"),
     "JetBrainsMono-Regular": require("../assets/fonts/JetBrainsMono-Regular.ttf"),
-    "JetBrainsMono-Bold": require("../assets/fonts/JetBrainsMono-Bold.ttf")
+    "JetBrainsMono-Bold": require("../assets/fonts/JetBrainsMono-Bold.ttf"),
   });
-
-  const setHydrating = useSession((state) => state.setHydrating);
-  const setUser = useSession((state) => state.setUser);
 
   useEffect(() => {
     if (fontsLoaded) SplashScreen.hideAsync().catch(() => undefined);
@@ -40,47 +56,8 @@ export default function RootLayout() {
         router.push(targetPath as never);
       }
     });
-    return () => {
-      sub.remove();
-    };
+    return () => sub.remove();
   }, [router]);
-
-  useEffect(() => {
-    const supabase = getSupabase();
-    setHydrating(true);
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session?.user) {
-        const u = data.session.user;
-        setUser({
-          id: u.id,
-          name: (u.user_metadata?.name as string) ?? u.email ?? "",
-          email: u.email ?? "",
-          avatarUrl: null,
-          createdAt: u.created_at,
-          updatedAt: u.updated_at ?? u.created_at
-        });
-      }
-      setHydrating(false);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        const u = session.user;
-        setUser({
-          id: u.id,
-          name: (u.user_metadata?.name as string) ?? u.email ?? "",
-          email: u.email ?? "",
-          avatarUrl: null,
-          createdAt: u.created_at,
-          updatedAt: u.updated_at ?? u.created_at
-        });
-      } else {
-        setUser(null);
-      }
-    });
-    return () => {
-      sub.subscription.unsubscribe();
-    };
-  }, [setHydrating, setUser]);
 
   if (!fontsLoaded) return null;
 
@@ -88,8 +65,17 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <StatusBar style="dark" />
+        <AuthGuard />
         <Slot />
       </SafeAreaProvider>
     </QueryClientProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <ClerkProvider publishableKey={env.clerkPublishableKey} tokenCache={clerkTokenCache}>
+      <AppLayout />
+    </ClerkProvider>
   );
 }

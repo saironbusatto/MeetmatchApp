@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@chenglou/pretext": "^0.0.7",
+    "@clerk/nextjs": "^7.4.0",
     "@farmei/design-tokens": "workspace:*",
     "@farmei/ui": "workspace:*",
     "@tanstack/react-virtual": "^3.13.24",

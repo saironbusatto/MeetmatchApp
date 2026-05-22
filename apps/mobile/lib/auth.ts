@@ -1,36 +1,33 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import * as SecureStore from "expo-secure-store";
-import { env } from "./env";
+// Auth é gerenciada pelo Clerk via @clerk/expo.
+// Use os hooks do Clerk nos componentes:
+//   useAuth()   → { getToken, isSignedIn, userId }
+//   useUser()   → { user }
+//   useClerk()  → { signOut }
+//
+// Para requests ao backend Oracle:
+//   const { getToken } = useAuth();
+//   const token = await getToken();
+//   fetch(url, { headers: { Authorization: `Bearer ${token}` } })
 
-const ExpoSecureStoreAdapter = {
-  getItem: (key: string) => SecureStore.getItemAsync(key),
-  setItem: (key: string, value: string) => SecureStore.setItemAsync(key, value),
-  removeItem: (key: string) => SecureStore.deleteItemAsync(key)
+import * as SecureStore from "expo-secure-store";
+
+// SecureStore adapter mantido para persistir o token do Clerk entre sessões.
+export const clerkTokenCache = {
+  async getToken(key: string) {
+    return SecureStore.getItemAsync(key);
+  },
+  async saveToken(key: string, value: string) {
+    return SecureStore.setItemAsync(key, value);
+  },
+  async clearToken(key: string) {
+    return SecureStore.deleteItemAsync(key);
+  },
 };
 
-let client: SupabaseClient | null = null;
-
-export function getSupabase(): SupabaseClient {
-  if (!client) {
-    client = createClient(env.supabaseUrl, env.supabaseAnonKey, {
-      auth: {
-        storage: ExpoSecureStoreAdapter as unknown as Storage,
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: false
-      }
-    });
-  }
-  return client;
-}
-
-export async function getAccessToken(): Promise<string | null> {
-  const { data } = await getSupabase().auth.getSession();
-  return data.session?.access_token ?? null;
-}
+// ── Invite token helpers (mantidos — não dependem de Supabase) ──────────────
 
 export const INVITE_TOKEN_KEY = "farmei.invite_token";
-const INVITE_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 dias
+const INVITE_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 type StoredInvite = { token: string; expiresAt: number };
 
@@ -42,12 +39,12 @@ function parseStored(raw: string | null): StoredInvite | null {
       return { token: parsed.token, expiresAt: parsed.expiresAt };
     }
   } catch {
-    // formato antigo (string crua) — descartar
+    // formato antigo — descartar
   }
   return null;
 }
 
-export async function rememberInviteToken(token: string, ttlMs: number = INVITE_TOKEN_TTL_MS) {
+export async function rememberInviteToken(token: string, ttlMs = INVITE_TOKEN_TTL_MS) {
   const payload: StoredInvite = { token, expiresAt: Date.now() + ttlMs };
   await SecureStore.setItemAsync(INVITE_TOKEN_KEY, JSON.stringify(payload));
 }
