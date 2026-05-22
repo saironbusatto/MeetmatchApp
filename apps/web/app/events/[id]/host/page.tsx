@@ -1,23 +1,27 @@
 "use client";
 
-import { useAuth } from "@/lib/auth";
+import { useApiToken } from "@/hooks/useApiToken";
 import { getApiBaseUrl } from "@/lib/api";
 import { useEffect, useState } from "react";
 
 const API = getApiBaseUrl();
 
 export default function HostPage({ params }: { params: Promise<{ id: string }> }) {
-  const { token } = useAuth();
+  const getToken = useApiToken();
   const [id, setId] = useState("");
   const [registrations, setRegistrations] = useState<any[]>([]);
 
   useEffect(() => { params.then((p) => setId(p.id)); }, [params]);
+
   useEffect(() => {
-    if (!token || !id) return;
-    fetch(`${API}/public-events/${id}/registrations`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((data) => setRegistrations(data.registrations ?? []));
-  }, [token, id]);
+    if (!id) return;
+    getToken().then((token) => {
+      if (!token) return;
+      fetch(`${API}/public-events/${id}/registrations`, { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.json())
+        .then((data) => setRegistrations(data.registrations ?? []));
+    });
+  }, [id]);
 
   return (
     <main>

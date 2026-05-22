@@ -1,13 +1,13 @@
 "use client";
 
-import { useAuth } from "@/lib/auth";
+import { useApiToken } from "@/hooks/useApiToken";
 import { getApiBaseUrl } from "@/lib/api";
 import { useEffect, useState } from "react";
 
 const API = getApiBaseUrl();
 
 export default function AvailabilityPage({ params }: { params: Promise<{ id: string }> }) {
-  const { token } = useAuth();
+  const getToken = useApiToken();
   const [id, setId] = useState("");
   const [date, setDate] = useState("");
   const [response, setResponse] = useState<"YES" | "MAYBE" | "NO">("YES");
@@ -15,6 +15,7 @@ export default function AvailabilityPage({ params }: { params: Promise<{ id: str
   useEffect(() => { params.then((p) => setId(p.id)); }, [params]);
 
   async function save() {
+    const token = await getToken();
     if (!token || !id) return;
     await fetch(`${API}/private-events/${id}/availability`, {
       method: "POST",
@@ -28,7 +29,7 @@ export default function AvailabilityPage({ params }: { params: Promise<{ id: str
       <h1>Disponibilidade</h1>
       <div className="grid card">
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-        <select value={response} onChange={(e) => setResponse(e.target.value as "YES" | "MAYBE" | "NO") }>
+        <select value={response} onChange={(e) => setResponse(e.target.value as "YES" | "MAYBE" | "NO")}>
           <option>YES</option>
           <option>MAYBE</option>
           <option>NO</option>

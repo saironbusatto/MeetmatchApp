@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/lib/auth";
+import { useApiToken } from "@/hooks/useApiToken";
 import { getApiBaseUrl } from "@/lib/api";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -8,17 +8,21 @@ import { useEffect, useState } from "react";
 const API = getApiBaseUrl();
 
 export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { token } = useAuth();
+  const getToken = useApiToken();
   const [id, setId] = useState("");
   const [event, setEvent] = useState<any>(null);
 
   useEffect(() => { params.then((p) => setId(p.id)); }, [params]);
+
   useEffect(() => {
-    if (!token || !id) return;
-    fetch(`${API}/private-events/${id}`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((data) => setEvent(data.event ?? null));
-  }, [token, id]);
+    if (!id) return;
+    getToken().then((token) => {
+      if (!token) return;
+      fetch(`${API}/private-events/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.json())
+        .then((data) => setEvent(data.event ?? null));
+    });
+  }, [id]);
 
   return (
     <main>
