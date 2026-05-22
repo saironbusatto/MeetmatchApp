@@ -1,6 +1,6 @@
 import type { MiddlewareHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
-import { verifyAccessToken } from "../utils/jwt";
+import { verifyClerkToken } from "../utils/jwt";
 
 export const requireAuth: MiddlewareHandler<{ Variables: { auth: { userId: string } } }> = async (
   c,
@@ -18,8 +18,8 @@ export const requireAuth: MiddlewareHandler<{ Variables: { auth: { userId: strin
   }
 
   try {
-    const decoded = verifyAccessToken(token);
-    c.set("auth", { userId: decoded.sub });
+    const userId = await verifyClerkToken(token);
+    c.set("auth", { userId });
     await next();
   } catch {
     throw new HTTPException(401, { message: "Invalid JWT" });
