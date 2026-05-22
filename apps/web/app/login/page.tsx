@@ -3,10 +3,11 @@
 import { useSignIn } from "@clerk/nextjs";
 
 export default function LoginPage() {
-  const { signIn, isLoaded } = useSignIn();
+  const signInState = useSignIn();
 
   async function handleOAuth(provider: "oauth_google" | "oauth_apple") {
-    if (!isLoaded) return;
+    if (!signInState.signIn) return;
+    const signIn = signInState.signIn;
     await signIn.authenticateWithRedirect({
       strategy: provider,
       redirectUrl: "/sso-callback",
