@@ -1,7 +1,7 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
-import { useApiToken } from "@/hooks/useApiToken";
+import { useAuth } from "@/lib/auth";
+
 import { getApiBaseUrl } from "@/lib/api";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -23,7 +23,7 @@ interface EventItem {
 
 export default function DashboardPage(): JSX.Element {
   const { user } = useUser();
-  const getToken = useApiToken();
+  const { token } = useAuth();
   const [privateEvents, setPrivateEvents] = useState<EventItem[]>([]);
   const [publicEvents, setPublicEvents] = useState<EventItem[]>([]);
 

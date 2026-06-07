@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiToken } from "@/hooks/useApiToken";
+import { useAuth } from "@/lib/auth";
 import { getApiBaseUrl } from "@/lib/api";
 import { useEffect, useState, useCallback } from "react";
 import { T } from "@/components/ui/tokens";
@@ -35,7 +35,7 @@ const RESPONSE_CONFIG: Record<AvailResponse, { bg: string; border: string; color
 };
 
 export default function AvailabilityPage({ params }: { params: Promise<{ id: string }> }): JSX.Element {
-  const getToken = useApiToken();
+  const { token } = useAuth();
   const [id, setId] = useState("");
   const [days, setDays] = useState<DayState[]>([]);
   const [saved, setSaved] = useState(false);
@@ -69,7 +69,7 @@ export default function AvailabilityPage({ params }: { params: Promise<{ id: str
   }, []);
 
   async function save() {
-    const token = await getToken();
+    const token = token;
     if (!token || !id) return;
     setSaving(true);
     await fetch(`${API}/private-events/${id}/availability`, {

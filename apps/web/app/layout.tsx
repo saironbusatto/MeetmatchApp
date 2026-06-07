@@ -1,17 +1,17 @@
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
+import { AuthProvider } from "@/lib/auth";
 import { Nav } from "@/components/ui/Nav";
-import type { JSX, ReactNode } from "react";
+import type { ReactNode } from "react";
 
-export default function RootLayout({ children }: { children: ReactNode }): JSX.Element {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <ClerkProvider>
-      <html lang="pt-BR">
-        <body>
+    <html lang="pt-BR">
+      <body>
+        <AuthProvider>
           <Nav />
           {children}
-        </body>
-      </html>
-    </ClerkProvider>
+        </AuthProvider>
+      </body>
+    </html>
   );
 }

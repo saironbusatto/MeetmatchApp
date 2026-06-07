@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiToken } from "@/hooks/useApiToken";
+import { useAuth } from "@/lib/auth";
 import { getApiBaseUrl } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -14,7 +14,7 @@ const API = getApiBaseUrl();
 
 export default function NewEventPage(): JSX.Element {
   const router = useRouter();
-  const getToken = useApiToken();
+  const { token } = useAuth();
   const [type, setType] = useState<"PRIVATE" | "PUBLIC">("PRIVATE");
   const [title, setTitle] = useState("");
   const [dateStart, setDateStart] = useState("");
@@ -24,7 +24,7 @@ export default function NewEventPage(): JSX.Element {
   const [loading, setLoading] = useState(false);
 
   async function create() {
-    const token = await getToken();
+    const token = token;
     if (!token) return;
     setLoading(true);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/lib/auth";
+import { useApiToken } from "@/hooks/useApiToken";
 import { getApiBaseUrl } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { T } from "@/components/ui/tokens";
@@ -20,29 +20,32 @@ interface PublicEvent {
 }
 
 export default function PublicPage(): JSX.Element {
-  const { token } = useAuth();
+  const getToken = useApiToken();
   const [events, setEvents] = useState<PublicEvent[]>([]);
   const [registering, setRegistering] = useState<string | null>(null);
   const [registered, setRegistered] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    if (!token) return;
-    fetch(`${API}/public-events`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((data) => {
-        const mapped = (data.data ?? []).map((item: any): PublicEvent => ({
-          id: item.event.id,
-          title: item.event.title ?? "",
-          description: item.event.description,
-          eventDate: item.settings?.eventDate,
-          maxCapacity: item.settings?.maxCapacity,
-          currentCount: item.settings?.currentCount,
-        }));
-        setEvents(mapped);
-      });
-  }, [token]);
+    getToken().then((token) => {
+      if (!token) return;
+      fetch(`${API}/public-events`, { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.json())
+        .then((data) => {
+          const mapped = (data.data ?? []).map((item: any): PublicEvent => ({
+            id: item.event.id,
+            title: item.event.title ?? "",
+            description: item.event.description,
+            eventDate: item.settings?.eventDate,
+            maxCapacity: item.settings?.maxCapacity,
+            currentCount: item.settings?.currentCount,
+          }));
+          setEvents(mapped);
+        });
+    });
+  }, []);
 
   async function register(eventId: string) {
+    const token = await getToken();
     if (!token) return;
     setRegistering(eventId);
     const res = await fetch(`${API}/public-events/${eventId}/register`, {
