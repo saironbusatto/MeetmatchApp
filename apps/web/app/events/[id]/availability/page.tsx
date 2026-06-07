@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/lib/auth";
+import { useApiToken } from "@/hooks/useApiToken";
 import { getApiBaseUrl } from "@/lib/api";
 import { useEffect, useState, useCallback } from "react";
 import { T } from "@/components/ui/tokens";
@@ -35,10 +35,8 @@ const RESPONSE_CONFIG: Record<AvailResponse, { bg: string; border: string; color
 };
 
 export default function AvailabilityPage({ params }: { params: Promise<{ id: string }> }): JSX.Element {
-  const { token } = useAuth();
+  const getToken = useApiToken();
   const [id, setId] = useState("");
-  const [dateStart, setDateStart] = useState("");
-  const [dateEnd, setDateEnd] = useState("");
   const [days, setDays] = useState<DayState[]>([]);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -48,20 +46,21 @@ export default function AvailabilityPage({ params }: { params: Promise<{ id: str
   }, [params]);
 
   useEffect(() => {
-    if (!token || !id) return;
-    fetch(`${API}/private-events/${id}`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((data) => {
-        const s: string = data.event?.settings?.dateWindowStart ?? data.settings?.dateWindowStart ?? "";
-        const e: string = data.event?.settings?.dateWindowEnd ?? data.settings?.dateWindowEnd ?? "";
-        if (s && e) {
-          setDateStart(s);
-          setDateEnd(e);
-          setDays(buildDayGrid(s, e).map((d) => ({ date: d, response: "MAYBE" })));
-        }
-      })
-      .catch(() => null);
-  }, [token, id]);
+    if (!id) return;
+    getToken().then((token) => {
+      if (!token) return;
+      fetch(`${API}/private-events/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.json())
+        .then((data) => {
+          const s: string = data.event?.settings?.dateWindowStart ?? data.settings?.dateWindowStart ?? "";
+          const e: string = data.event?.settings?.dateWindowEnd ?? data.settings?.dateWindowEnd ?? "";
+          if (s && e) {
+            setDays(buildDayGrid(s, e).map((d) => ({ date: d, response: "MAYBE" })));
+          }
+        })
+        .catch(() => null);
+    });
+  }, [id]);
 
   const toggle = useCallback((date: string, current: AvailResponse) => {
     const order: AvailResponse[] = ["YES", "MAYBE", "NO"];
@@ -70,6 +69,7 @@ export default function AvailabilityPage({ params }: { params: Promise<{ id: str
   }, []);
 
   async function save() {
+    const token = await getToken();
     if (!token || !id) return;
     setSaving(true);
     await fetch(`${API}/private-events/${id}/availability`, {
@@ -184,26 +184,10 @@ export default function AvailabilityPage({ params }: { params: Promise<{ id: str
                     gap: 2,
                   }}
                 >
-                  <span
-                    style={{
-                      fontFamily: T.fontBody,
-                      fontSize: 10,
-                      fontWeight: 600,
-                      color: cfg.color,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.04em",
-                    }}
-                  >
+                  <span style={{ fontFamily: T.fontBody, fontSize: 10, fontWeight: 600, color: cfg.color, textTransform: "uppercase", letterSpacing: "0.04em" }}>
                     {d.toLocaleDateString("pt-BR", { weekday: "short" })}
                   </span>
-                  <span
-                    style={{
-                      fontFamily: T.fontMono,
-                      fontSize: 15,
-                      fontWeight: 700,
-                      color: cfg.color,
-                    }}
-                  >
+                  <span style={{ fontFamily: T.fontMono, fontSize: 15, fontWeight: 700, color: cfg.color }}>
                     {d.getDate()}
                   </span>
                 </button>

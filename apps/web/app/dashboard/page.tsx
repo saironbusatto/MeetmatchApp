@@ -1,6 +1,7 @@
 "use client";
 
-import { useAuth } from "@/lib/auth";
+import { useUser } from "@clerk/nextjs";
+import { useApiToken } from "@/hooks/useApiToken";
 import { getApiBaseUrl } from "@/lib/api";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -21,38 +22,41 @@ interface EventItem {
 }
 
 export default function DashboardPage(): JSX.Element {
-  const { user, token } = useAuth();
+  const { user } = useUser();
+  const getToken = useApiToken();
   const [privateEvents, setPrivateEvents] = useState<EventItem[]>([]);
   const [publicEvents, setPublicEvents] = useState<EventItem[]>([]);
 
   useEffect(() => {
-    if (!token) return;
-    const headers = { Authorization: `Bearer ${token}` };
-    fetch(`${API}/private-events`, { headers })
-      .then((r) => r.json())
-      .then((data) => setPrivateEvents(
-        (data.data ?? []).map((item: any) => ({
-          id: item.event?.id ?? item.id,
-          title: item.event?.title ?? item.title ?? "Sem título",
-          type: "PRIVATE" as const,
-          dateWindowStart: item.settings?.dateWindowStart,
-          dateWindowEnd: item.settings?.dateWindowEnd,
-        }))
-      ))
-      .catch(() => null);
+    getToken().then((token) => {
+      if (!token) return;
+      const headers = { Authorization: `Bearer ${token}` };
+      fetch(`${API}/private-events`, { headers })
+        .then((r) => r.json())
+        .then((data) => setPrivateEvents(
+          (data.data ?? []).map((item: any) => ({
+            id: item.event?.id ?? item.id,
+            title: item.event?.title ?? item.title ?? "Sem título",
+            type: "PRIVATE" as const,
+            dateWindowStart: item.settings?.dateWindowStart,
+            dateWindowEnd: item.settings?.dateWindowEnd,
+          }))
+        ))
+        .catch(() => null);
 
-    fetch(`${API}/public-events`, { headers })
-      .then((r) => r.json())
-      .then((data) => setPublicEvents(
-        (data.data ?? []).map((item: any) => ({
-          id: item.event?.id ?? item.id,
-          title: item.event?.title ?? item.title ?? "Sem título",
-          type: "PUBLIC" as const,
-          eventDate: item.settings?.eventDate,
-        }))
-      ))
-      .catch(() => null);
-  }, [token]);
+      fetch(`${API}/public-events`, { headers })
+        .then((r) => r.json())
+        .then((data) => setPublicEvents(
+          (data.data ?? []).map((item: any) => ({
+            id: item.event?.id ?? item.id,
+            title: item.event?.title ?? item.title ?? "Sem título",
+            type: "PUBLIC" as const,
+            eventDate: item.settings?.eventDate,
+          }))
+        ))
+        .catch(() => null);
+    });
+  }, []);
 
   const allEvents: EventItem[] = [...privateEvents, ...publicEvents];
 
@@ -139,7 +143,7 @@ export default function DashboardPage(): JSX.Element {
     <main style={pageStyle}>
       <div style={headerStyle}>
         <div>
-          <p style={greetingStyle}>Buenas, {user?.name?.split(" ")[0] ?? "você"}</p>
+          <p style={greetingStyle}>Buenas, {user?.firstName ?? user?.username ?? "você"}</p>
           <h1 style={titleStyle}>Seus eventos</h1>
         </div>
         <Link href="/events/new">
