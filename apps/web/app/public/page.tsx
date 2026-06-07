@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiToken } from "@/hooks/useApiToken";
+import { useAuth } from "@/lib/auth";
 import { getApiBaseUrl } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { T } from "@/components/ui/tokens";
@@ -20,7 +20,7 @@ interface PublicEvent {
 }
 
 export default function PublicPage(): JSX.Element {
-  const getToken = useApiToken();
+  const { token } = useAuth();
   const [events, setEvents] = useState<PublicEvent[]>([]);
   const [registering, setRegistering] = useState<string | null>(null);
   const [registered, setRegistered] = useState<Set<string>>(new Set());
@@ -45,7 +45,7 @@ export default function PublicPage(): JSX.Element {
   }, []);
 
   async function register(eventId: string) {
-    const token = await getToken();
+    const token = token;
     if (!token) return;
     setRegistering(eventId);
     const res = await fetch(`${API}/public-events/${eventId}/register`, {
