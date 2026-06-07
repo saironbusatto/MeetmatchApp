@@ -133,6 +133,7 @@ export interface CreatePublicEventRequest {
   eventDate: string;
   eventTime?: string;
   capacity: number;
+  category?: string;
 }
 
 export interface ApiErrorResponse {

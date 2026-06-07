@@ -139,6 +139,7 @@ Evidência bruta: - raw/wiki-ingest/2026-05-17_11-52-24.md
 - Created: pretext/text-measurement.md (new topic)
 - Updated: index.md with pretext section
 
+
 ## [2026-05-20] ingest | Sprint plan Postgres/API migration + Alembic governance
 
 - Created: `docs/SPRINTS_POSTGRES_API_MIGRATION.md`
@@ -176,3 +177,39 @@ Evidência bruta: - raw/wiki-ingest/2026-05-17_11-52-24.md
   - `docs/*LOCAL*.md`
   - `docs/private/`
   - `wiki/private/`
+
+## [2026-05-19] ingest | Auditoria de segurança do Credenciais.md
+
+- Verificado conteúdo de `Credenciais.md` com foco em privacidade/chaves/tokens.
+- Confirmado que `Credenciais.md` está ignorado por `.gitignore` (linha 30).
+- Confirmado que não há histórico de commit (`--all`) para `Credenciais.md`, `*.key`, `*.key.pub` e `.env`.
+- Evidência: `raw/wiki-ingest/2026-05-19_00-47-07.md`
+
+## [2026-05-19] ingest | Checagem de servidor (disco + containers)
+
+- Acesso SSH validado com usuário `ubuntu`.
+- Verificado espaço em disco com `df -h` no host `farmei-prod`.
+- Verificados containers em execução com `docker ps`: 3 ativos.
+- Evidência: `raw/wiki-ingest/2026-05-19_00-48-20.md`
+
+## [2026-05-19] ingest | Build Android via EAS bloqueado por autenticação
+
+- `eas-cli` instalado localmente com sucesso.
+- Tentativa de login Expo falhou por credencial inválida.
+- Build Android não foi iniciado nesta etapa.
+- Evidência: `raw/wiki-ingest/2026-05-19_00-53-22.md`
+
+## [2026-05-19] ingest | Troubleshooting EAS Android build
+
+- Investigadas falhas em cadeia do build Android no EAS (prebuild, bundle e gradle).
+- Aplicadas correções em `apps/mobile`: simplificação de `metro.config.js` e adição de deps ausentes (`whatwg-fetch`, `expo-modules-core`, `@babel/runtime`, `react-native-css-interop`).
+- Build avançou até fase `RUN_GRADLEW`, falhando em `android/app/build.gradle` linha 14 com `Cannot invoke method getAbsolutePath() on null object` (resolução de `hermes-compiler`).
+- Evidência: `raw/wiki-ingest/2026-05-19_08-13-13.md`
+
+
+## [2026-05-21] ingest | Pull remoto com autostash
+
+- Executado `git pull --rebase --autostash` em `main`.
+- Fast-forward para `origin/main` aplicado com sucesso.
+- Reaplicação do autostash gerou conflitos; mudanças locais preservadas no stash.
+- Evidência: `raw/wiki-ingest/2026-05-21_13-27-26.md`

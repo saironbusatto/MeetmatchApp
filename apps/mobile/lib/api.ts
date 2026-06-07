@@ -100,24 +100,38 @@ export function createApiClient(options: ApiClientOptions = {}) {
       }) => request<{ device: { id: string } }>("POST", "/users/me/devices", body)
     },
     privateEvents: {
+      list: () =>
+        request<{ data: Array<{ event: Event; settings: unknown; participants: unknown[] }> }>(
+          "GET", "/private-events"
+        ),
       create: (body: CreatePrivateEventRequest) =>
         request<{ event: Event }>("POST", "/private-events", body),
-      get: (id: string) => request<{ event: Event }>("GET", `/private-events/${id}`),
+      get: (id: string) =>
+        request<{ event: Event; settings: unknown; participants: unknown[] }>("GET", `/private-events/${id}`),
+      invite: (id: string, body: { email: string }) =>
+        request<{ participant: unknown; inviteLink: string }>(
+          "POST", `/private-events/${id}/participants`, body
+        ),
+      submitAvailability: (id: string, body: { responses: Array<{ date: string; response: "YES" | "MAYBE" | "NO" }> }) =>
+        request<{ ok: boolean }>("POST", `/private-events/${id}/availability`, body),
       suggestion: (id: string) =>
         request<{ date: string; confidence: number; reasoning: string }>(
-          "GET",
-          `/private-events/${id}/suggestion`
+          "GET", `/private-events/${id}/suggestion`
         ),
       confirm: (id: string, date: string) =>
-        request<{ event: Event }>("POST", `/private-events/${id}/confirm`, { date })
+        request<{ event: Event }>("POST", `/private-events/${id}/confirm`, { date }),
     },
     publicEvents: {
+      list: (category?: string) => {
+        const qs = category ? `?category=${encodeURIComponent(category)}` : "";
+        return request<{ data: Array<{ event: Event; settings: unknown }> }>("GET", `/public-events${qs}`);
+      },
       create: (body: CreatePublicEventRequest) =>
         request<{ event: Event }>("POST", "/public-events", body),
-      list: () => request<{ data: Array<{ event: Event }> }>("GET", "/public-events"),
-      get: (id: string) => request<{ event: Event }>("GET", `/public-events/${id}`),
+      get: (id: string) =>
+        request<{ event: Event; settings: unknown; registrationCount: number }>("GET", `/public-events/${id}`),
       register: (id: string) =>
-        request<void>("POST", `/public-events/${id}/registrations`)
+        request<void>("POST", `/public-events/${id}/registrations`),
     },
     invites: {
       accept: (token: string) =>

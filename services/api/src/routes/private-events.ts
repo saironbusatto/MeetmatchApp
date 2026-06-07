@@ -61,6 +61,18 @@ function getOrCreateParticipantByToken(token: string) {
 
 export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: string } } }>()
   .use("*", requireAuth)
+  .get("/", (c) => {
+    const auth = c.get("auth");
+    const events = [...db.events.values()].filter(
+      (e) => e.type === "PRIVATE" && (e.ownerId === auth.userId || isParticipant(e.id, auth.userId))
+    );
+    const items = events.map((event) => ({
+      event,
+      settings: db.privateSettings.get(event.id),
+      participants: [...db.participants.values()].filter((p) => p.eventId === event.id),
+    }));
+    return c.json({ data: items }, 200);
+  })
   .post("/", zValidator("json", createSchema), (c) => {
     const auth = c.get("auth");
     const payload = c.req.valid("json");

@@ -246,3 +246,9 @@ Cached:    6 cached, 6 total
 - Task #33 concluída: persistência de user_devices em PostgreSQL via Drizzle.
 - Gerada migration SQL para devices; aplicação no banco depende de DATABASE_URL no ambiente.
 - Raw ingest evidence: raw/wiki-ingest/2026-05-17_15-33-11.md
+
+## 2026-05-19
+- Executada auditoria de segurança em `Credenciais.md` e arquivos sensíveis locais.
+- Validado que `Credenciais.md` está ignorado por `.gitignore` e sem commits no histórico local (`--all`).
+- Checado histórico local para `*.key`, `*.key.pub` e `.env` sem evidência de versionamento.
+- Raw ingest evidence: `raw/wiki-ingest/2026-05-19_00-47-07.md`

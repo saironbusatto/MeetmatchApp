@@ -1,96 +1,89 @@
-import { Link } from "expo-router";
-import { Pressable, SafeAreaView, ScrollView } from "react-native";
-import { EmptyState } from "~/components/StateCard";
-import { StampCard } from "~/components/StampCard";
-import { Text, View } from "~/components/Themed";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { ActivityIndicator, FlatList, SafeAreaView, Text, View } from "react-native";
+import { EventCard } from "~/components/ui/EventCard";
+import { FilterChips } from "~/components/ui/FilterChips";
+import { NewButton } from "~/components/ui/Button";
+import { T } from "~/components/ui/tokens";
 import { useSession } from "~/lib/store";
+import { usePrivateEvents } from "~/lib/queries";
+import type { Event } from "@farmei/types";
 
-export default function PrivateHome() {
+const FILTERS = ["Upcoming", "Waiting", "Past", "All"];
+
+function statusOf(event: Event): "locked" | "pending" {
+  return event.status === "CONFIRMED" ? "locked" : "pending";
+}
+
+function whenLabel(event: Event): string {
+  if (event.confirmedDate) return event.confirmedDate;
+  return "Waiting for responses";
+}
+
+export default function HomeTab() {
+  const router = useRouter();
   const user = useSession((s) => s.user);
-  const firstName = user?.name?.split(" ")[0] ?? "amigo";
+  const [filter, setFilter] = useState("Upcoming");
+  const firstName = user?.name?.split(" ")[0] ?? "você";
+  const { data, isLoading, error } = usePrivateEvents();
+
+  const events = data?.data ?? [];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#FAFAF7" }}>
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 96 }}>
-        <Text className="font-body text-sm text-ink-500">Buenas, {firstName}</Text>
-        <Text className="mt-1 font-display text-[40px] leading-[1.1] text-ink-900">
-          Your events
-        </Text>
-
-        <View className="mt-6 flex-row gap-2">
-          {["Upcoming", "Waiting", "Past", "All"].map((label, i) => (
-            <Pressable
-              key={label}
-              className={
-                i === 0
-                  ? "rounded-full bg-ink-900 px-4 py-2"
-                  : "rounded-full border border-ink-100 bg-ink-0 px-4 py-2"
-              }
-            >
-              <Text
-                className={
-                  i === 0
-                    ? "font-body text-xs text-ink-0"
-                    : "font-body text-xs text-ink-700"
-                }
-              >
-                {label}
-              </Text>
-            </Pressable>
-          ))}
+    <SafeAreaView style={{ flex: 1, backgroundColor: T.paper }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 16, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" }}>
+        <View>
+          <Text style={{ fontFamily: T.fontBodyMedium, fontSize: 13, color: T.ink500 }}>
+            Buenas, {firstName}
+          </Text>
+          <Text style={{ fontFamily: T.fontDisplay, fontSize: 38, lineHeight: 38, letterSpacing: -1, color: T.ink, marginTop: 4 }}>
+            Your events
+          </Text>
         </View>
+        <NewButton onPress={() => router.push("/events/new" as any)} />
+      </View>
 
-        <View className="mt-8 gap-4">
-          <StampCard>
-            <Text className="font-mono text-[11px] uppercase tracking-wider text-ink-500">
-              Ter · Jun 04 · 14:00
-            </Text>
-            <Text className="mt-2 font-display text-2xl text-ink-900">
-              Q3 planning lunch
-            </Text>
-            <View className="mt-3 self-start rounded-full bg-success-100 px-2 py-1">
-              <Text className="font-body text-[11px] font-semibold text-success-500">
-                locked in
-              </Text>
-            </View>
-          </StampCard>
+      <FilterChips options={FILTERS} active={filter} onChange={setFilter} />
 
-          <StampCard>
-            <Text className="font-mono text-[11px] uppercase tracking-wider text-ink-500">
-              Aguardando 3/6 respostas
-            </Text>
-            <Text className="mt-2 font-display text-2xl text-ink-900">
-              Aniversário do Diego
-            </Text>
-            <View className="mt-3 self-start rounded-full bg-warn-100 px-2 py-1">
-              <Text className="font-body text-[11px] font-semibold text-warn-500">
-                waiting
-              </Text>
-            </View>
-          </StampCard>
+      {isLoading ? (
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator color={T.vermillion} />
         </View>
-        <View className="mt-4">
-          <EmptyState
-            title="Sem novos conflitos por aqui"
-            description="Quando alguém mudar a disponibilidade, você vê os alertas nesta seção."
-          />
+      ) : error ? (
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32 }}>
+          <Text style={{ fontFamily: T.fontBody, fontSize: 14, color: T.ink500, textAlign: "center" }}>
+            Não foi possível carregar os eventos.
+          </Text>
         </View>
-      </ScrollView>
-
-      <Link href="/events/new" asChild>
-        <Pressable
-          accessibilityLabel="Criar novo evento"
-          className="absolute bottom-24 right-6 h-14 w-14 items-center justify-center rounded-full bg-ink-900"
-          style={{
-            shadowColor: "#0A0A0A",
-            shadowOffset: { width: 2, height: 2 },
-            shadowOpacity: 1,
-            shadowRadius: 0
-          }}
-        >
-          <Text className="font-display text-2xl text-ink-0">+</Text>
-        </Pressable>
-      </Link>
+      ) : events.length === 0 ? (
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32, gap: 12 }}>
+          <Text style={{ fontFamily: T.fontDisplay, fontSize: 24, color: T.ink, textAlign: "center" }}>
+            Nenhum evento ainda
+          </Text>
+          <Text style={{ fontFamily: T.fontBody, fontSize: 15, color: T.ink500, textAlign: "center" }}>
+            Cria o primeiro e convida a galera.
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={events}
+          keyExtractor={(item) => item.event.id}
+          contentContainerStyle={{ paddingHorizontal: 16, gap: 10, paddingBottom: 24 }}
+          renderItem={({ item }) => (
+            <EventCard
+              title={item.event.title}
+              when={whenLabel(item.event)}
+              status={statusOf(item.event)}
+              people={(item.participants as any[]).slice(0, 6).map((p: any, i: number) => ({
+                name: p.nameSnapshot ?? p.email ?? "Convidado",
+                isKey: p.role === "KEY_PERSON",
+                colorIdx: i,
+              }))}
+              onPress={() => router.push(`/events/${item.event.id}` as any)}
+            />
+          )}
+        />
+      )}
     </SafeAreaView>
   );
 }

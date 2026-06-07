@@ -1,95 +1,91 @@
-import { Link } from "expo-router";
-import { Pressable, SafeAreaView, ScrollView, View as RNView } from "react-native";
-import { StampCard } from "~/components/StampCard";
-import { Text, View } from "~/components/Themed";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { ActivityIndicator, FlatList, Pressable, SafeAreaView, Text, View } from "react-native";
+import { FilterChips } from "~/components/ui/FilterChips";
+import { PublicEventCard } from "~/components/ui/PublicEventCard";
+import { T } from "~/components/ui/tokens";
+import { usePublicEvents } from "~/lib/queries";
 
-const mockEvents = [
-  { id: "1", title: "Futebol na quadra de salão", when: "Sex · Jun 07 · 20:00", filled: 8, capacity: 12, category: "Sports" },
-  { id: "2", title: "Volley de praia", when: "Sáb · Jun 08 · 16:00", filled: 6, capacity: 10, category: "Sports" },
-  { id: "3", title: "Show de Rock — Caverna Pub", when: "Sex · Jun 14 · 22:00", filled: 24, capacity: 80, category: "Music" }
-];
+const FILTERS = ["All", "Sports", "Music", "Social", "Food"];
 
-function fillColor(ratio: number) {
-  if (ratio >= 0.8) return "#FF3B2E";
-  if (ratio >= 0.5) return "#E89E18";
-  return "#2EA862";
-}
+const CATEGORY_COLORS: Record<string, string> = {
+  Sports: T.vermillion,
+  Music: "#7A5BAA",
+  Social: "#2A6F7A",
+  Food: "#C99B00",
+  Art: "#2EA862",
+};
 
-export default function PublicFeed() {
+export default function PublicTab() {
+  const router = useRouter();
+  const [filter, setFilter] = useState("All");
+  const { data, isLoading, error } = usePublicEvents(filter === "All" ? undefined : filter);
+
+  const events = data?.data ?? [];
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#FAFAF7" }}>
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 96 }}>
-        <Text className="font-body text-sm text-ink-500">O que está rolando</Text>
-        <Text className="mt-1 font-display text-[38px] leading-[1.1] text-ink-900">
-          Perto de você
-        </Text>
-
-        <View className="mt-6 flex-row gap-2">
-          {["All", "Sports", "Music", "Social", "Food"].map((label, i) => (
-            <Pressable
-              accessibilityLabel={`Filtrar por ${label}`}
-              key={label}
-              className={
-                i === 0
-                  ? "rounded-full bg-ink-900 px-4 py-2"
-                  : "rounded-full border border-ink-100 bg-ink-0 px-4 py-2"
-              }
-            >
-              <Text
-                className={
-                  i === 0
-                    ? "font-body text-xs text-ink-0"
-                    : "font-body text-xs text-ink-700"
-                }
-              >
-                {label}
-              </Text>
-            </Pressable>
-          ))}
+    <SafeAreaView style={{ flex: 1, backgroundColor: T.paper }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 16, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" }}>
+        <View>
+          <Text style={{ fontFamily: T.fontBodyMedium, fontSize: 13, color: T.ink500 }}>
+            O que está rolando
+          </Text>
+          <Text style={{ fontFamily: T.fontDisplay, fontSize: 38, lineHeight: 38, letterSpacing: -1, color: T.ink, marginTop: 4 }}>
+            Perto de você
+          </Text>
         </View>
+        <Pressable
+          onPress={() => router.push("/events/new-public" as any)}
+          style={{ paddingVertical: 9, paddingHorizontal: 14, borderRadius: 999, backgroundColor: T.ink }}
+        >
+          <Text style={{ fontFamily: T.fontBodySemiBold, fontSize: 13, color: T.white }}>+ Host</Text>
+        </Pressable>
+      </View>
 
-        <View className="mt-6 gap-4">
-          {mockEvents.map((e) => {
-            const ratio = e.filled / e.capacity;
+      <FilterChips options={FILTERS} active={filter} onChange={setFilter} />
+
+      {isLoading ? (
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator color={T.vermillion} />
+        </View>
+      ) : error ? (
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32 }}>
+          <Text style={{ fontFamily: T.fontBody, fontSize: 14, color: T.ink500, textAlign: "center" }}>
+            Não foi possível carregar os eventos.
+          </Text>
+        </View>
+      ) : events.length === 0 ? (
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32, gap: 12 }}>
+          <Text style={{ fontFamily: T.fontDisplay, fontSize: 24, color: T.ink, textAlign: "center" }}>
+            Nada por aqui ainda
+          </Text>
+          <Text style={{ fontFamily: T.fontBody, fontSize: 15, color: T.ink500, textAlign: "center" }}>
+            Seja o primeiro a hospedar algo.
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={events}
+          keyExtractor={(item) => item.event.id}
+          contentContainerStyle={{ paddingHorizontal: 16, gap: 10, paddingBottom: 24 }}
+          renderItem={({ item }) => {
+            const settings = item.settings as any;
             return (
-              <Link key={e.id} href={`/public/${e.id}`} asChild>
-                <Pressable>
-                  <StampCard>
-                    <Text className="font-mono text-[11px] uppercase tracking-wider text-ink-500">
-                      {e.when}
-                    </Text>
-                    <Text className="mt-2 font-display text-2xl text-ink-900">
-                      {e.title}
-                    </Text>
-                    <View className="mt-3 flex-row items-center gap-3">
-                      <RNView
-                        style={{
-                          flex: 1,
-                          height: 6,
-                          backgroundColor: "#E8E6E0",
-                          borderRadius: 3,
-                          overflow: "hidden"
-                        }}
-                      >
-                        <RNView
-                          style={{
-                            width: `${Math.min(ratio * 100, 100)}%`,
-                            height: "100%",
-                            backgroundColor: fillColor(ratio)
-                          }}
-                        />
-                      </RNView>
-                      <Text className="font-mono text-xs text-ink-700">
-                        {e.filled}/{e.capacity}
-                      </Text>
-                    </View>
-                  </StampCard>
-                </Pressable>
-              </Link>
+              <PublicEventCard
+                title={item.event.title}
+                when={settings?.eventDate ?? ""}
+                location={item.event.locationText ?? ""}
+                category={settings?.category ?? "Social"}
+                categoryColor={CATEGORY_COLORS[settings?.category ?? "Social"] ?? T.ink500}
+                current={settings?.registrationCount ?? 0}
+                max={settings?.capacity ?? 100}
+                people={[]}
+                onPress={() => router.push(`/public/${item.event.id}` as any)}
+              />
             );
-          })}
-        </View>
-      </ScrollView>
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 }

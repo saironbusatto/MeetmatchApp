@@ -1,0 +1,51 @@
+export const T = {
+  vermillion: "#FF3B2E",
+  vermillionDark: "#E92518",
+  vermillionSoft: "#FFF1EE",
+  spark: "#FFD93D",
+  sparkSoft: "#FFF4BD",
+  ink: "#0A0A0A",
+  ink800: "#161618",
+  ink700: "#28272A",
+  ink600: "#3F3E3A",
+  ink500: "#5F5D57",
+  ink400: "#8C8A82",
+  ink300: "#B8B4A8",
+  ink200: "#D4D1C8",
+  ink100: "#E8E6E0",
+  ink50: "#F4F2EC",
+  paper: "#FAFAF7",
+  white: "#FFFFFF",
+  success: "#2EA862",
+  successSoft: "#D7F3E2",
+  warn: "#E89E18",
+  warnSoft: "#FFF0D6",
+
+  fontDisplay: "BricolageGrotesque-Bold",
+  fontDisplayRegular: "BricolageGrotesque-Regular",
+  fontBody: "Geist-Regular",
+  fontBodyMedium: "Geist-Medium",
+  fontBodySemiBold: "Geist-SemiBold",
+  fontMono: "JetBrainsMono-Regular",
+  fontMonoBold: "JetBrainsMono-Bold",
+
+  stamp: {
+    shadowColor: "#0A0A0A",
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 1 as const,
+    shadowRadius: 0,
+    elevation: 4,
+  },
+  stampAi: {
+    shadowColor: "#FF3B2E",
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 1 as const,
+    shadowRadius: 0,
+    elevation: 6,
+  },
+} as const;
+
+export const AV_COLORS = [
+  "#FF3B2E", "#2A6F7A", "#7A5BAA", "#C99B00",
+  "#2EA862", "#9D5C2C", "#3F3E3A",
+];

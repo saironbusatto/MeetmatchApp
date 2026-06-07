@@ -1,55 +1,61 @@
 import { Link } from "expo-router";
-import { Pressable, SafeAreaView } from "react-native";
-import { registerDeviceForPush } from "~/lib/push";
-import { Text, View } from "~/components/Themed";
+import { Pressable, SafeAreaView, View, Text } from "react-native";
+import { GhostButton, PrimaryButton } from "~/components/ui/Button";
+import { T } from "~/components/ui/tokens";
 
 export default function Onboarding() {
-  async function enableNotifications() {
-    await registerDeviceForPush().catch(() => undefined);
-  }
-
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#FAFAF7" }}>
-      <View className="flex-1 justify-between px-8 py-12">
-        <View className="h-40 w-40 self-end rounded-full bg-vermillion-500" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: T.paper }}>
+      <View style={{ flex: 1, paddingHorizontal: 28, paddingTop: 60, paddingBottom: 32, overflow: "hidden" }}>
+        {/* Decorative circles */}
+        <View style={{
+          position: "absolute", top: -40, right: -40,
+          width: 200, height: 200, borderRadius: 100,
+          backgroundColor: T.vermillion,
+        }} />
+        <View style={{
+          position: "absolute", top: 40, right: 30,
+          width: 28, height: 28, borderRadius: 14,
+          backgroundColor: T.spark,
+          borderWidth: 2, borderColor: T.ink,
+        }} />
 
-        <View>
-          <Text className="font-display text-[56px] leading-[1.05] text-ink-900">
-            Let's find a time that works.
-          </Text>
-          <Text className="mt-6 font-body text-base text-ink-500">
-            You pick the people and a window. The AI does the math so nobody has
-            to argue about Tuesday.
-          </Text>
-        </View>
+        <Text style={{
+          marginTop: 40,
+          fontFamily: T.fontBodySemiBold,
+          fontSize: 14, color: T.ink600,
+          letterSpacing: 1, textTransform: "uppercase",
+        }}>
+          👋 Hey
+        </Text>
 
-        <View className="gap-3">
+        <Text style={{
+          marginTop: 10,
+          fontFamily: T.fontDisplay,
+          fontSize: 56, lineHeight: 54,
+          letterSpacing: -2, color: T.ink,
+        }}>
+          {"Let's find\na time\nthat works."}
+        </Text>
+
+        <Text style={{
+          marginTop: 24,
+          fontFamily: T.fontBody,
+          fontSize: 17, lineHeight: 26,
+          color: T.ink600,
+        }}>
+          You pick the people and a window. The AI does the math so nobody has to argue about Tuesday.
+        </Text>
+
+        <View style={{ flex: 1 }} />
+
+        <View style={{ gap: 12 }}>
           <Link href="/(auth)/signup" asChild>
-            <Pressable
-              accessibilityLabel="Criar conta no Farmei"
-              className="items-center rounded-full border-2 border-ink-900 bg-vermillion-500 py-4"
-              style={{
-                shadowColor: "#0A0A0A",
-                shadowOffset: { width: 3, height: 3 },
-                shadowOpacity: 1,
-                shadowRadius: 0
-              }}
-            >
-              <Text className="font-body text-base font-semibold text-ink-0">
-                Get started — it's free
-              </Text>
-            </Pressable>
+            <PrimaryButton size="lg">Get started — it's free</PrimaryButton>
           </Link>
           <Link href="/(auth)/login" asChild>
-            <Pressable accessibilityLabel="Entrar com conta existente" className="items-center py-3">
-              <Text className="font-body text-base text-ink-500">
-                I already have an account
-              </Text>
-            </Pressable>
+            <GhostButton>I already have an account</GhostButton>
           </Link>
-          <Pressable accessibilityLabel="Ativar notificações" onPress={enableNotifications} className="items-center py-2">
-            <Text className="font-body text-sm text-ink-400">Enable notifications</Text>
-          </Pressable>
         </View>
       </View>
     </SafeAreaView>

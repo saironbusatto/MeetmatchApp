@@ -12,11 +12,16 @@
       "resizeMode": "contain",
       "backgroundColor": "#FAFAF7"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.farmei.mobile",
-      "associatedDomains": ["applinks:farmei.app"]
+      "associatedDomains": [
+        "applinks:farmei.app",
+        "applinks:farmei.app"
+      ]
     },
     "android": {
       "package": "app.farmei.mobile",
@@ -27,8 +32,32 @@
       "intentFilters": [
         {
           "action": "VIEW",
-          "data": [{ "scheme": "https", "host": "farmei.app", "pathPrefix": "/invite" }],
-          "category": ["BROWSABLE", "DEFAULT"],
+          "data": [
+            {
+              "scheme": "https",
+              "host": "farmei.app",
+              "pathPrefix": "/invite"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ],
+          "autoVerify": true
+        },
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "farmei.app",
+              "pathPrefix": "/invite"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ],
           "autoVerify": true
         }
       ]
@@ -54,7 +83,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/your-project-id",
+      "url": "https://u.expo.dev/b36fe064-2a03-4ae7-9703-7bd44a36cb80",
       "enabled": true
     },
     "experiments": {
@@ -62,9 +91,11 @@
     },
     "extra": {
       "apiUrl": "${EXPO_PUBLIC_API_URL}",
-      "supabaseUrl": "${EXPO_PUBLIC_SUPABASE_URL}",
-      "supabaseAnonKey": "${EXPO_PUBLIC_SUPABASE_ANON_KEY}",
-      "featureMaps": false
+      "featureMaps": false,
+      "router": {},
+      "eas": {
+        "projectId": "b36fe064-2a03-4ae7-9703-7bd44a36cb80"
+      }
     }
   }
 }

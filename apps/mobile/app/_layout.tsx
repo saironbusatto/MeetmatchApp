@@ -8,7 +8,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useSession } from "~/lib/store";
-import { getSupabase } from "~/lib/auth";
+import { hydrateSession } from "~/lib/auth";
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
@@ -46,40 +46,14 @@ export default function RootLayout() {
   }, [router]);
 
   useEffect(() => {
-    const supabase = getSupabase();
     setHydrating(true);
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session?.user) {
-        const u = data.session.user;
-        setUser({
-          id: u.id,
-          name: (u.user_metadata?.name as string) ?? u.email ?? "",
-          email: u.email ?? "",
-          avatarUrl: null,
-          createdAt: u.created_at,
-          updatedAt: u.updated_at ?? u.created_at
-        });
-      }
+    hydrateSession().then((user) => {
+      setUser(user
+        ? { ...user, avatarUrl: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+        : null
+      );
       setHydrating(false);
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        const u = session.user;
-        setUser({
-          id: u.id,
-          name: (u.user_metadata?.name as string) ?? u.email ?? "",
-          email: u.email ?? "",
-          avatarUrl: null,
-          createdAt: u.created_at,
-          updatedAt: u.updated_at ?? u.created_at
-        });
-      } else {
-        setUser(null);
-      }
-    });
-    return () => {
-      sub.subscription.unsubscribe();
-    };
   }, [setHydrating, setUser]);
 
   if (!fontsLoaded) return null;

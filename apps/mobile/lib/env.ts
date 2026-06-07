@@ -2,8 +2,6 @@ import Constants from "expo-constants";
 
 type Extra = {
   apiUrl?: string;
-  supabaseUrl?: string;
-  supabaseAnonKey?: string;
   featureMaps?: boolean;
 };
 
@@ -22,13 +20,7 @@ function readEnv(name: string): string | undefined {
 
 function required(name: string, devFallback?: string): string {
   const extraValue = pickExtra(
-    name === "EXPO_PUBLIC_API_URL"
-      ? extra.apiUrl
-      : name === "EXPO_PUBLIC_SUPABASE_URL"
-        ? extra.supabaseUrl
-        : name === "EXPO_PUBLIC_SUPABASE_ANON_KEY"
-          ? extra.supabaseAnonKey
-          : undefined
+    name === "EXPO_PUBLIC_API_URL" ? extra.apiUrl : undefined
   );
 
   const value = extraValue ?? readEnv(name);
@@ -36,12 +28,10 @@ function required(name: string, devFallback?: string): string {
 
   if (__DEV__ && devFallback) return devFallback;
 
-  throw new Error(`Missing required env var: ${name} (set EXPO_PUBLIC_${name.replace(/^EXPO_PUBLIC_/, "")} or app.json extra)`);
+  throw new Error(`Missing required env var: ${name}`);
 }
 
 export const env = {
   apiUrl: required("EXPO_PUBLIC_API_URL", "http://localhost:3001/api/v1"),
-  supabaseUrl: required("EXPO_PUBLIC_SUPABASE_URL"),
-  supabaseAnonKey: required("EXPO_PUBLIC_SUPABASE_ANON_KEY"),
   featureMaps: extra.featureMaps ?? false
 } as const;
