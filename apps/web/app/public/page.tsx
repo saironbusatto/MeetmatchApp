@@ -26,26 +26,23 @@ export default function PublicPage(): JSX.Element {
   const [registered, setRegistered] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    getToken().then((token) => {
-      if (!token) return;
-      fetch(`${API}/public-events`, { headers: { Authorization: `Bearer ${token}` } })
-        .then((r) => r.json())
-        .then((data) => {
-          const mapped = (data.data ?? []).map((item: any): PublicEvent => ({
-            id: item.event.id,
-            title: item.event.title ?? "",
-            description: item.event.description,
-            eventDate: item.settings?.eventDate,
-            maxCapacity: item.settings?.maxCapacity,
-            currentCount: item.settings?.currentCount,
-          }));
-          setEvents(mapped);
-        });
-    });
-  }, []);
+    if (!token) return;
+    fetch(`${API}/public-events`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((data) => {
+        const mapped = (data.data ?? []).map((item: any): PublicEvent => ({
+          id: item.event.id,
+          title: item.event.title ?? "",
+          description: item.event.description,
+          eventDate: item.settings?.eventDate,
+          maxCapacity: item.settings?.maxCapacity,
+          currentCount: item.settings?.currentCount,
+        }));
+        setEvents(mapped);
+      });
+  }, [token]);
 
   async function register(eventId: string) {
-    const token = token;
     if (!token) return;
     setRegistering(eventId);
     const res = await fetch(`${API}/public-events/${eventId}/register`, {

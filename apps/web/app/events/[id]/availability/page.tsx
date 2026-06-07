@@ -46,21 +46,18 @@ export default function AvailabilityPage({ params }: { params: Promise<{ id: str
   }, [params]);
 
   useEffect(() => {
-    if (!id) return;
-    getToken().then((token) => {
-      if (!token) return;
-      fetch(`${API}/private-events/${id}`, { headers: { Authorization: `Bearer ${token}` } })
-        .then((r) => r.json())
-        .then((data) => {
-          const s: string = data.event?.settings?.dateWindowStart ?? data.settings?.dateWindowStart ?? "";
-          const e: string = data.event?.settings?.dateWindowEnd ?? data.settings?.dateWindowEnd ?? "";
-          if (s && e) {
-            setDays(buildDayGrid(s, e).map((d) => ({ date: d, response: "MAYBE" })));
-          }
-        })
-        .catch(() => null);
-    });
-  }, [id]);
+    if (!token || !id) return;
+    fetch(`${API}/private-events/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((data) => {
+        const s: string = data.event?.settings?.dateWindowStart ?? data.settings?.dateWindowStart ?? "";
+        const e: string = data.event?.settings?.dateWindowEnd ?? data.settings?.dateWindowEnd ?? "";
+        if (s && e) {
+          setDays(buildDayGrid(s, e).map((d) => ({ date: d, response: "MAYBE" })));
+        }
+      })
+      .catch(() => null);
+  }, [token, id]);
 
   const toggle = useCallback((date: string, current: AvailResponse) => {
     const order: AvailResponse[] = ["YES", "MAYBE", "NO"];
@@ -69,7 +66,6 @@ export default function AvailabilityPage({ params }: { params: Promise<{ id: str
   }, []);
 
   async function save() {
-    const token = token;
     if (!token || !id) return;
     setSaving(true);
     await fetch(`${API}/private-events/${id}/availability`, {

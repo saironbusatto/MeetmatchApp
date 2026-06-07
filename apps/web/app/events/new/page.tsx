@@ -24,7 +24,6 @@ export default function NewEventPage(): JSX.Element {
   const [loading, setLoading] = useState(false);
 
   async function create() {
-    const token = token;
     if (!token) return;
     setLoading(true);
 
