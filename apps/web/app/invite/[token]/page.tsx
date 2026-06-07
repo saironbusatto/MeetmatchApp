@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type JSX } from "react";
 import { getApiBaseUrl } from "@/lib/api";
 
 const API = getApiBaseUrl();
 
-export default function InvitePage({ params }: { params: Promise<{ token: string }> }) {
+export default function InvitePage({ params }: { params: Promise<{ token: string }> }): JSX.Element {
   const [message, setMessage] = useState("");
 
   async function accept() {

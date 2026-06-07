@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, type JSX } from 'react'
 import { usePretext, useContainerWidth } from '@/hooks/usePretext'
 
 interface ExpandableDescriptionProps {
@@ -15,7 +15,7 @@ export function ExpandableDescription({
   maxLines = 3,
   font = '400 14px Geist, system-ui, sans-serif',
   lineHeight = 21,
-}: ExpandableDescriptionProps) {
+}: ExpandableDescriptionProps): JSX.Element {
   const [expanded, setExpanded] = useState(false)
   const [containerRef, width] = useContainerWidth<HTMLDivElement>()
 

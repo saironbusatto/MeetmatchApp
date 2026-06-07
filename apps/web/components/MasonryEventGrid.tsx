@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useMemo } from 'react'
+import { useRef, useMemo, type JSX } from 'react'
 import { usePretext, useContainerWidth } from '@/hooks/usePretext'
 
 interface EventItem {
@@ -42,7 +42,7 @@ function CardWithHeight({
 }: {
   item: EventItem
   width: number
-}) {
+}): JSX.Element {
   const height = useCardHeight(item, width)
   return (
     <article className="card" style={{ height }}>
@@ -57,7 +57,7 @@ export function MasonryEventGrid({
   events,
   columns = 2,
   gap = 16,
-}: MasonryEventGridProps) {
+}: MasonryEventGridProps): JSX.Element {
   const [containerRef, containerWidth] = useContainerWidth<HTMLDivElement>()
   const colWidth = (containerWidth - gap * (columns - 1)) / columns
 

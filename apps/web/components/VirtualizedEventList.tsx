@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, type JSX } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { usePretext } from '@/hooks/usePretext'
 
@@ -18,7 +18,7 @@ interface VirtualizedEventListProps {
   estimatedItemHeight?: number
 }
 
-function EventCardHeight({ item, width }: { item: EventItem; width: number }) {
+function EventCardHeight({ item, width }: { item: EventItem; width: number }): number {
   const title = usePretext({
     text: item.title ?? '',
     width,
@@ -40,7 +40,7 @@ function EventCardHeight({ item, width }: { item: EventItem; width: number }) {
 export function VirtualizedEventList({
   events,
   estimatedItemHeight = 120,
-}: VirtualizedEventListProps) {
+}: VirtualizedEventListProps): JSX.Element {
   const parentRef = useRef<HTMLDivElement>(null)
 
   const virtualizer = useVirtualizer({

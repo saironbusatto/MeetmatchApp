@@ -3,11 +3,11 @@
 import { useAuth } from "@/lib/auth";
 import { getApiBaseUrl } from "@/lib/api";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type JSX } from "react";
 
 const API = getApiBaseUrl();
 
-export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }): JSX.Element {
   const { token } = useAuth();
   const [id, setId] = useState("");
   const [event, setEvent] = useState<any>(null);

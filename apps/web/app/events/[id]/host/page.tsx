@@ -2,11 +2,11 @@
 
 import { useAuth } from "@/lib/auth";
 import { getApiBaseUrl } from "@/lib/api";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type JSX } from "react";
 
 const API = getApiBaseUrl();
 
-export default function HostPage({ params }: { params: Promise<{ id: string }> }) {
+export default function HostPage({ params }: { params: Promise<{ id: string }> }): JSX.Element {
   const { token } = useAuth();
   const [id, setId] = useState("");
   const [registrations, setRegistrations] = useState<any[]>([]);

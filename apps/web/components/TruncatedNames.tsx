@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, type JSX } from 'react'
 import { usePretext, useContainerWidth } from '@/hooks/usePretext'
 
 interface TruncatedNamesProps {
@@ -13,7 +13,7 @@ export function TruncatedNames({
   names,
   font = '400 14px Geist, system-ui, sans-serif',
   separator = ', ',
-}: TruncatedNamesProps) {
+}: TruncatedNamesProps): JSX.Element {
   const [containerRef, width] = useContainerWidth<HTMLSpanElement>()
 
   const result = useMemo(() => {
