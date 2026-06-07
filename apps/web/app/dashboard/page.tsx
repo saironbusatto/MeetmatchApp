@@ -22,7 +22,7 @@ interface EventItem {
 }
 
 export default function DashboardPage(): JSX.Element {
-  const { user } = useUser();
+  
   const { token } = useAuth();
   const [privateEvents, setPrivateEvents] = useState<EventItem[]>([]);
   const [publicEvents, setPublicEvents] = useState<EventItem[]>([]);
