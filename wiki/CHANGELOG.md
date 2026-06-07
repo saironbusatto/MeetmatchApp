@@ -6,12 +6,19 @@
 - Mobile: todas as telas auth + tabs reescritas com design Farmei real.
 - Mobile: Sprint A — tabs conectadas à API real via react-query (private-events, public-events).
 - Mobile: Sprint B — fluxo privado completo: invite → availability → AI result → confirmed.
+- Mobile: Sprint C — public event detail com API real (join, share) + host dashboard (check-in, export CSV).
+- Mobile: Sprint D — events/new.tsx reescrito com EventTypeCard (ink+spark para privado, stamp para público).
 - API: `GET /private-events` adicionado (lista eventos do usuário autenticado).
+- API: `GET /public-events/:id/registrations` adicionado (para host dashboard).
 - API: deployed no Oracle via docker compose build.
-- Web: design Farmei portado para todas as páginas (login, signup, dashboard, new event, public feed) via `components/ui/` com inline styles.
+- Web: design Farmei portado — home, login, signup, dashboard, new event, public feed, availability, host panel.
+- Web: Dockerfile corrigido para `cd apps/web && pnpm exec next build` (bypass turbo).
+- Web: contaminação Clerk removida de layout, Nav, login, signup, dashboard, public, availability, sso-callback deletado.
+- Web: validado via Playwright — home, login, dashboard funcionais com design correto no Oracle.
 - CORS Oracle: adicionado localhost:8081 e localhost:19006 ao CORS_ORIGIN.
 - Types: `category` adicionado ao `CreatePublicEventRequest`.
-- Wiki: mobile-architecture, architectural-decisions, component-patterns, backlog atualizados.
+- Git: push `origin/main` — 12 commits, branch limpa.
+- Wiki: log, CHANGELOG, mobile-architecture, architectural-decisions (ADR-014), component-patterns, backlog atualizados.
 
 ## 2026-05-16
 - Bootstrapped repository structure into apps/packages/services layout.

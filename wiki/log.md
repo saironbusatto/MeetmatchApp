@@ -1,5 +1,53 @@
 # Wiki Log
 
+## [2026-06-07] ingest | Deploy web Oracle + validação browser + git push final
+
+### O que foi feito
+
+**Deploy web no Oracle:**
+- Dockerfile corrigido: trocado `pnpm turbo run build --filter=@farmei/web` por `cd apps/web && pnpm exec next build` — turbo falhava por outputs não configurados nos packages utilitários.
+- Web buildou com sucesso e subiu em `http://137.131.255.5:3000`.
+
+**Contaminação Clerk detectada e removida (múltiplos rounds):**
+- Um processo externo (agente background + linter) introduziu `@clerk/nextjs`, `ClerkProvider`, `useSignIn`, `useSignUp`, `useUser`, `useClerk`, `useApiToken`, `clerkMiddleware` e `verifyClerkToken` em:
+  - `apps/web/app/layout.tsx`, `login/page.tsx`, `signup/page.tsx`, `dashboard/page.tsx`, `public/page.tsx`, `events/new/page.tsx`, `events/[id]/availability/page.tsx`
+  - `apps/web/components/ui/Nav.tsx`
+  - `apps/web/app/sso-callback/page.tsx` (criado, deletado)
+  - `apps/web/hooks/useApiToken.ts` (criado, deletado)
+  - `services/api/src/middleware/auth.ts` e `utils/jwt.ts`
+  - `apps/mobile/app/_layout.tsx`, `login.tsx`, `signup.tsx`
+- Todos restaurados para JWT Oracle (`useAuth` de `@/lib/auth`, `AuthProvider`, `verifyAccessToken`).
+- Arquivos Clerk-only deletados definitivamente via `git rm`.
+- `dashboard/page.tsx` tinha `getToken().then(...)` com brace desbalanceado — corrigido para `if (token) {`.
+- `@clerk/nextjs` removido do `apps/web/package.json`.
+
+**Remote (GitHub) tinha commits Clerk divergindo:**
+- Histórico do remote tinha 4 commits Clerk (`bdf27b5`, `5f8e364`, `dc5a983`, `ad7e891`) que divergiam após `4660fbd`.
+- Push resolvido como fast-forward (nossos commits são descendentes dos Clerk via pull anterior).
+
+**Validação browser com Playwright:**
+- Screenshots capturados de web e mobile antes e depois do deploy.
+- Mobile onboarding ✅ círculo vermillon, ponto spark, "Let's find a time that works." 56px Bricolage.
+- Mobile login ✅ "Buenas de novo.", campos uppercase, botão stamp vermelho.
+- Mobile home tabs ✅ "Buenas, Sairon" / filter chips / loading spinner vermillion.
+- Web home ✅ headline "Let's find a time that works." em Bricolage grande, navbar Farmei• dot, botão "Criar conta" vermelho stamp, 3 feature cards.
+- Web login ✅ "Bem-vindo de volta.", E-MAIL/SENHA uppercase, botão vermelho, link vermelho "Criar conta".
+- Web dashboard ✅ "BUENAS, SAIRON" vermillion, "Seus eventos", "+ Novo evento" stamp, empty state.
+
+**Git push final:**
+- Branch `main` — commit `9f9a214` — push `origin/main` ✅.
+- Total commits desta sessão: 12 commits.
+
+### ADR adicionado
+- ADR-014: Remoção do cliente Supabase/Clerk do mobile — ver `architectural-decisions.md`.
+
+### Docs atualizados
+- `wiki/log.md` esta entrada + entrada Sprint C+D anterior.
+- `wiki/CHANGELOG.md` entrada 2026-06-07 expandida.
+- `wiki/backlog/mvp-backlog.md` — M1–M4 mobile concluídos.
+- `wiki/architecture/mobile-architecture.md` — auth section e estrutura de pastas atualizadas.
+- `wiki/design-system/component-patterns.md` — inventário real de componentes implementados.
+
 ## [2026-06-07] ingest | Sprint A+B mobile + design system portado + web redesign
 
 ### O que foi feito nesta sessão
