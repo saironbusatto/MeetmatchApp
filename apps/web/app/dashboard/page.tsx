@@ -28,7 +28,7 @@ export default function DashboardPage(): JSX.Element {
   const [publicEvents, setPublicEvents] = useState<EventItem[]>([]);
 
   useEffect(() => {
-    getToken().then((token) => {
+    if (token) {
       if (!token) return;
       const headers = { Authorization: `Bearer ${token}` };
       fetch(`${API}/private-events`, { headers })
