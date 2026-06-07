@@ -59,12 +59,7 @@ export default function Signup() {
                 secureTextEntry={f.secure}
                 autoCapitalize="none"
                 keyboardType={f.keyboard}
-                style={{
-                  fontFamily: T.fontBody, fontSize: 16, color: T.ink,
-                  paddingVertical: 14, paddingHorizontal: 16,
-                  borderWidth: 1.5, borderColor: T.ink100,
-                  borderRadius: 14, backgroundColor: T.white,
-                }}
+                style={{ fontFamily: T.fontBody, fontSize: 16, color: T.ink, paddingVertical: 14, paddingHorizontal: 16, borderWidth: 1.5, borderColor: T.ink100, borderRadius: 14, backgroundColor: T.white }}
               />
             </View>
           ))}

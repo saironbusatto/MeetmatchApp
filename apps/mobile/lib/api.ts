@@ -132,6 +132,8 @@ export function createApiClient(options: ApiClientOptions = {}) {
         request<{ event: Event; settings: unknown; registrationCount: number }>("GET", `/public-events/${id}`),
       register: (id: string) =>
         request<void>("POST", `/public-events/${id}/registrations`),
+      getRegistrations: (id: string) =>
+        request<{ registrations: unknown[] }>("GET", `/public-events/${id}/registrations`),
     },
     invites: {
       accept: (token: string) =>

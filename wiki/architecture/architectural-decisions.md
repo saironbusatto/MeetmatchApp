@@ -31,8 +31,9 @@ Registro compilado dos ADRs do Farmei. Cada decisão inclui o raciocínio e o qu
 | Decisão | Regra |
 |---------|-------|
 | ADR-008 | Todo código novo usa "Farmei". CSS legado (.vmt-*) mantido como prefixo temporário. Migração controlada em tarefa separada. |
-| ADR-012 | Migração operacional Supabase → Oracle como fonte única de verdade | Elimina dualidade de auth/dados e reduz falhas de integração em produção. |
-| ADR-013 | SQLAlchemy + Alembic em trilho paralelo ao Drizzle | Permite governança de migração (heads/current/sql offline) sem interromper o deploy atual. |
+| ADR-012 | ✅ **Concluído 2026-06-07** — Migração operacional Supabase → Oracle como fonte única de verdade. API usa JWT próprio, PostgreSQL no Oracle. |
+| ADR-013 | SQLAlchemy + Alembic em trilho paralelo ao Drizzle | Permite governança de migração sem interromper o deploy atual. |
+| ADR-014 | **Mobile: remoção do cliente Supabase** — `@supabase/supabase-js` removido do `apps/mobile`. Auth passa por `lib/auth.ts` (fetch direto na API Oracle). Razão: API já não aceita tokens Supabase desde ADR-012; manter o SDK criava dependência desnecessária e erros de env em produção. Fallback `localStorage` para `expo start --web`. |
 
 ## Pontos de evolução documentados
 

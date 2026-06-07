@@ -5,7 +5,34 @@
 
 ## Overview
 
-Síntese dos padrões de componentes do Farmei derivados do design system e dos UI kits. Todos devem ser implementados com shadcn/ui como base técnica (acessibilidade) e Tailwind + tokens Farmei como camada visual — nenhum componente deve parecer shadcn padrão na UI final.
+Síntese dos padrões de componentes do Farmei derivados do design system e dos UI kits.
+
+**Status de implementação (2026-06-07):**
+- **Mobile (`apps/mobile/components/ui/`):** implementado com inline styles React Native + `tokens.ts`. Sem shadcn/ui (não existe no RN).
+- **Web (`apps/web/components/ui/`):** implementado com inline styles React + `tokens.ts`. Sem Tailwind (não configurado no web app).
+
+Ambas as plataformas compartilham os mesmos valores de tokens (cores, fontes, stamp shadow) definidos diretamente como constantes TypeScript em `tokens.ts` de cada plataforma — derivados de `colors_and_type.css`.
+
+## Inventário de componentes implementados
+
+### Mobile (`apps/mobile/components/ui/`)
+
+| Componente | Arquivo | O que cobre |
+|---|---|---|
+| Tokens | `tokens.ts` | Toda a paleta, fontes, stamp/stampAi como objeto TS |
+| PrimaryButton | `Button.tsx` | Vermillion + stamp shadow, tamanhos sm/md/lg |
+| SecondaryButton | `Button.tsx` | White + ink border, sem stamp |
+| AIButton | `Button.tsx` | Ink bg + spark yellow text + stamp vermillion |
+| GhostButton | `Button.tsx` | Sem background, ação terciária |
+| NewButton | `Button.tsx` | Pill ink, "+" para criar evento |
+| Avatar | `Avatar.tsx` | Iniciais coloridas, key person indicator (dot vermillion) |
+| AvatarStack | `Avatar.tsx` | Overlap com margem negativa, overflow +N |
+| AppHeader | `AppHeader.tsx` | Back button circular, título centralizado, slot de ação |
+| FilterChips | `FilterChips.tsx` | ScrollView horizontal, active = ink bg |
+| EventCard | `EventCard.tsx` | Evento privado: badge locked/waiting, AvatarStack |
+| PublicEventCard | `PublicEventCard.tsx` | Evento público: occupancy bar colorida, badge de categoria |
+| Field | `Field.tsx` | Input com label uppercase, border ink100 |
+| Sparkle | `Sparkle.tsx` | SVG via react-native-svg, cor configurável |
 
 ## Botões
 

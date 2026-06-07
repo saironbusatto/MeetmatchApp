@@ -1,53 +1,90 @@
 import { Link, Stack } from "expo-router";
-import { Pressable, SafeAreaView } from "react-native";
-import { StampCard } from "~/components/StampCard";
-import { Text, View } from "~/components/Themed";
+import { SafeAreaView, Text, View } from "react-native";
+import { AppHeader } from "~/components/ui/AppHeader";
+import { T } from "~/components/ui/tokens";
+import { Sparkle } from "~/components/ui/Sparkle";
+
+interface EventTypeCardProps {
+  href: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  isAi?: boolean;
+}
+
+function EventTypeCard({ href, eyebrow, title, description, isAi }: EventTypeCardProps) {
+  return (
+    <Link href={href as any} asChild>
+      <View
+        style={{
+          backgroundColor: isAi ? T.ink : T.white,
+          borderWidth: isAi ? 2 : 1,
+          borderColor: T.ink,
+          borderRadius: 20,
+          padding: 22,
+          gap: 10,
+          ...(isAi ? T.stampAi : T.stamp),
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          {isAi && <Sparkle size={14} color={T.spark} />}
+          <Text style={{
+            fontFamily: T.fontBodySemiBold,
+            fontSize: 11,
+            letterSpacing: 1,
+            textTransform: "uppercase",
+            color: isAi ? T.spark : T.ink500,
+          }}>
+            {eyebrow}
+          </Text>
+        </View>
+        <Text style={{
+          fontFamily: T.fontDisplay,
+          fontSize: 24,
+          letterSpacing: -0.5,
+          color: isAi ? T.white : T.ink,
+          lineHeight: 28,
+        }}>
+          {title}
+        </Text>
+        <Text style={{
+          fontFamily: T.fontBody,
+          fontSize: 14,
+          color: isAi ? T.ink300 : T.ink500,
+          lineHeight: 20,
+        }}>
+          {description}
+        </Text>
+      </View>
+    </Link>
+  );
+}
 
 export default function NewEventPicker() {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#FAFAF7" }}>
-      <Stack.Screen options={{ title: "Novo evento", headerShown: true }} />
-      <View className="flex-1 px-6 pt-6">
-        <Text className="font-display text-3xl text-ink-900">
+    <SafeAreaView style={{ flex: 1, backgroundColor: T.paper }}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <AppHeader title="Novo evento" />
+
+      <View style={{ flex: 1, padding: 20, gap: 14, justifyContent: "center" }}>
+        <Text style={{ fontFamily: T.fontDisplay, fontSize: 32, letterSpacing: -1, color: T.ink, marginBottom: 8 }}>
           Que tipo de evento?
         </Text>
-        <Text className="mt-2 font-body text-base text-ink-500">
-          Privado escolhe a data com IA. Público é data fixa com inscrição.
-        </Text>
 
-        <View className="mt-8 gap-4">
-          <Link href="/events/new-private" asChild>
-            <Pressable>
-              <StampCard>
-                <Text className="font-body text-[11px] uppercase tracking-wider text-ink-500">
-                  privado · com IA
-                </Text>
-                <Text className="mt-2 font-display text-xl text-ink-900">
-                  Agendar com a galera
-                </Text>
-                <Text className="mt-2 font-body text-sm text-ink-500">
-                  Janela de datas + key person → IA escolhe.
-                </Text>
-              </StampCard>
-            </Pressable>
-          </Link>
+        <EventTypeCard
+          href="/events/new-private"
+          eyebrow="privado · com IA"
+          title="Agendar com a galera"
+          description="Você define uma janela e a IA escolhe a melhor data cruzando a disponibilidade de todo mundo."
+          isAi
+        />
 
-          <Link href="/events/new-public" asChild>
-            <Pressable>
-              <StampCard>
-                <Text className="font-body text-[11px] uppercase tracking-wider text-ink-500">
-                  público · sem IA
-                </Text>
-                <Text className="mt-2 font-display text-xl text-ink-900">
-                  Abrir vagas para qualquer pessoa
-                </Text>
-                <Text className="mt-2 font-body text-sm text-ink-500">
-                  Data e local fixos, lotação máxima.
-                </Text>
-              </StampCard>
-            </Pressable>
-          </Link>
-        </View>
+        <EventTypeCard
+          href="/events/new-public"
+          eyebrow="público · data fixa"
+          title="Abrir vagas"
+          description="Data e local fixos, lotação máxima. Qualquer pessoa pode se inscrever."
+        />
       </View>
     </SafeAreaView>
   );

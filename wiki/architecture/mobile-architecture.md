@@ -27,22 +27,47 @@ O app mobile (`apps/mobile`) é um app Expo (React Native + Expo Router v3 + Typ
 ```
 apps/mobile/
 ├── app/
-│   ├── _layout.tsx                 # Fonts + providers + session bootstrap
+│   ├── _layout.tsx                 # Fonts + providers + hydrateSession()
 │   ├── index.tsx                   # Redirect (auth | tabs)
-│   ├── (auth)/                     # Onboarding, login, signup
-│   ├── (tabs)/                     # Home (privado) | Public | Profile
+│   ├── (auth)/                     # onboarding, login, signup
+│   ├── (tabs)/                     # index (privado) | public | profile
 │   ├── events/
 │   │   ├── new.tsx                 # Selector Privado | Público
-│   │   ├── new-private.tsx
-│   │   ├── new-public.tsx
-│   │   └── [id]/                   # detail, availability, result, confirmed, host
-│   ├── public/[id].tsx             # Detalhe público
+│   │   ├── new-private.tsx         # Formulário com POST /private-events
+│   │   ├── new-public.tsx          # Formulário com POST /public-events
+│   │   └── [id]/
+│   │       ├── index.tsx           # Detalhe + ações (convidar | disponibilidade)
+│   │       ├── invite.tsx          # Convidar por email → POST /participants
+│   │       ├── availability.tsx    # Grid yes/maybe/no → POST /availability
+│   │       ├── result.tsx          # AI card spark + confirm → POST /confirm
+│   │       ├── confirmed.tsx       # Locked-in screen
+│   │       └── host.tsx            # Painel do host (check-in)
+│   ├── public/[id].tsx             # Detalhe público + inscrição
 │   ├── invite/[token].tsx          # Deeplink de convite
 │   └── +not-found.tsx
-├── components/                     # Themed, StampCard…
-├── lib/                            # api, auth, env, push, store
+├── components/
+│   ├── ui/                         # Design system Farmei implementado (2026-06-07)
+│   │   ├── tokens.ts               # Paleta, fontes, stamp shadow como constantes TS
+│   │   ├── Button.tsx              # PrimaryButton, SecondaryButton, AIButton, GhostButton, NewButton
+│   │   ├── Avatar.tsx              # Avatar (iniciais coloridas, key indicator) + AvatarStack
+│   │   ├── AppHeader.tsx           # Header com back button circular
+│   │   ├── FilterChips.tsx         # Chips horizontais scrolláveis
+│   │   ├── EventCard.tsx           # Card evento privado (badge locked/waiting + AvatarStack)
+│   │   ├── PublicEventCard.tsx     # Card evento público (occupancy bar colorida)
+│   │   ├── Field.tsx               # Input com label uppercase
+│   │   └── Sparkle.tsx             # SVG spark (react-native-svg)
+│   ├── StampCard.tsx               # Card com stamp shadow (legado, ainda em uso em alguns flows)
+│   └── Themed.tsx                  # Wrappers Text/View (legado)
+├── lib/
+│   ├── api.ts                      # createApiClient() com todos os endpoints
+│   ├── auth.ts                     # signIn/signUp/signOut/hydrateSession/getAccessToken
+│   ├── env.ts                      # EXPO_PUBLIC_API_URL apenas (sem Supabase)
+│   ├── push.ts                     # expo-notifications + registerDevice
+│   ├── queries.ts                  # React Query hooks (usePrivateEvents, usePublicEvents, etc.)
+│   ├── store.ts                    # Zustand useSession
+│   └── useApi.ts                   # Hook que instancia createApiClient com getAccessToken
 ├── assets/                         # fonts + icons
-└── (configs)                       # app.json, metro, babel, tailwind, tsconfig…
+└── (configs)                       # app.json, metro, babel, tailwind, tsconfig, eas.json
 ```
 
 ## Integração com o monorepo
@@ -54,10 +79,12 @@ apps/mobile/
 
 ## Sessão e autenticação
 
+> **Atualizado 2026-06-07:** `@supabase/supabase-js` removido do mobile. Auth 100% via JWT próprio da API Oracle.
+
 ```
 RootLayout (_layout.tsx)
- ├─ getSupabase() → singleton com SecureStore adapter
- ├─ onAuthStateChange → atualiza store Zustand (useSession)
+ ├─ hydrateSession() → GET /users/me com token do SecureStore
+ ├─ setUser() → atualiza store Zustand (useSession)
  └─ Slot
 
 index.tsx
@@ -69,7 +96,16 @@ index.tsx
  └─ Guard: se anônimo, manda para onboarding
 ```
 
-Tokens efêmeros de convite ficam em `farmei.invite_token` (SecureStore). Ao aceitar via `POST /invites/:token/accept`, o app pula direto para `availability` do evento alvo.
+**`lib/auth.ts` — funções exportadas:**
+- `signIn(email, password)` → POST /auth/login → salva JWT no SecureStore
+- `signUp(email, password, name)` → POST /auth/signup → salva JWT
+- `signOut()` → remove JWT do SecureStore
+- `hydrateSession()` → GET /users/me → retorna User ou null
+- `getAccessToken()` → lê JWT do SecureStore (usado pelo API client)
+
+**Fallback web:** `SecureStore` não existe no browser. Em `Platform.OS === 'web'`, o storage cai para `localStorage`. Mantém compatibilidade com `expo start --web` durante desenvolvimento.
+
+Tokens efêmeros de convite ficam em `farmei.invite_token` (SecureStore / localStorage). Ao aceitar via `POST /invites/:token/accept`, o app pula direto para `availability` do evento alvo.
 
 ## Diferenças intencionais vs. web
 

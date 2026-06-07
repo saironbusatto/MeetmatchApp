@@ -106,7 +106,7 @@ function parseStored(raw: string | null): StoredInvite | null {
   return null;
 }
 
-export async function rememberInviteToken(token: string, ttlMs: number = INVITE_TOKEN_TTL_MS) {
+export async function rememberInviteToken(token: string, ttlMs = INVITE_TOKEN_TTL_MS) {
   const payload: StoredInvite = { token, expiresAt: Date.now() + ttlMs };
   await storage.set(INVITE_TOKEN_KEY, JSON.stringify(payload));
 }

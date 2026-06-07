@@ -1,5 +1,18 @@
 # Project Wiki Changelog
 
+## 2026-06-07
+- Mobile: removido @supabase/supabase-js, auth migrado para JWT Oracle (ADR-014).
+- Mobile: design system portado do zero em `components/ui/` (Button, Avatar, AppHeader, FilterChips, EventCard, PublicEventCard, Sparkle, tokens).
+- Mobile: todas as telas auth + tabs reescritas com design Farmei real.
+- Mobile: Sprint A — tabs conectadas à API real via react-query (private-events, public-events).
+- Mobile: Sprint B — fluxo privado completo: invite → availability → AI result → confirmed.
+- API: `GET /private-events` adicionado (lista eventos do usuário autenticado).
+- API: deployed no Oracle via docker compose build.
+- Web: design Farmei portado para todas as páginas (login, signup, dashboard, new event, public feed) via `components/ui/` com inline styles.
+- CORS Oracle: adicionado localhost:8081 e localhost:19006 ao CORS_ORIGIN.
+- Types: `category` adicionado ao `CreatePublicEventRequest`.
+- Wiki: mobile-architecture, architectural-decisions, component-patterns, backlog atualizados.
+
 ## 2026-05-16
 - Bootstrapped repository structure into apps/packages/services layout.
 - Added docs skeleton files: PRD.md, ARCHITECTURE.md, TASKS.md.

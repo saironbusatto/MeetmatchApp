@@ -17,12 +17,12 @@ O backlog está organizado em 6 fases sequenciais com dependências explícitas.
 | M3 — Fluxo privado (web) | Criar → convidar → disponibilidade → sugestão → confirmar | ✅ Concluído |
 | M4 — Fluxo público (web) | Criar → listar → inscrever → painel host | ✅ Concluído |
 | M5 — Qualidade (web) | Testes, erros, a11y, limpeza | ✅ Concluído |
-| M1 Mobile — Foundation | Scaffold Expo Router, tokens, NativeWind, CI básico | ⬜ Próximo |
-| M2 Mobile — Auth & Shell | Supabase + SecureStore, tab bar, onboarding | ⬜ |
-| M3 Mobile — Fluxo privado | Home → Confirmed (com AICard hero) | ⬜ |
-| M4 Mobile — Fluxo público | Feed → Detail → Create → Host | ⬜ |
-| M5 Mobile — Convites & Push | `/invite/[token]` + expo-notifications | ⬜ |
-| M6 Mobile — Qualidade | Maestro flows, a11y, EAS + stores | ⬜ |
+| M1 Mobile — Foundation | Scaffold Expo Router, tokens, NativeWind, CI básico | ✅ Concluído |
+| M2 Mobile — Auth & Shell | JWT Oracle + SecureStore, tab bar, onboarding, design system portado | ✅ Concluído |
+| M3 Mobile — Fluxo privado | Create → Invite → Availability → AI Result → Confirmed (dados reais) | ✅ Concluído |
+| M4 Mobile — Fluxo público | Feed, Create, Detail com occupancy bar (dados reais) | ✅ Parcial (host panel pendente) |
+| M5 Mobile — Convites & Push | `/invite/[token]` + expo-notifications | 🔄 Em andamento |
+| M6 Mobile — Qualidade | Maestro flows, a11y, EAS Android (build quebrado) | ⬜ |
 
 ## Fase 1 — Foundation do monorepo (próxima)
 

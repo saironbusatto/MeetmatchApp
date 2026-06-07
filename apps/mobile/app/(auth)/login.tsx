@@ -1,6 +1,6 @@
 import { Stack, useRouter } from "expo-router";
 import { useState } from "react";
-import { SafeAreaView, Text, TextInput, View, Pressable } from "react-native";
+import { SafeAreaView, Text, TextInput, View } from "react-native";
 import { PrimaryButton, GhostButton } from "~/components/ui/Button";
 import { T } from "~/components/ui/tokens";
 import { signIn } from "~/lib/auth";
@@ -50,12 +50,7 @@ export default function Login() {
               placeholderTextColor={T.ink400}
               autoCapitalize="none"
               keyboardType="email-address"
-              style={{
-                fontFamily: T.fontBody, fontSize: 16, color: T.ink,
-                paddingVertical: 14, paddingHorizontal: 16,
-                borderWidth: 1.5, borderColor: T.ink100,
-                borderRadius: 14, backgroundColor: T.white,
-              }}
+              style={{ fontFamily: T.fontBody, fontSize: 16, color: T.ink, paddingVertical: 14, paddingHorizontal: 16, borderWidth: 1.5, borderColor: T.ink100, borderRadius: 14, backgroundColor: T.white }}
             />
           </View>
 
@@ -69,12 +64,7 @@ export default function Login() {
               placeholder="sua senha"
               placeholderTextColor={T.ink400}
               secureTextEntry
-              style={{
-                fontFamily: T.fontBody, fontSize: 16, color: T.ink,
-                paddingVertical: 14, paddingHorizontal: 16,
-                borderWidth: 1.5, borderColor: T.ink100,
-                borderRadius: 14, backgroundColor: T.white,
-              }}
+              style={{ fontFamily: T.fontBody, fontSize: 16, color: T.ink, paddingVertical: 14, paddingHorizontal: 16, borderWidth: 1.5, borderColor: T.ink100, borderRadius: 14, backgroundColor: T.white }}
             />
           </View>
 

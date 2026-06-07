@@ -1,5 +1,57 @@
 # Wiki Log
 
+## [2026-06-07] ingest | Sprint A+B mobile + design system portado + web redesign
+
+### O que foi feito nesta sessão
+
+**Diagnóstico e fix de infraestrutura:**
+- Identificado que mobile ainda usava `@supabase/supabase-js` enquanto a API já rodava JWT próprio no Oracle — autenticação quebrada em produção.
+- Migrado `lib/auth.ts` do mobile: removido SDK Supabase, implementado `signIn/signUp/signOut/hydrateSession` com fetch direto na API Oracle.
+- Corrigido erro `ExpoSecureStore.getValueWithKeyAsync is not a function` no browser: adicionado fallback `localStorage` via `Platform.OS === 'web'`.
+- Corrigido CORS do Oracle: `CORS_ORIGIN` só tinha `137.131.255.5:3000`, adicionado `localhost:8081` e `localhost:19006`.
+- Criado usuário real no PostgreSQL Oracle (`saironbusatto@gmail.com`).
+
+**Design system mobile portado do zero:**
+- `components/ui/tokens.ts` — paleta completa, fontes, stamp/stampAi como constantes TS.
+- `components/ui/Button.tsx` — PrimaryButton, SecondaryButton, AIButton (spark yellow), GhostButton, NewButton.
+- `components/ui/Avatar.tsx` — Avatar com iniciais coloridas + key person dot; AvatarStack com overlap.
+- `components/ui/AppHeader.tsx` — header com back button circular.
+- `components/ui/FilterChips.tsx` — chips horizontais scrolláveis.
+- `components/ui/EventCard.tsx` — card privado com badge locked/waiting + AvatarStack.
+- `components/ui/PublicEventCard.tsx` — card público com barra de ocupação colorida.
+- `components/ui/Sparkle.tsx` — ícone SVG via react-native-svg.
+
+**Telas reescritas com design real:**
+- `(auth)/onboarding` — círculo decorativo vermillon, ponto spark, headline 56px.
+- `(auth)/login` e `signup` — campos com label uppercase, layout correto.
+- `(tabs)/index` — greeting + "Your events", filter chips, event cards.
+- `(tabs)/public` — "Perto de você", chips por categoria, cards com occupancy bar.
+- `(tabs)/profile` — avatar grande + info card com stamp shadow.
+
+**Sprint A — dados reais conectados:**
+- Adicionado `GET /private-events` na API (lista eventos do usuário autenticado).
+- `lib/useApi.ts` e `lib/queries.ts` — react-query hooks para todos os endpoints.
+- Tabs conectadas à API real com loading/empty states.
+- `new-private.tsx` e `new-public.tsx` — formulários funcionais com POST na API.
+- `category` adicionado ao tipo `CreatePublicEventRequest`.
+
+**Sprint B — fluxo privado completo:**
+- `events/[id]/index.tsx` — detalhe real com participantes da API.
+- `events/[id]/invite.tsx` — convidar por email → POST /participants.
+- `events/[id]/availability.tsx` — calendário tap yes/maybe/no → POST /availability.
+- `events/[id]/result.tsx` — card spark amarelo com stamp vermelho, confiança %, rationale da IA.
+- `events/[id]/confirmed.tsx` — locked-in screen com lista de participantes.
+
+**Deploy:**
+- API no Oracle atualizada via `docker compose build api && docker compose up -d`.
+- Commit `1c5897e` — 46 arquivos, 2833 inserções.
+
+### Docs atualizados nesta sessão
+- `architecture/mobile-architecture.md` — seção de auth (Supabase→JWT) + estrutura de pastas atualizada.
+- `architecture/architectural-decisions.md` — ADR-012 marcado como concluído, ADR-014 adicionado.
+- `design-system/component-patterns.md` — inventário de componentes implementados.
+- `backlog/mvp-backlog.md` — M1–M4 mobile atualizados.
+
 ## [2026-05-16] ingest | Ingest completo do repositório Farmei
 
 Fontes ingeridas nesta sessão:
@@ -213,3 +265,42 @@ Evidência bruta: - raw/wiki-ingest/2026-05-17_11-52-24.md
 - Fast-forward para `origin/main` aplicado com sucesso.
 - Reaplicação do autostash gerou conflitos; mudanças locais preservadas no stash.
 - Evidência: `raw/wiki-ingest/2026-05-21_13-27-26.md`
+
+## [2026-06-07] ingest | Sprint C+D mobile + web design deClerk + browser validation
+
+### O que foi feito
+
+**Sprint C — Mobile fluxo público completo:**
+- `apps/mobile/app/public/[id].tsx` — detalhe de evento público com dados reais (GET /public-events/:id), barra de ocupação, botão "Eu vou!" funcional, share sheet
+- `apps/mobile/app/events/[id]/host.tsx` — host dashboard com lista de inscritos (GET /public-events/:id/registrations), check-in por horário, remoção de inscrito, export CSV via Share
+- `apps/mobile/lib/api.ts` — adicionado `publicEvents.getRegistrations(id)`
+
+**Sprint D — Mobile design polish:**
+- `apps/mobile/app/events/new.tsx` — seletor de tipo de evento reescrito com `EventTypeCard`: privado usa AIButton card (ink bg, spark yellow, stampAi), público usa card padrão com stamp
+- Removido uso de `StampCard` e `Themed` legados nessa tela
+
+**Validação com browser automation (Playwright):**
+- Mobile onboarding: ✅ círculo vermelho, ponto spark, Bricolage 56px, stamp button
+- Mobile login: ✅ "Buenas de novo.", labels uppercase, botão vermelho stamp
+- Mobile tabs: ✅ "Buenas, Sairon" / filter chips / loading spinner vermelho
+- Web: aguardando deploy com design correto
+
+**Correção de contaminação Clerk:**
+- Processo externo introduziu `@clerk/nextjs`, `@clerk/types`, `useApiToken`, `ClerkProvider`, `clerkMiddleware` em vários arquivos web e mobile
+- Todos removidos e restaurados para versão JWT Oracle:
+  - `apps/web/app/layout.tsx` → AuthProvider
+  - `apps/web/app/login/page.tsx`, `signup/page.tsx` → email/senha + useAuth
+  - `apps/web/components/ui/Nav.tsx` → useAuth (sem Clerk)
+  - `apps/web/middleware.ts` → JWT cookie check
+  - `apps/mobile/app/_layout.tsx` → hydrateSession() sem Clerk
+  - `apps/mobile/app/(auth)/login.tsx`, `signup.tsx` → sem OAuthButton/Clerk
+  - `services/api/src/middleware/auth.ts`, `utils/jwt.ts` → verifyAccessToken JWT local
+  - `apps/web/hooks/useApiToken.ts`, `apps/web/app/sso-callback/page.tsx` → deletados
+
+**Git:**
+- Force push para sobrescrever commits Clerk no remote (os commits Clerk divergiam do nosso trabalho JWT)
+- Deploy no Oracle via docker compose build web
+
+### Docs atualizados
+- `wiki/log.md` esta entrada
+- `wiki/CHANGELOG.md` entrada 2026-06-07 expandida

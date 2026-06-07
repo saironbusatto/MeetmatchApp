@@ -40,9 +40,7 @@ export default function RootLayout() {
         router.push(targetPath as never);
       }
     });
-    return () => {
-      sub.remove();
-    };
+    return () => { sub.remove(); };
   }, [router]);
 
   useEffect(() => {

@@ -9,7 +9,7 @@ const extra = (Constants.expoConfig?.extra ?? {}) as Extra;
 
 function pickExtra(value: string | undefined): string | undefined {
   if (!value) return undefined;
-  if (value.startsWith("${")) return undefined; // não interpolado
+  if (value.startsWith("${")) return undefined;
   return value;
 }
 
