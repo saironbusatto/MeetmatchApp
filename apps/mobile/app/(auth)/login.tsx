@@ -1,6 +1,6 @@
-import { Stack, useRouter } from "expo-router";
+import { Link, Stack, useRouter } from "expo-router";
 import { useState } from "react";
-import { SafeAreaView, Text, TextInput, View } from "react-native";
+import { Pressable, SafeAreaView, Text, TextInput, View } from "react-native";
 import { PrimaryButton, GhostButton } from "~/components/ui/Button";
 import { T } from "~/components/ui/tokens";
 import { signIn } from "~/lib/auth";
@@ -80,6 +80,17 @@ export default function Login() {
         <PrimaryButton size="lg" onPress={handleLogin} disabled={submitting}>
           {submitting ? "Entrando…" : "Entrar"}
         </PrimaryButton>
+
+        <Link href="/(auth)/signup" asChild>
+          <Pressable>
+            <Text style={{ fontFamily: T.fontBody, fontSize: 14, color: T.ink500, textAlign: "center", marginTop: 16 }}>
+              Não tem conta?{" "}
+              <Text style={{ fontFamily: T.fontBodySemiBold, color: T.ink, textDecorationLine: "underline" }}>
+                Criar
+              </Text>
+            </Text>
+          </Pressable>
+        </Link>
       </View>
     </SafeAreaView>
   );

@@ -2,8 +2,8 @@
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { T } from "./tokens";
-import type { CSSProperties } from "react";
-export function Nav() {
+import type { CSSProperties, JSX } from "react";
+export function Nav(): JSX.Element {
   const { user, logout } = useAuth();
   const nav: CSSProperties = { position: "sticky", top: 0, zIndex: 100, background: T.paper, borderBottom: `1px solid ${T.ink100}`, padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 60 };
   const logo: CSSProperties = { fontFamily: T.fontDisplay, fontSize: 22, fontWeight: 700, color: T.ink, letterSpacing: "-0.02em", textDecoration: "none" };

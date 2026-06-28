@@ -1,6 +1,6 @@
-import { Stack, useRouter } from "expo-router";
+import { Link, Stack, useRouter } from "expo-router";
 import { useState } from "react";
-import { SafeAreaView, Text, TextInput, View } from "react-native";
+import { Pressable, SafeAreaView, Text, TextInput, View } from "react-native";
 import { PrimaryButton } from "~/components/ui/Button";
 import { T } from "~/components/ui/tokens";
 import { signUp } from "~/lib/auth";
@@ -15,6 +15,8 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const isEmailTaken = error?.toLowerCase().includes("email already in use") ?? false;
 
   async function handleSignup() {
     setSubmitting(true);
@@ -67,6 +69,15 @@ export default function Signup() {
           {error ? (
             <View style={{ backgroundColor: T.vermillionSoft, borderRadius: 10, padding: 12 }}>
               <Text style={{ fontFamily: T.fontBody, fontSize: 14, color: T.vermillion }}>{error}</Text>
+              {isEmailTaken ? (
+                <Link href="/(auth)/login" asChild>
+                  <Pressable>
+                    <Text style={{ fontFamily: T.fontBodySemiBold, fontSize: 14, color: T.vermillion, marginTop: 8, textDecorationLine: "underline" }}>
+                      Entrar com minha conta →
+                    </Text>
+                  </Pressable>
+                </Link>
+              ) : null}
             </View>
           ) : null}
         </View>
@@ -76,6 +87,17 @@ export default function Signup() {
         <PrimaryButton size="lg" onPress={handleSignup} disabled={submitting}>
           {submitting ? "Criando…" : "Criar conta"}
         </PrimaryButton>
+
+        <Link href="/(auth)/login" asChild>
+          <Pressable>
+            <Text style={{ fontFamily: T.fontBody, fontSize: 14, color: T.ink500, textAlign: "center", marginTop: 16 }}>
+              Já tem conta?{" "}
+              <Text style={{ fontFamily: T.fontBodySemiBold, color: T.ink, textDecorationLine: "underline" }}>
+                Entrar
+              </Text>
+            </Text>
+          </Pressable>
+        </Link>
       </View>
     </SafeAreaView>
   );

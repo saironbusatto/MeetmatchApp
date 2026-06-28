@@ -2,7 +2,7 @@
 import { useAuth } from "@/lib/auth";
 import { getApiBaseUrl } from "@/lib/api";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type JSX } from "react";
 import Link from "next/link";
 import { T } from "@/components/ui/tokens";
 import { PrimaryButton } from "@/components/ui/Button";
@@ -11,7 +11,7 @@ import { Card } from "@/components/ui/Card";
 
 const API = getApiBaseUrl();
 
-export default function SignupPage() {
+export default function SignupPage(): JSX.Element {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

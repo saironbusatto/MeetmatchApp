@@ -62,6 +62,10 @@ export const authRouter = new Hono()
         updatedAt: now
       });
 
+      if (!createdUser) {
+        return c.json({ message: "Erro ao criar usuário" }, 500);
+      }
+
       const accessToken = signAccessToken({ userId: userId, email });
       return c.json(
         {

@@ -22,17 +22,12 @@ function getJwtSecret() {
 
 export function signAccessToken(claims: AccessClaims) {
   const secret = getJwtSecret();
-  return jwt.sign(
-    {
-      email: claims.email
-    },
-    secret,
-    {
-      algorithm: "HS256",
-      subject: claims.userId,
-      expiresIn: process.env.JWT_EXPIRES_IN ?? DEFAULT_EXPIRES_IN
-    }
-  );
+  const payload = { email: claims.email };
+  return jwt.sign(payload, secret, {
+    algorithm: "HS256",
+    subject: claims.userId,
+    expiresIn: (process.env.JWT_EXPIRES_IN ?? DEFAULT_EXPIRES_IN) as string | number,
+  } as jwt.SignOptions);
 }
 
 export function verifyAccessToken(token: string): TokenPayload {
