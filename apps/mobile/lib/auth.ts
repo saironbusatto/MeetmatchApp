@@ -33,7 +33,7 @@ async function removeAccessToken() {
 }
 
 type AuthUser = { id: string; name: string; email: string };
-type AuthResult = { accessToken: string; user: AuthUser };
+type AuthResult = { access_token: string; user: AuthUser };
 
 async function post<T>(path: string, body: unknown): Promise<{ data: T | null; error: string | null }> {
   try {
@@ -55,14 +55,14 @@ async function post<T>(path: string, body: unknown): Promise<{ data: T | null; e
 export async function signIn(email: string, password: string) {
   const { data, error } = await post<AuthResult>("/auth/login", { email, password });
   if (error || !data) return { user: null, error };
-  await saveAccessToken(data.accessToken);
+  await saveAccessToken(data.access_token);
   return { user: data.user, error: null };
 }
 
 export async function signUp(email: string, password: string, name: string) {
   const { data, error } = await post<AuthResult>("/auth/signup", { email, password, name });
   if (error || !data) return { user: null, error };
-  await saveAccessToken(data.accessToken);
+  await saveAccessToken(data.access_token);
   return { user: data.user, error: null };
 }
 
@@ -74,7 +74,7 @@ export async function hydrateSession(): Promise<AuthUser | null> {
   const token = await getAccessToken();
   if (!token) return null;
   try {
-    const res = await fetch(`${env.apiUrl}/auth/me`, {
+    const res = await fetch(`${env.apiUrl}/users/me`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (!res.ok) {

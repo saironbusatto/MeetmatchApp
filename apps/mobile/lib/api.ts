@@ -81,7 +81,7 @@ export function createApiClient(options: ApiClientOptions = {}) {
     request,
     auth: {
       me: async () => {
-        const res = await request<{ user: User }>("GET", "/auth/me");
+        const res = await request<{ user: User }>("GET", "/users/me");
         return userSchema.parse(res.user);
       },
       signup: (body: { name: string; email: string; password: string }) =>
