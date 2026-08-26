@@ -3,9 +3,7 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  experimental: {
-    typedRoutes: false
-  },
+  typedRoutes: false,
   turbopack: {
     root: path.resolve(__dirname, "../../"),
   },
