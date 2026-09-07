@@ -2,221 +2,806 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<title>Farmei — Protótipo clicável</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farmei — Onde os eventos ganham vida</title>
 <link rel="stylesheet" href="colors_and_type.css">
 <style>
-  html, body { margin: 0; padding: 0; background: var(--bg-page); min-height: 100vh; }
-  body { font-family: var(--font-body); color: var(--fg-1); }
+/* ============================================================
+   FARMEI PROTOTYPE — ENERGY MODE
+   Inspired by doBrasil.live: people, movement, party, sports
+   ============================================================ */
 
-  .stage {
-    min-height: 100vh; display: grid;
-    grid-template-columns: 280px 1fr 280px; gap: 32px;
-    padding: 32px 40px; box-sizing: border-box;
-    background: radial-gradient(ellipse at 30% 0%, #FFEFEB 0%, var(--bg-page) 60%);
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body); color: var(--ink-900);
+  background: var(--bg-page); overflow-x: hidden;
+}
 
-  /* Left rail — brand & instructions */
-  .rail-l {
-    display: flex; flex-direction: column; gap: 20px;
-    position: sticky; top: 32px; align-self: flex-start;
-  }
-  .brand { display: flex; align-items: center; gap: 10px; }
-  .brand .wm {
-    font-family: var(--font-display); font-weight: 800; font-size: 22px;
-    letter-spacing: -0.035em; color: var(--ink-900); position: relative;
-  }
-  .brand .wm::after {
-    content: ""; position: absolute; top: 4px; right: -10px;
-    width: 7px; height: 7px; border-radius: 50%; background: var(--vermillion-500);
-  }
-  .pill {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 6px 12px; border-radius: 999px;
-    background: var(--ink-900); color: #fff;
-    font: 600 12px/1 var(--font-body); letter-spacing: 0.04em; text-transform: uppercase;
-    width: fit-content;
-  }
-  .pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--spark-300); }
-  h1.kicker {
-    margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 38px;
-    line-height: 0.96; letter-spacing: -0.025em; color: var(--ink-900);
-  }
-  p.lede {
-    margin: 0; font: 400 15px/1.5 var(--font-body); color: var(--ink-600); text-wrap: pretty;
-  }
-  .tip {
-    margin-top: 12px; padding: 14px 16px; border-radius: 14px;
-    background: var(--bg-surface); border: 1px solid var(--border-1);
-  }
-  .tip .label {
-    font: 600 11px/1 var(--font-body); color: var(--vermillion-600);
-    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px;
-  }
-  .tip p { margin: 0; font: 400 13px/1.5 var(--font-body); color: var(--ink-700); }
+/* ─── Reveal animations ─────────────────────────────────────── */
+.reveal {
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-left {
+  opacity: 0; transform: translateX(-60px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+.reveal-right {
+  opacity: 0; transform: translateX(60px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+.reveal-right.visible { opacity: 1; transform: translateX(0); }
+.reveal-scale {
+  opacity: 0; transform: scale(0.85);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-spring);
+}
+.reveal-scale.visible { opacity: 1; transform: scale(1); }
 
-  /* Center stage — phone */
-  .phone-wrap {
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
-  }
-  .reset-btn {
-    font: 600 13px/1 var(--font-body); padding: 8px 14px; border-radius: 999px;
-    background: var(--bg-surface); border: 1px solid var(--border-1); color: var(--ink-700);
-    cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
-  }
-  .reset-btn:hover { background: var(--ink-50); }
+/* stagger children */
+.stagger > * { transition-delay: calc(var(--i, 0) * 100ms); }
 
-  /* Right rail — step list */
-  .rail-r {
-    display: flex; flex-direction: column; gap: 6px;
-    position: sticky; top: 32px; align-self: flex-start;
-  }
-  .rail-r .h {
-    font: 600 11px/1 var(--font-body); color: var(--ink-500);
-    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px;
-  }
-  .step {
-    display: flex; align-items: center; gap: 12px; padding: 10px 12px;
-    border: 1px solid transparent; border-radius: 12px;
-    cursor: pointer; background: transparent; text-align: left; width: 100%;
-    transition: background 160ms;
-    font-family: var(--font-body);
-  }
-  .step:hover { background: var(--ink-50); }
-  .step.on { background: var(--bg-surface); border-color: var(--ink-900); box-shadow: 2px 2px 0 var(--ink-900); }
-  .step .n {
-    width: 26px; height: 26px; border-radius: 50%;
-    background: var(--ink-50); color: var(--ink-700);
-    font: 600 12px/1 var(--font-mono); display: flex; align-items: center; justify-content: center;
-    flex: none;
-  }
-  .step.on .n { background: var(--ink-900); color: var(--spark-300); }
-  .step .nm { font: 600 14px/1.2 var(--font-body); color: var(--ink-900); }
-  .step .sub { font: 400 11px/1.2 var(--font-body); color: var(--ink-500); margin-top: 2px; }
+/* ─── Floating shapes (parallax decoration) ─────────────────── */
+@keyframes floatA { 0%,100% { transform: translate(0,0) rotate(0deg); } 50% { transform: translate(12px,-18px) rotate(5deg); } }
+@keyframes floatB { 0%,100% { transform: translate(0,0) rotate(0deg); } 50% { transform: translate(-10px,14px) rotate(-4deg); } }
+@keyframes floatC { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(8px,-10px) scale(1.08); } }
+@keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.15); opacity: 0.8; } }
+@keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes countUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  @media (max-width: 1080px) {
-    .stage { grid-template-columns: 1fr; gap: 24px; padding: 24px; }
-    .rail-l, .rail-r { position: static; }
-  }
+/* ─── NAV ───────────────────────────────────────────────────── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 40px;
+  background: rgba(250,250,247,0.88); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--ink-100);
+  transition: box-shadow 0.3s;
+}
+.nav.scrolled { box-shadow: 0 2px 20px rgba(10,10,10,0.06); }
+.nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nav-brand .wm {
+  font-family: var(--font-display); font-weight: 800; font-size: 22px;
+  letter-spacing: -0.035em; color: var(--ink-900); position: relative;
+}
+.nav-brand .wm::after {
+  content: ""; position: absolute; top: 4px; right: -10px;
+  width: 7px; height: 7px; border-radius: 50%; background: var(--vermillion-500);
+}
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a {
+  font: 600 14px/1 var(--font-body); color: var(--ink-600);
+  text-decoration: none; transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--ink-900); }
+.nav-cta {
+  font: 600 14px/1 var(--font-body); padding: 10px 20px; border-radius: 999px;
+  background: var(--vermillion-500); color: #fff; border: 2px solid var(--ink-900);
+  box-shadow: 2px 2px 0 var(--ink-900); cursor: pointer; text-decoration: none;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.nav-cta:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--ink-900); }
+
+/* ─── HERO ──────────────────────────────────────────────────── */
+.hero {
+  position: relative; min-height: 100vh; display: flex; align-items: center;
+  padding: 120px 40px 80px; overflow: hidden;
+  background: radial-gradient(ellipse at 20% 20%, #FFEFEB 0%, var(--bg-page) 55%);
+}
+.hero-content { max-width: 680px; position: relative; z-index: 2; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px 6px 6px; background: var(--ink-0);
+  border: 1.5px solid var(--ink-900); border-radius: 999px;
+  box-shadow: 2px 2px 0 var(--ink-900); margin-bottom: 28px;
+}
+.hero-eyebrow .tag {
+  background: var(--spark-300); padding: 3px 10px; border-radius: 999px;
+  font: 700 11px/1 var(--font-body); color: var(--ink-900);
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.hero-eyebrow span { font: 500 13px/1 var(--font-body); color: var(--ink-700); }
+.hero h1 {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(52px, 7vw, 96px); line-height: 0.92;
+  letter-spacing: -0.038em; color: var(--ink-900); margin: 0;
+}
+.hero h1 .accent { color: var(--vermillion-500); }
+.hero h1 .dot {
+  display: inline-block; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--vermillion-500); vertical-align: middle;
+  margin-left: 4px; position: relative; top: -4px;
+}
+.hero-sub {
+  margin: 28px 0 0; font: 400 19px/1.5 var(--font-body);
+  color: var(--ink-600); max-width: 520px; text-wrap: pretty;
+}
+.hero-actions { margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap; }
+.hero-btn-primary {
+  font: 600 16px/1 var(--font-body); padding: 16px 28px; border-radius: 16px;
+  background: var(--vermillion-500); color: #fff;
+  border: 2px solid var(--ink-900); box-shadow: 3px 3px 0 var(--ink-900);
+  cursor: pointer; transition: transform 0.12s, box-shadow 0.12s;
+}
+.hero-btn-primary:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--ink-900); }
+.hero-btn-secondary {
+  font: 600 16px/1 var(--font-body); padding: 16px 28px; border-radius: 16px;
+  background: var(--ink-0); color: var(--ink-900);
+  border: 2px solid var(--ink-900); box-shadow: 3px 3px 0 var(--ink-900);
+  cursor: pointer; transition: transform 0.12s, box-shadow 0.12s;
+}
+.hero-btn-secondary:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--ink-900); }
+
+/* Hero floating shapes */
+.hero-shapes { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.hero-shape {
+  position: absolute; border-radius: 50%;
+  border: 3px solid var(--ink-900);
+}
+.hero-shape.s1 { width: 320px; height: 320px; background: var(--vermillion-500); top: 8%; right: 8%; animation: floatA 8s ease-in-out infinite; }
+.hero-shape.s2 { width: 80px; height: 80px; background: var(--spark-300); top: 35%; right: 28%; animation: floatB 6s ease-in-out infinite; }
+.hero-shape.s3 { width: 40px; height: 40px; background: var(--ink-900); top: 55%; right: 12%; animation: floatC 5s ease-in-out infinite; }
+.hero-shape.s4 { width: 18px; height: 18px; background: var(--vermillion-400); top: 18%; right: 42%; animation: pulse 3s ease-in-out infinite; }
+.hero-shape.s5 { width: 12px; height: 12px; background: var(--spark-400); top: 70%; right: 35%; animation: pulse 4s ease-in-out infinite 0.5s; }
+
+/* Hero floating event cards */
+.hero-cards { position: absolute; top: 0; right: 0; bottom: 0; width: 50%; z-index: 2; pointer-events: none; }
+.hero-card {
+  position: absolute; padding: 14px 18px; border-radius: 16px;
+  background: var(--ink-0); border: 2px solid var(--ink-900);
+  box-shadow: 4px 4px 0 var(--ink-900);
+  font-family: var(--font-body); display: flex; align-items: center; gap: 12px;
+  max-width: 280px;
+}
+.hero-card.c1 { top: 18%; right: 10%; animation: floatA 9s ease-in-out infinite; transform: rotate(-3deg); }
+.hero-card.c2 { top: 48%; right: 5%; animation: floatB 7s ease-in-out infinite; transform: rotate(2deg); }
+.hero-card.c3 { top: 72%; right: 18%; animation: floatC 8s ease-in-out infinite; transform: rotate(-1deg); }
+.hero-card .emoji { font-size: 28px; flex: none; }
+.hero-card .info .title { font: 600 13px/1.2 var(--font-display); color: var(--ink-900); }
+.hero-card .info .meta { font: 400 11px/1.3 var(--font-body); color: var(--ink-500); margin-top: 2px; }
+.hero-card .avatars { display: flex; margin-left: auto; }
+.hero-card .avatars .av {
+  width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff;
+  margin-left: -8px; display: flex; align-items: center; justify-content: center;
+  font: 700 10px/1 var(--font-body); color: #fff;
+}
+.hero-card .avatars .av:first-child { margin-left: 0; }
+
+/* ─── STATS BAR ─────────────────────────────────────────────── */
+.stats {
+  display: flex; justify-content: center; gap: 64px; padding: 56px 40px;
+  background: var(--ink-900); color: #fff; position: relative; overflow: hidden;
+}
+.stats::before {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(90deg, transparent, transparent 120px, rgba(255,255,255,0.03) 120px, rgba(255,255,255,0.03) 121px);
+}
+.stat { text-align: center; position: relative; z-index: 1; }
+.stat-num {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 52px; letter-spacing: -0.03em; line-height: 1;
+}
+.stat-num .unit { font-size: 28px; color: var(--spark-300); }
+.stat-label { font: 500 14px/1.3 var(--font-body); color: var(--ink-300); margin-top: 8px; }
+
+/* ─── CATEGORIES ────────────────────────────────────────────── */
+.categories {
+  padding: 96px 40px; max-width: 1280px; margin: 0 auto;
+}
+.section-header { margin-bottom: 56px; }
+.section-eyebrow {
+  font: 600 12px/1 var(--font-body); color: var(--vermillion-600);
+  letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 12px;
+}
+.section-title {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(36px, 5vw, 56px); letter-spacing: -0.03em;
+  line-height: 1; color: var(--ink-900); margin: 0;
+}
+.section-sub {
+  font: 400 17px/1.5 var(--font-body); color: var(--ink-600);
+  margin-top: 16px; max-width: 540px;
+}
+.cat-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+}
+.cat-card {
+  position: relative; border-radius: 22px; overflow: hidden;
+  border: 2px solid var(--ink-900); box-shadow: 4px 4px 0 var(--ink-900);
+  cursor: pointer; transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+  aspect-ratio: 3/4; display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 24px;
+}
+.cat-card:hover {
+  transform: translate(-3px,-3px) scale(1.02);
+  box-shadow: 7px 7px 0 var(--ink-900);
+}
+.cat-card .bg {
+  position: absolute; inset: 0; z-index: 0;
+  transition: transform 0.5s var(--ease-out);
+}
+.cat-card:hover .bg { transform: scale(1.06); }
+.cat-card .overlay {
+  position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(0deg, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.2) 50%, transparent 100%);
+}
+.cat-card .content { position: relative; z-index: 2; }
+.cat-card .emoji { font-size: 40px; margin-bottom: 12px; }
+.cat-card .name {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 24px; color: #fff; letter-spacing: -0.01em;
+}
+.cat-card .count {
+  font: 500 13px/1 var(--font-body); color: var(--spark-300);
+  margin-top: 6px;
+}
+
+/* ─── SHOWCASE (phone prototype) ────────────────────────────── */
+.showcase {
+  padding: 96px 40px; background: var(--ink-900); color: #fff;
+  position: relative; overflow: hidden;
+}
+.showcase::before {
+  content: ''; position: absolute; top: -200px; right: -200px;
+  width: 600px; height: 600px; border-radius: 50%;
+  background: var(--vermillion-500); opacity: 0.08;
+}
+.showcase-inner {
+  max-width: 1280px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1.2fr; gap: 60px; align-items: center;
+}
+.showcase-text .section-eyebrow { color: var(--spark-300); }
+.showcase-text .section-title { color: #fff; }
+.showcase-text .section-sub { color: var(--ink-300); }
+.showcase-steps {
+  display: flex; flex-direction: column; gap: 16px; margin-top: 36px;
+}
+.showcase-step {
+  display: flex; align-items: flex-start; gap: 16px; padding: 16px;
+  border-radius: 14px; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: background 0.2s, border-color 0.2s; cursor: pointer;
+}
+.showcase-step:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
+.showcase-step.active { background: rgba(255,59,46,0.12); border-color: var(--vermillion-500); }
+.showcase-step .num {
+  width: 32px; height: 32px; border-radius: 50%; flex: none;
+  background: var(--ink-700); color: var(--ink-300);
+  display: flex; align-items: center; justify-content: center;
+  font: 600 13px/1 var(--font-mono);
+}
+.showcase-step.active .num { background: var(--vermillion-500); color: #fff; }
+.showcase-step .text .st-title { font: 600 15px/1.2 var(--font-body); color: #fff; }
+.showcase-step .text .st-sub { font: 400 12px/1.3 var(--font-body); color: var(--ink-400); margin-top: 2px; }
+
+.showcase-phone {
+  display: flex; justify-content: center; align-items: center;
+  position: relative;
+}
+.showcase-phone .glow {
+  position: absolute; width: 340px; height: 340px; border-radius: 50%;
+  background: var(--vermillion-500); opacity: 0.15; filter: blur(80px);
+}
+
+/* ─── EVENT TICKER ──────────────────────────────────────────── */
+.ticker-section { padding: 48px 0; overflow: hidden; background: var(--bg-page); }
+.ticker-label {
+  text-align: center; margin-bottom: 24px;
+  font: 600 12px/1 var(--font-body); color: var(--ink-400);
+  letter-spacing: 0.14em; text-transform: uppercase;
+}
+.ticker-track {
+  display: flex; gap: 20px; animation: ticker 30s linear infinite;
+  width: max-content;
+}
+.ticker-item {
+  flex: none; width: 260px; padding: 16px 20px; border-radius: 16px;
+  background: var(--ink-0); border: 1.5px solid var(--ink-100);
+  display: flex; align-items: center; gap: 12px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ticker-item:hover { border-color: var(--ink-900); box-shadow: 2px 2px 0 var(--ink-900); }
+.ticker-item .emoji { font-size: 28px; }
+.ticker-item .info .ti-title { font: 600 13px/1.2 var(--font-display); color: var(--ink-900); }
+.ticker-item .info .ti-meta { font: 400 11px/1.3 var(--font-body); color: var(--ink-500); margin-top: 2px; }
+
+/* ─── SOCIAL PROOF ──────────────────────────────────────────── */
+.social-proof {
+  padding: 80px 40px; max-width: 1080px; margin: 0 auto; text-align: center;
+}
+.sp-avatars {
+  display: flex; justify-content: center; margin-bottom: 24px;
+}
+.sp-av {
+  width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--bg-page);
+  margin-left: -12px; display: flex; align-items: center; justify-content: center;
+  font: 700 14px/1 var(--font-body); color: #fff;
+}
+.sp-av:first-child { margin-left: 0; }
+.sp-text {
+  font: 500 20px/1.4 var(--font-body); color: var(--ink-700); max-width: 600px; margin: 0 auto;
+}
+.sp-text strong { color: var(--ink-900); }
+.sp-stars { margin-top: 16px; color: var(--spark-300); font-size: 20px; letter-spacing: 4px; }
+
+/* ─── CTA SECTION ───────────────────────────────────────────── */
+.cta-section {
+  padding: 96px 40px; background: var(--vermillion-500);
+  position: relative; overflow: hidden; text-align: center;
+}
+.cta-section::before {
+  content: ''; position: absolute; bottom: -120px; left: -80px;
+  width: 320px; height: 320px; border-radius: 50%;
+  background: var(--spark-300); border: 4px solid var(--ink-900);
+}
+.cta-section::after {
+  content: ''; position: absolute; top: 40px; right: 60px;
+  width: 24px; height: 24px; border-radius: 50%; background: var(--ink-900);
+}
+.cta-section h2 {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(42px, 6vw, 88px); letter-spacing: -0.035em;
+  line-height: 0.95; color: #fff; margin: 0; position: relative;
+}
+.cta-section p {
+  font: 400 19px/1.5 var(--font-body); color: rgba(255,255,255,0.9);
+  margin: 24px auto 40px; max-width: 540px; position: relative;
+}
+.cta-btn {
+  font: 600 17px/1 var(--font-body); padding: 18px 36px; border-radius: 16px;
+  background: var(--spark-300); color: var(--ink-900);
+  border: 2px solid var(--ink-900); box-shadow: 4px 4px 0 var(--ink-900);
+  cursor: pointer; position: relative;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.cta-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--ink-900); }
+
+/* ─── FOOTER ────────────────────────────────────────────────── */
+.footer {
+  padding: 48px 40px; display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid var(--ink-100); max-width: 1280px; margin: 0 auto;
+}
+.footer-brand { display: flex; align-items: center; gap: 10px; }
+.footer-brand .wm {
+  font-family: var(--font-display); font-weight: 800; font-size: 18px;
+  letter-spacing: -0.035em; color: var(--ink-900); position: relative;
+}
+.footer-brand .wm::after {
+  content: ""; position: absolute; top: 3px; right: -8px;
+  width: 5px; height: 5px; border-radius: 50%; background: var(--vermillion-500);
+}
+.footer-copy { font: 400 13px/1 var(--font-body); color: var(--ink-400); }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a { font: 500 13px/1 var(--font-body); color: var(--ink-500); text-decoration: none; }
+.footer-links a:hover { color: var(--ink-900); }
+
+/* ─── RESPONSIVE ────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .hero { flex-direction: column; text-align: center; padding: 120px 24px 60px; }
+  .hero-content { max-width: 100%; }
+  .hero-sub { margin-left: auto; margin-right: auto; }
+  .hero-actions { justify-content: center; }
+  .hero-cards { display: none; }
+  .hero-shapes .s1 { width: 200px; height: 200px; right: -40px; }
+  .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  .showcase-inner { grid-template-columns: 1fr; }
+  .showcase-phone { order: -1; }
+  .stats { flex-wrap: wrap; gap: 32px; }
+}
+@media (max-width: 640px) {
+  .nav { padding: 12px 20px; }
+  .nav-links { display: none; }
+  .cat-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 44px; }
+}
 </style>
 </head>
 <body>
-  <div id="root"></div>
 
-  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<!-- ═══ NAV ═══════════════════════════════════════════════════ -->
+<nav class="nav" id="nav">
+  <a href="#" class="nav-brand">
+    <img src="assets/logomark.svg" width="32" height="32" alt="">
+    <span class="wm">farmei</span>
+  </a>
+  <div class="nav-links">
+    <a href="#categories">Eventos</a>
+    <a href="#showcase">Como funciona</a>
+    <a href="#stats">Números</a>
+    <a class="nav-cta" href="#showcase">Experimentar</a>
+  </div>
+</nav>
 
-  <script type="text/babel" src="ui_kits/mobile/ios-frame.jsx"></script>
-  <script type="text/babel" src="ui_kits/mobile/components.jsx"></script>
-  <script type="text/babel" src="ui_kits/mobile/screens-a.jsx"></script>
-  <script type="text/babel" src="ui_kits/mobile/screens-b.jsx"></script>
-  <script type="text/babel" src="ui_kits/mobile/screens-public.jsx"></script>
-  <script type="text/babel" src="ui_kits/mobile/screens-social.jsx"></script>
+<!-- ═══ HERO ══════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-shapes">
+    <div class="hero-shape s1"></div>
+    <div class="hero-shape s2"></div>
+    <div class="hero-shape s3"></div>
+    <div class="hero-shape s4"></div>
+    <div class="hero-shape s5"></div>
+  </div>
 
-  <script type="text/babel">
-    const STEPS = [
-      { key: 'onboarding',    name: 'Onboarding',      sub: 'Tela inicial' },
-      { key: 'home',          name: 'Home private',    sub: 'Lista de eventos' },
-      { key: 'create',        name: 'Novo privado',    sub: 'Título + janela' },
-      { key: 'invite',        name: 'Convidar',        sub: 'Pessoas e key person' },
-      { key: 'availability',  name: 'Disponibilidade', sub: 'Sim · talvez · não' },
-      { key: 'result',        name: 'IA escolhe',      sub: 'A melhor data' },
-      { key: 'confirmed',     name: 'Confirmado',      sub: 'Locked in 🎉' },
-      { key: 'public-home',   name: 'Home público',    sub: 'Eventos perto' },
-      { key: 'public-create', name: 'Novo público',    sub: 'Host um evento' },
-      { key: 'public-detail', name: 'Detalhes',        sub: 'Ver + se inscrever' },
-      { key: 'host-dash',     name: 'Host manager',    sub: 'Gerenciar inscritos' },
-      { key: 'crush-find',    name: 'Crush finder',    sub: 'Quem mais vai' },
-      { key: 'map',           name: 'Mapa',            sub: 'Eventos próximos' },
-      { key: 'stories',       name: 'Stories',         sub: 'O que rola lá' },
-    ];
+  <div class="hero-content reveal">
+    <div class="hero-eyebrow">
+      <span class="tag">Novo</span>
+      <span>A IA agenda com a galera</span>
+    </div>
+    <h1>
+      Onde os<br>
+      <span class="accent">eventos</span><br>
+      ganham vida<span class="dot"></span>
+    </h1>
+    <p class="hero-sub">
+      Cria evento privado com a galera — a IA escolhe o melhor dia.
+      Ou descobre o que tá rolando perto de você. Futebol, show, pagode, rolê.
+    </p>
+    <div class="hero-actions">
+      <button class="hero-btn-primary" onclick="document.getElementById('showcase').scrollIntoView({behavior:'smooth'})">
+        Cria teu primeiro evento
+      </button>
+      <button class="hero-btn-secondary" onclick="document.getElementById('categories').scrollIntoView({behavior:'smooth'})">
+        Ver o que rola
+      </button>
+    </div>
+  </div>
 
-    function Prototype() {
-      const [step, setStep] = React.useState(0);
+  <div class="hero-cards">
+    <div class="hero-card c1">
+      <span class="emoji">⚽</span>
+      <div class="info">
+        <div class="title">Futebol na Quadra</div>
+        <div class="meta">Sex · 19h · 8 vagas</div>
+      </div>
+      <div class="avatars">
+        <div class="av" style="background:#FF3B2E">R</div>
+        <div class="av" style="background:#2A6F7A">M</div>
+        <div class="av" style="background:#7A5BAA">J</div>
+      </div>
+    </div>
+    <div class="hero-card c2">
+      <span class="emoji">🎸</span>
+      <div class="info">
+        <div class="title">Show de Rock</div>
+        <div class="meta">Sáb · 22h · Lapa</div>
+      </div>
+      <div class="avatars">
+        <div class="av" style="background:#C99B00">D</div>
+        <div class="av" style="background:#2EA862">A</div>
+      </div>
+    </div>
+    <div class="hero-card c3">
+      <span class="emoji">🎉</span>
+      <div class="info">
+        <div class="title">Aniversário da Lí</div>
+        <div class="meta">Qua · 20h · Rooftop</div>
+      </div>
+      <div class="avatars">
+        <div class="av" style="background:#9D5C2C">L</div>
+        <div class="av" style="background:#3F3E3A">P</div>
+        <div class="av" style="background:#FF3B2E">S</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-      // Read from URL hash on mount so refresh keeps position
-      React.useEffect(() => {
-        const h = parseInt(window.location.hash.slice(1), 10);
-        if (!isNaN(h) && h >= 0 && h < STEPS.length) setStep(h);
-      }, []);
-      React.useEffect(() => {
-        window.location.hash = String(step);
-      }, [step]);
+<!-- ═══ STATS ═════════════════════════════════════════════════ -->
+<section class="stats" id="stats">
+  <div class="stat reveal" style="--i:0">
+    <div class="stat-num"><span class="counter" data-target="12400">0</span><span class="unit">+</span></div>
+    <div class="stat-label">Eventos criados</div>
+  </div>
+  <div class="stat reveal" style="--i:1">
+    <div class="stat-num"><span class="counter" data-target="48000">0</span><span class="unit">+</span></div>
+    <div class="stat-label">Pessoas conectadas</div>
+  </div>
+  <div class="stat reveal" style="--i:2">
+    <div class="stat-num"><span class="counter" data-target="320">0</span><span class="unit">+</span></div>
+    <div class="stat-label">Cidades ativas</div>
+  </div>
+  <div class="stat reveal" style="--i:3">
+    <div class="stat-num"><span class="counter" data-target="94">0</span><span class="unit">%</span></div>
+    <div class="stat-label">Dias encontrados de primeira</div>
+  </div>
+</section>
 
-      const go = (i) => setStep(Math.max(0, Math.min(STEPS.length - 1, i)));
+<!-- ═══ CATEGORIES ════════════════════════════════════════════ -->
+<section class="categories" id="categories">
+  <div class="section-header reveal">
+    <div class="section-eyebrow">O que tá rolando</div>
+    <h2 class="section-title">Escolhe teu rolê.</h2>
+    <p class="section-sub">Dos quadrilhas de futebol aos shows de domingo — tem evento pra cada vibe.</p>
+  </div>
+  <div class="cat-grid stagger">
+    <div class="cat-card reveal" style="--i:0; --bg: linear-gradient(135deg, #1a6b3a 0%, #0d4a25 100%);">
+      <div class="bg" style="background: var(--bg);"></div>
+      <div class="overlay"></div>
+      <div class="content">
+        <div class="emoji">⚽</div>
+        <div class="name">Futebol</div>
+        <div class="count">3.2k eventos este mês</div>
+      </div>
+    </div>
+    <div class="cat-card reveal" style="--i:1; --bg: linear-gradient(135deg, #7A5BAA 0%, #4a2d7a 100%);">
+      <div class="bg" style="background: var(--bg);"></div>
+      <div class="overlay"></div>
+      <div class="content">
+        <div class="emoji">🎸</div>
+        <div class="name">Shows</div>
+        <div class="count">1.8k eventos este mês</div>
+      </div>
+    </div>
+    <div class="cat-card reveal" style="--i:2; --bg: linear-gradient(135deg, #FF3B2E 0%, #a31a12 100%);">
+      <div class="bg" style="background: var(--bg);"></div>
+      <div class="overlay"></div>
+      <div class="content">
+        <div class="emoji">🎶</div>
+        <div class="name">Pagode & Samba</div>
+        <div class="count">2.5k eventos este mês</div>
+      </div>
+    </div>
+    <div class="cat-card reveal" style="--i:3; --bg: linear-gradient(135deg, #2A6F7A 0%, #1a4a52 100%);">
+      <div class="bg" style="background: var(--bg);"></div>
+      <div class="overlay"></div>
+      <div class="content">
+        <div class="emoji">🏐</div>
+        <div class="name">Vôlei & Praia</div>
+        <div class="count">1.4k eventos este mês</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-      const publicEvent = {
-        id: 1,
-        title: 'Show de Rock — Caverna Pub',
-        when: 'Sex · Jun 07 · 22:00',
-        location: 'Caverna Pub · Lapa',
-        category: 'Music',
-        people: SAMPLE_PEOPLE.slice(0, 5),
-        current: 24,
-        max: 80,
-        color: '#7A5BAA',
-      };
+<!-- ═══ TICKER ════════════════════════════════════════════════ -->
+<div class="ticker-section">
+  <div class="ticker-label">Eventos acontecendo agora</div>
+  <div class="ticker-track" id="ticker">
+    <div class="ticker-item"><span class="emoji">⚽</span><div class="info"><div class="ti-title">Pelada na JK</div><div class="ti-meta">Hoje · 19h · 6 vagas</div></div></div>
+    <div class="ticker-item"><span class="emoji">🎸</span><div class="info"><div class="ti-title">Sertanejo no Roof</div><div class="ti-meta">Sáb · 21h · 40 vagas</div></div></div>
+    <div class="ticker-item"><span class="emoji">🍕</span><div class="info"><div class="ti-title">Pizza Night</div><div class="ti-meta">Qui · 20h · 12 vagas</div></div></div>
+    <div class="ticker-item"><span class="emoji">🎉</span><div class="info"><div class="ti-title">Churras do Zé</div><div class="ti-meta">Dom · 12h · 20 vagas</div></div></div>
+    <div class="ticker-item"><span class="emoji">🏐</span><div class="info"><div class="ti-title">Vôlei de Praia</div><div class="ti-meta">Sex · 16h · 10 vagas</div></div></div>
+    <div class="ticker-item"><span class="emoji">🎤</span><div class="info"><div class="ti-title">Karaoke Bar</div><div class="ti-meta">Qua · 21h · 30 vagas</div></div></div>
+    <div class="ticker-item"><span class="emoji">🏃</span><div class="info"><div class="ti-title">Corrida de 5k</div><div class="ti-meta">Dom · 7h · 100 vagas</div></div></div>
+    <div class="ticker-item"><span class="emoji">🎭</span><div class="info"><div class="ti-title">Teatro Improviso</div><div class="ti-meta">Sex · 20h · 50 vagas</div></div></div>
+    <!-- duplicate for seamless loop -->
+    <div class="ticker-item"><span class="emoji">⚽</span><div class="info"><div class="ti-title">Pelada na JK</div><div class="ti-meta">Hoje · 19h · 6 vagas</div></div></div>
+    <div class="ticker-item"><span class="emoji">🎸</span><div class="info"><div class="ti-title">Sertanejo no Roof</div><div class="ti-meta">Sáb · 21h · 40 vagas</div></div></div>
+    <div class="ticker-item"><span class="emoji">🍕</span><div class="info"><div class="ti-title">Pizza Night</div><div class="ti-meta">Qui · 20h · 12 vagas</div></div></div>
+    <div class="ticker-item"><span class="emoji">🎉</span><div class="info"><div class="ti-title">Churras do Zé</div><div class="ti-meta">Dom · 12h · 20 vagas</div></div></div>
+    <div class="ticker-item"><span class="emoji">🏐</span><div class="info"><div class="ti-title">Vôlei de Praia</div><div class="ti-meta">Sex · 16h · 10 vagas</div></div></div>
+    <div class="ticker-item"><span class="emoji">🎤</span><div class="info"><div class="ti-title">Karaoke Bar</div><div class="ti-meta">Qua · 21h · 30 vagas</div></div></div>
+    <div class="ticker-item"><span class="emoji">🏃</span><div class="info"><div class="ti-title">Corrida de 5k</div><div class="ti-meta">Dom · 7h · 100 vagas</div></div></div>
+    <div class="ticker-item"><span class="emoji">🎭</span><div class="info"><div class="ti-title">Teatro Improviso</div><div class="ti-meta">Sex · 20h · 50 vagas</div></div></div>
+  </div>
+</div>
 
-      const screens = {
-        onboarding:   <OnboardingScreen   onContinue={() => go(1)} />,
-        home:         <HomeScreen         onNewEvent={() => go(2)} onOpen={() => go(6)} onChangeNav={(k) => { if (k === 'new') go(2); else if (k === 'public') go(7); }} />,
-        create:       <CreateScreen       onBack={() => go(1)}     onNext={() => go(3)} />,
-        invite:       <InviteScreen       onBack={() => go(2)}     onNext={() => go(4)} />,
-        availability: <AvailabilityScreen onBack={() => go(3)}     onNext={() => go(5)} />,
-        result:       <ResultScreen       onBack={() => go(4)}     onLock={() => go(6)} />,
-        confirmed:    <ConfirmedScreen    onBack={() => go(5)}     onHome={() => go(1)} />,
-        'public-home': <PublicEventsHome onNewPublic={() => go(8)} onOpen={() => go(9)} onChangeNav={(k) => { if (k === 'new') go(8); else if (k === 'home') go(1); }} />,
-        'public-create': <CreatePublicEvent onBack={() => go(7)} onNext={() => go(7)} />,
-        'public-detail': <PublicEventDetails event={publicEvent} onBack={() => go(7)} onJoin={() => alert('✓ Você está inscrito! Até lá.')} />,
-        'host-dash': <HostDashboard event={publicEvent} onBack={() => go(7)} />,
-        'crush-find': <CrushFinder onBack={() => go(7)} />,
-        'map': <MapView onBack={() => go(7)} onEventDetail={() => go(9)} />,
-        'stories': <EventStories event={publicEvent} onBack={() => go(9)} />,
-      };
+<!-- ═══ SHOWCASE (phone prototype) ════════════════════════════ -->
+<section class="showcase" id="showcase">
+  <div class="showcase-inner">
+    <div class="showcase-text">
+      <div class="section-eyebrow reveal">Protótipo interativo</div>
+      <h2 class="section-title reveal">Clica, navega,<br>experimenta.</h2>
+      <p class="section-sub reveal">14 telas mockadas que funcionam como o app real. Cada botão te leva pra próxima tela — do onboarding ao mapa.</p>
+      <div class="showcase-steps reveal" id="showcase-steps">
+        <!-- populated by JS -->
+      </div>
+    </div>
+    <div class="showcase-phone reveal-scale">
+      <div class="glow"></div>
+      <div id="phone-mount"></div>
+    </div>
+  </div>
+</section>
 
-      const current = STEPS[step];
+<!-- ═══ SOCIAL PROOF ══════════════════════════════════════════ -->
+<section class="social-proof reveal">
+  <div class="sp-avatars">
+    <div class="sp-av" style="background:#FF3B2E">R</div>
+    <div class="sp-av" style="background:#2A6F7A">M</div>
+    <div class="sp-av" style="background:#7A5BAA">J</div>
+    <div class="sp-av" style="background:#C99B00">D</div>
+    <div class="sp-av" style="background:#2EA862">A</div>
+    <div class="sp-av" style="background:#9D5C2C">L</div>
+    <div class="sp-av" style="background:#3F3E3A">P</div>
+  </div>
+  <p class="sp-text">
+    "<strong>Farmei mudou como a galera agenda.</strong> Antes era aquele grupo de WhatsApp infinito. Agora a IA resolve em 2 minutos."
+  </p>
+  <div class="sp-stars">★ ★ ★ ★ ★</div>
+</section>
 
-      return (
-        <div className="stage" data-screen-label="Protótipo Farmei">
-          <aside className="rail-l">
-            <div className="brand">
-              <img src="assets/logomark.svg" width="36" height="36" alt=""/>
-              <span className="wm">farmei</span>
-            </div>
-            <span className="pill"><span className="dot"></span>Protótipo clicável</span>
-            <h1 className="kicker">Clica no celular pra navegar.</h1>
-            <p className="lede">Cada CTA dentro do app te leva pra próxima tela — exatamente como funcionaria de verdade. Os dados são fictícios, mas o fluxo é real.</p>
-            <div className="tip">
-              <div className="label">Como testar</div>
-              <p>Começa em <strong>Onboarding</strong> e segue os botões. Pode também clicar nas etapas à direita pra pular direto pra qualquer tela.</p>
-            </div>
-          </aside>
+<!-- ═══ CTA ═══════════════════════════════════════════════════ -->
+<section class="cta-section reveal">
+  <h2>¡Vamos —<br> cria teu rolê.</h2>
+  <p>Grátis, pra sempre, pros eventos que importam. Sem cartão, sem frescura.</p>
+  <button class="cta-btn" onclick="document.getElementById('showcase').scrollIntoView({behavior:'smooth'})">
+    Começar agora
+  </button>
+</section>
 
-          <div className="phone-wrap">
-            <IOSDevice width={400} height={860}>{screens[current.key]}</IOSDevice>
-            <button className="reset-btn" onClick={() => go(0)}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12 a9 9 0 1 0 3 -6.7"/><path d="M3 4 V10 H9"/></svg>
-              Voltar ao início
-            </button>
+<!-- ═══ FOOTER ════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-brand">
+    <img src="assets/logomark.svg" width="24" height="24" alt="">
+    <span class="wm">farmei</span>
+  </div>
+  <div class="footer-copy">© 2026 Farmei. Todos os direitos reservados.</div>
+  <div class="footer-links">
+    <a href="#">Termos</a>
+    <a href="#">Privacidade</a>
+    <a href="#">Contato</a>
+  </div>
+</footer>
+
+<!-- ═══ SCRIPTS ═══════════════════════════════════════════════ -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="ui_kits/mobile/ios-frame.jsx"></script>
+<script type="text/babel" src="ui_kits/mobile/components.jsx"></script>
+<script type="text/babel" src="ui_kits/mobile/screens-a.jsx"></script>
+<script type="text/babel" src="ui_kits/mobile/screens-b.jsx"></script>
+<script type="text/babel" src="ui_kits/mobile/screens-public.jsx"></script>
+<script type="text/babel" src="ui_kits/mobile/screens-social.jsx"></script>
+
+<script type="text/babel">
+  /* ─── Prototype phone (embedded in showcase) ───────────────── */
+  const STEPS = [
+    { key: 'onboarding',    name: 'Onboarding',      sub: 'Tela inicial' },
+    { key: 'home',          name: 'Home private',    sub: 'Lista de eventos' },
+    { key: 'create',        name: 'Novo privado',    sub: 'Título + janela' },
+    { key: 'invite',        name: 'Convidar',        sub: 'Pessoas e key person' },
+    { key: 'availability',  name: 'Disponibilidade', sub: 'Sim · talvez · não' },
+    { key: 'result',        name: 'IA escolhe',      sub: 'A melhor data' },
+    { key: 'confirmed',     name: 'Confirmado',      sub: 'Locked in' },
+    { key: 'public-home',   name: 'Home público',    sub: 'Eventos perto' },
+    { key: 'public-create', name: 'Novo público',    sub: 'Host um evento' },
+    { key: 'public-detail', name: 'Detalhes',        sub: 'Ver + se inscrever' },
+    { key: 'host-dash',     name: 'Host manager',    sub: 'Gerenciar inscritos' },
+    { key: 'crush-find',    name: 'Crush finder',    sub: 'Quem mais vai' },
+    { key: 'map',           name: 'Mapa',            sub: 'Eventos próximos' },
+    { key: 'stories',       name: 'Stories',         sub: 'O que rola lá' },
+  ];
+
+  function PrototypePhone() {
+    const [step, setStep] = React.useState(0);
+    React.useEffect(() => {
+      const h = parseInt(window.location.hash.slice(1), 10);
+      if (!isNaN(h) && h >= 0 && h < STEPS.length) setStep(h);
+    }, []);
+    React.useEffect(() => { window.location.hash = String(step); }, [step]);
+    const go = (i) => setStep(Math.max(0, Math.min(STEPS.length - 1, i)));
+
+    const publicEvent = {
+      id: 1, title: 'Show de Rock — Caverna Pub', when: 'Sex · Jun 07 · 22:00',
+      location: 'Caverna Pub · Lapa', category: 'Music',
+      people: SAMPLE_PEOPLE.slice(0, 5), current: 24, max: 80, color: '#7A5BAA',
+    };
+
+    const screens = {
+      onboarding:   <OnboardingScreen   onContinue={() => go(1)} />,
+      home:         <HomeScreen         onNewEvent={() => go(2)} onOpen={() => go(6)} onChangeNav={(k) => { if (k === 'new') go(2); else if (k === 'public') go(7); }} />,
+      create:       <CreateScreen       onBack={() => go(1)}     onNext={() => go(3)} />,
+      invite:       <InviteScreen       onBack={() => go(2)}     onNext={() => go(4)} />,
+      availability: <AvailabilityScreen onBack={() => go(3)}     onNext={() => go(5)} />,
+      result:       <ResultScreen       onBack={() => go(4)}     onLock={() => go(6)} />,
+      confirmed:    <ConfirmedScreen    onBack={() => go(5)}     onHome={() => go(1)} />,
+      'public-home': <PublicEventsHome onNewPublic={() => go(8)} onOpen={() => go(9)} onChangeNav={(k) => { if (k === 'new') go(8); else if (k === 'home') go(1); }} />,
+      'public-create': <CreatePublicEvent onBack={() => go(7)} onNext={() => go(7)} />,
+      'public-detail': <PublicEventDetails event={publicEvent} onBack={() => go(7)} onJoin={() => alert('Inscrito!')} />,
+      'host-dash': <HostDashboard event={publicEvent} onBack={() => go(7)} />,
+      'crush-find': <CrushFinder onBack={() => go(7)} />,
+      'map': <MapView onBack={() => go(7)} onEventDetail={() => go(9)} />,
+      'stories': <EventStories event={publicEvent} onBack={() => go(9)} />,
+    };
+
+    const current = STEPS[step];
+
+    // Update showcase sidebar steps
+    React.useEffect(() => {
+      const container = document.getElementById('showcase-steps');
+      if (!container) return;
+      container.innerHTML = STEPS.map((s, i) => `
+        <div class="showcase-step ${i === step ? 'active' : ''}" data-step="${i}">
+          <div class="num">${String(i + 1).padStart(2, '0')}</div>
+          <div class="text">
+            <div class="st-title">${s.name}</div>
+            <div class="st-sub">${s.sub}</div>
           </div>
-
-          <aside className="rail-r">
-            <div className="h">Etapas do fluxo</div>
-            {STEPS.map((s, i) => (
-              <button key={s.key} className={"step " + (i === step ? "on" : "")} onClick={() => go(i)}>
-                <span className="n">{String(i + 1).padStart(2, '0')}</span>
-                <span>
-                  <div className="nm">{s.name}</div>
-                  <div className="sub">{s.sub}</div>
-                </span>
-              </button>
-            ))}
-          </aside>
         </div>
-      );
-    }
+      `).join('');
+      container.querySelectorAll('.showcase-step').forEach(el => {
+        el.addEventListener('click', () => go(parseInt(el.dataset.step)));
+      });
+    }, [step]);
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<Prototype/>);
-  </script>
+    return (
+      <div style={{ position: 'relative', zIndex: 2 }}>
+        <div style={{
+          width: 380, borderRadius: 32, overflow: 'hidden',
+          border: '3px solid #fff', boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          background: '#fff',
+        }}>
+          <IOSDevice width={380} height={780}>{screens[current.key]}</IOSDevice>
+        </div>
+        <div style={{ textAlign: 'center', marginTop: 16 }}>
+          <button onClick={() => go(0)} style={{
+            font: '600 13px/1 var(--font-body)', padding: '8px 16px', borderRadius: 999,
+            background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+            color: '#fff', cursor: 'pointer',
+          }}>
+            ↻ Recomeçar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('phone-mount')).render(<PrototypePhone />);
+</script>
+
+<script>
+/* ═══ Vanilla JS — scroll reveals, counters, nav ═════════════ */
+
+// Intersection Observer for reveals
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
+  revealObserver.observe(el);
+});
+
+// Animated counters
+function animateCounter(el) {
+  const target = parseInt(el.dataset.target, 10);
+  const duration = 2000;
+  const start = performance.now();
+  function tick(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    el.textContent = Math.floor(eased * target).toLocaleString('pt-BR');
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting && !e.target.dataset.counted) {
+      e.target.dataset.counted = '1';
+      animateCounter(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+
+// Nav scroll shadow
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+// Parallax on hero shapes
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  document.querySelectorAll('.hero-shape').forEach((el, i) => {
+    const speed = 0.1 + (i * 0.05);
+    el.style.transform = `translateY(${y * speed}px)`;
+  });
+}, { passive: true });
+</script>
+
 </body>
 </html>
