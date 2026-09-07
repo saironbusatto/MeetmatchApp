@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farmei — marque rolê de verdade com a galera</title>
+<meta name="description" content="Farmei é o app de eventos reais entre pessoas reais. Crie rolês privados, ache o melhor dia pra galera inteira e veja o que está rolando perto de você com lotação em tempo real.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Limelight&family=Poppins:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ---- design system: energetic (tokens.css :root, verbatim) ---- */
+:root {
+  --bg: #fff8d7;
+  --surface: #ffffff;
+  --surface-warm: #ffef9f;
+  --fg: #1d1836;
+  --fg-2: #4c426c;
+  --muted: #796f91;
+  --meta: #ff6b00;
+  --border: #eadfba;
+  --border-soft: #f5eccd;
+  --accent: #ff6b00;
+  --accent-on: #ffffff;
+  --accent-hover: color-mix(in oklab, var(--accent), black 8%);
+  --accent-active: color-mix(in oklab, var(--accent), black 14%);
+  --success: #2e9d57;
+  --warn: #ffb020;
+  --danger: #e5484d;
+  --font-display: Inter, system-ui, sans-serif;
+  --font-body: Inter, system-ui, sans-serif;
+  --font-mono: "SF Mono", ui-monospace, Menlo, monospace;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 24px;
+  --text-2xl: 36px;
+  --text-3xl: 54px;
+  --text-4xl: 76px;
+  --leading-body: 1.52;
+  --leading-tight: 1.06;
+  --tracking-display: -0.025em;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --section-y-desktop: 96px;
+  --section-y-tablet: 68px;
+  --section-y-phone: 48px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+  --elev-flat: none;
+  --elev-ring: 0 0 0 1px var(--border);
+  --elev-raised: 0 18px 44px rgba(29, 24, 54, 0.14);
+  --focus-ring: 0 0 0 4px rgba(255, 107, 0, 0.26);
+  --motion-fast: 150ms;
+  --motion-base: 240ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --container-max: 1180px;
+  --container-gutter-desktop: 36px;
+  --container-gutter-tablet: 24px;
+  --container-gutter-phone: 16px;
+}
+/* ---- energetic brand palette bindings (style foundations) ---- */
+:root {
+  --primary: #EA580B;
+  --secondary: #F59E0B;
+  --success-brand: #16A34A;
+  --warning-brand: #D97706;
+  --danger-brand: #DC2626;
+  --brand-bg: #FFEDD5;
+  --brand-surface: #FDBA74;
+  --brand-text: #EA580C;
+  --ink: var(--fg);
+  --ink-2: var(--fg-2);
+  --font-display: "Limelight", Georgia, serif;
+  --font-body: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --border-strong: #1d1836;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--brand-bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  overflow-x: hidden;
+}
+img, video, canvas, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-gutter-desktop);
+}
+section { padding-block: var(--section-y-desktop); }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--brand-text);
+  margin: 0 0 var(--space-4);
+}
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; margin: 0; }
+h2 {
+  font-size: clamp(30px, 5vw, var(--text-3xl));
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+h3 { font-size: var(--text-xl); line-height: 1.15; }
+p { margin: 0 0 var(--space-4); }
+.lead { font-size: var(--text-lg); color: var(--ink-2); max-width: 62ch; }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 52px;
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  cursor: pointer;
+  border: 3px solid var(--border-strong);
+  transition: transform var(--motion-fast) var(--ease-standard),
+              background-color var(--motion-fast) var(--ease-standard),
+              box-shadow var(--motion-fast) var(--ease-standard);
+}
+.btn:active { transform: translateY(2px); }
+.btn-primary {
+  background: var(--primary);
+  color: var(--accent-on);
+  box-shadow: 6px 6px 0 var(--border-strong);
+}
+.btn-primary:hover { background: #c94708; box-shadow: 3px 3px 0 var(--border-strong); transform: translateY(2px); }
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  box-shadow: none;
+}
+.btn-secondary:hover { background: var(--brand-surface); color: var(--ink); }
+.btn-ghost {
+  min-height: 44px;
+  border: 2px solid var(--border-strong);
+  background: transparent;
+  color: var(--ink);
+  padding: 0 var(--space-5);
+  font-size: var(--text-sm);
+}
+.btn-ghost:hover { background: var(--secondary); color: var(--border-strong); }
+.on-dark.btn-secondary { color: #fff; border-color: #fff; }
+.on-dark.btn-secondary:hover { background: #fff; color: var(--border-strong); }
+
+/* ---------- logo ---------- */
+.logomark {
+  width: 40px; height: 40px; flex: none;
+  display: grid; place-items: center;
+  background: var(--primary);
+  color: var(--accent-on);
+  border: 3px solid var(--border-strong);
+  border-radius: 12px;
+}
+.logomark svg { width: 100%; height: 100%; }
+.logomark text { font-family: var(--font-display); }
+.wordmark { font-family: var(--font-display); font-size: 26px; letter-spacing: 0.01em; }
+
+/* ---------- nav ---------- */
+.site-header {
+  position: sticky; top: 0; z-index: 40;
+  background: color-mix(in oklab, var(--brand-bg), transparent 8%);
+  backdrop-filter: blur(10px);
+  border-bottom: 3px solid var(--border-strong);
+}
+.nav {
+  display: flex; align-items: center; gap: var(--space-6);
+  min-height: 76px;
+}
+.brand { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; }
+.nav-links { display: flex; gap: var(--space-6); margin-left: auto; align-items: center; }
+.nav-links a {
+  font-size: var(--text-sm); font-weight: 500; text-decoration: none;
+  padding: 10px 4px; border-bottom: 2px solid transparent;
+}
+.nav-links a:hover { border-bottom-color: var(--primary); }
+
+/* ---------- hero ---------- */
+.hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex; align-items: center;
+  overflow: hidden;
+  padding-block: 120px;
+  border-bottom: 3px solid var(--border-strong);
+}
+.hero-media { position: absolute; inset: 0; z-index: 0; }
+.hero-media video { width: 100%; height: 100%; object-fit: cover; }
+.hero-media::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(29,24,54,.82) 0%, rgba(29,24,54,.66) 45%, rgba(234,88,11,.72) 100%);
+}
+.hero .container { position: relative; z-index: 1; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  background: var(--secondary); color: var(--border-strong);
+  border: 3px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  padding: 6px 16px 6px 6px;
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: var(--space-6);
+}
+.hero-badge .logomark { width: 30px; height: 30px; border-width: 2px; border-radius: 8px; }
+.hero h1 {
+  font-size: clamp(46px, 11vw, 132px);
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+  color: #fff;
+  margin: 0 0 var(--space-6);
+  max-width: 15ch;
+  text-shadow: 0 6px 30px rgba(29,24,54,.45);
+}
+.hero h1 .word { display: inline-block; white-space: nowrap; margin-right: 0.22em; }
+.hero h1 .ch { display: inline-block; opacity: 0; transform: translateY(0.4em) rotate(6deg); }
+.hero h1 .ch.on { opacity: 1; transform: none; transition: opacity 420ms var(--ease-standard), transform 420ms var(--ease-standard); }
+.hero h1 em { font-style: normal; color: var(--secondary); }
+.hero-sub { color: rgba(255,255,255,.92); font-size: clamp(17px, 2.1vw, 21px); max-width: 56ch; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-8); }
+.hero-stats {
+  display: flex; flex-wrap: wrap; gap: var(--space-8);
+  margin-top: 56px; padding-top: var(--space-6);
+  border-top: 2px solid rgba(255,255,255,.28);
+}
+.hero-stats div { color: #fff; }
+.hero-stats b { display: block; font-family: var(--font-display); font-size: 30px; line-height: 1.1; }
+.hero-stats span { font-size: var(--text-sm); color: rgba(255,255,255,.8); }
+
+/* ---------- marquee ---------- */
+.marquee-band {
+  background: var(--secondary);
+  border-block: 3px solid var(--border-strong);
+  padding-block: 34px;
+  overflow: hidden;
+  transform: rotate(-2.2deg) scale(1.06);
+  margin-block: -18px;
+  position: relative; z-index: 5;
+}
+.marquee-band + .marquee-band { background: var(--primary); transform: rotate(1.6deg) scale(1.06); }
+.marquee-track { display: flex; width: max-content; animation: slide 26s linear infinite; }
+.marquee-band + .marquee-band .marquee-track { animation-duration: 34s; animation-direction: reverse; }
+.marquee-track span {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 3.4vw, 40px);
+  color: var(--border-strong);
+  padding-inline: var(--space-6);
+  display: inline-flex; align-items: center; gap: var(--space-6);
+  white-space: nowrap;
+}
+.marquee-band + .marquee-band .marquee-track span { color: #fff; }
+.marquee-track span::after { content: "●"; font-size: 0.5em; opacity: .7; }
+@keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ---------- events grid ---------- */
+.section-head { display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: end; justify-content: space-between; margin-bottom: var(--space-12); }
+.section-head .lead { margin: var(--space-4) 0 0; }
+.filter-row { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-8); }
+.chip {
+  font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 600;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  border: 2px solid var(--border-strong); border-radius: var(--radius-pill);
+  padding: 8px 14px; background: transparent;
+}
+.chip[data-active="true"] { background: var(--border-strong); color: var(--brand-bg); }
+
+.grid-events { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); perspective: 1200px; }
+.event-card {
+  grid-column: span 1;
+  background: var(--surface);
+  border: 3px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 8px 8px 0 var(--border-strong);
+  transition: transform var(--motion-base) var(--ease-standard), box-shadow var(--motion-base) var(--ease-standard);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.event-card:hover { box-shadow: 14px 14px 0 var(--primary); }
+.event-card.wide { grid-column: span 2; }
+.event-media { position: relative; aspect-ratio: 4 / 3; background: var(--brand-surface); }
+.event-card.wide .event-media { aspect-ratio: 16 / 9; }
+.event-media img { width: 100%; height: 100%; object-fit: cover; }
+.event-tag {
+  position: absolute; top: 14px; left: 14px;
+  background: var(--border-strong); color: #fff;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 7px 12px; border-radius: var(--radius-pill);
+}
+.event-tag.privado { background: var(--secondary); color: var(--border-strong); }
+.event-body { padding: var(--space-6); }
+.event-body h3 { margin-bottom: 6px; }
+.event-place { font-size: var(--text-sm); color: var(--ink-2); margin-bottom: var(--space-5); }
+.event-place b { font-weight: 600; color: var(--ink); }
+.occ-row { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.05em; margin-bottom: 8px; }
+.occ-row .full { color: var(--danger-brand); }
+.occ-bar { height: 12px; border: 2px solid var(--border-strong); border-radius: var(--radius-pill); overflow: hidden; background: var(--brand-bg); }
+.occ-fill { height: 100%; width: 0; background: var(--primary); transition: width 1100ms var(--ease-standard); }
+.occ-fill.hot { background: var(--danger-brand); }
+.occ-fill.ok { background: var(--success-brand); }
+.avatars { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-5); }
+.stack { display: flex; }
+.stack span {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+  background: var(--brand-surface); color: var(--border-strong);
+  border: 2px solid var(--border-strong);
+  margin-left: -10px;
+}
+.stack span:first-child { margin-left: 0; }
+.stack span.alt { background: var(--secondary); }
+.stack span.more { background: var(--border-strong); color: #fff; }
+.avatars small { font-size: var(--text-xs); color: var(--ink-2); }
+
+/* ---------- app mock ---------- */
+.mock-section {
+  position: relative;
+  background: var(--border-strong);
+  color: #fff;
+  border-block: 3px solid var(--border-strong);
+  overflow: hidden;
+}
+.mock-section h2, .mock-section .lead { color: #fff; }
+.mock-section .lead { color: rgba(255,255,255,.82); }
+.mock-grid { display: grid; grid-template-columns: 1fr 400px; gap: 64px; align-items: center; position: relative; z-index: 2; }
+.mock-flow { display: flex; flex-direction: column; gap: var(--space-6); margin-top: var(--space-8); }
+.flow-step { display: flex; gap: var(--space-5); align-items: flex-start; }
+.flow-step .num {
+  font-family: var(--font-display); font-size: 22px;
+  width: 52px; height: 52px; flex: none;
+  display: grid; place-items: center;
+  border: 3px solid #fff; border-radius: 14px;
+  color: var(--secondary);
+}
+.flow-step[data-live="true"] .num { background: var(--primary); color: #fff; border-color: var(--primary); }
+.flow-step h3 { font-size: var(--text-lg); margin-bottom: 4px; }
+.flow-step p { color: rgba(255,255,255,.76); font-size: var(--text-sm); margin: 0; }
+.mock-tagline {
+  font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--secondary);
+  margin-top: var(--space-8);
+}
+
+.phone-wrap { position: relative; display: grid; place-items: center; }
+.phone {
+  position: relative; z-index: 2;
+  width: 320px; height: 650px;
+  background: var(--surface);
+  border: 6px solid #fff;
+  border-radius: 46px;
+  box-shadow: 0 30px 70px rgba(0,0,0,.5);
+  overflow: hidden;
+}
+.phone::before {
+  content: ""; position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  width: 110px; height: 26px; background: var(--border-strong); border-radius: var(--radius-pill); z-index: 5;
+}
+.screens { display: flex; height: 100%; transition: transform 620ms var(--ease-standard); }
+.screen { flex: 0 0 100%; padding: 58px 18px 18px; background: var(--brand-bg); color: var(--ink); overflow: hidden; }
+.screen-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
+.screen-top strong { font-family: var(--font-display); font-size: 19px; }
+.screen-top .dot { width: 28px; height: 28px; border-radius: 50%; background: var(--brand-surface); border: 2px solid var(--border-strong); }
+.mini-tabs { display: flex; gap: 6px; margin-bottom: var(--space-4); }
+.mini-tabs b, .mini-tabs i {
+  font-family: var(--font-mono); font-size: 10px; font-style: normal; font-weight: 600;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  padding: 6px 10px; border-radius: var(--radius-pill); border: 2px solid var(--border-strong);
+}
+.mini-tabs b { background: var(--border-strong); color: var(--brand-bg); }
+.mini-row {
+  display: flex; gap: 10px; align-items: center;
+  background: var(--surface); border: 2px solid var(--border-strong);
+  border-radius: 14px; padding: 10px; margin-bottom: 10px;
+}
+.mini-row .thumb { width: 46px; height: 46px; border-radius: 10px; flex: none; border: 2px solid var(--border-strong); overflow: hidden; background: var(--brand-surface); }
+.mini-row .thumb img { width: 100%; height: 100%; object-fit: cover; }
+.mini-row p { margin: 0; font-size: 12px; font-weight: 600; line-height: 1.25; }
+.mini-row small { font-size: 10px; color: var(--ink-2); font-family: var(--font-mono); }
+.mini-bar { height: 7px; border: 2px solid var(--border-strong); border-radius: var(--radius-pill); background: var(--brand-bg); margin-top: 5px; overflow: hidden; }
+.mini-bar i { display: block; height: 100%; background: var(--primary); }
+.mini-field { background: var(--surface); border: 2px solid var(--border-strong); border-radius: 12px; padding: 9px 11px; margin-bottom: 9px; }
+.mini-field label { display: block; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); }
+.mini-field span { font-size: 13px; font-weight: 600; }
+.mini-days { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 10px 0 14px; }
+.mini-days span {
+  text-align: center; font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  padding: 9px 0; border: 2px solid var(--border-strong); border-radius: 9px; background: var(--surface);
+}
+.mini-days span.pick { background: var(--secondary); }
+.mini-cta {
+  display: block; text-align: center; background: var(--primary); color: #fff;
+  border: 2px solid var(--border-strong); border-radius: var(--radius-pill);
+  padding: 11px; font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
+}
+.mini-hero {
+  text-align: center; background: var(--success-brand); color: #fff;
+  border: 2px solid var(--border-strong); border-radius: 18px; padding: 20px 14px; margin-bottom: 12px;
+}
+.mini-hero b { display: block; font-family: var(--font-display); font-size: 30px; line-height: 1.1; }
+.mini-hero small { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+.mini-note { font-size: 11px; color: var(--ink-2); text-align: center; margin: 12px 0 0; }
+.screen-dots { display: flex; gap: 8px; justify-content: center; margin-top: var(--space-6); position: relative; z-index: 3; }
+.screen-dots button {
+  width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+  border: 2px solid #fff; background: transparent; padding: 0;
+  display: grid; place-items: center;
+}
+.screen-dots button i { display: block; width: 9px; height: 9px; border-radius: 50%; background: #fff; opacity: .45; }
+.screen-dots button[aria-current="true"] { background: var(--primary); border-color: var(--primary); }
+.screen-dots button[aria-current="true"] i { opacity: 1; }
+
+.float-img {
+  position: absolute; z-index: 1;
+  border: 3px solid #fff; border-radius: var(--radius-md); overflow: hidden;
+  box-shadow: 0 20px 44px rgba(0,0,0,.45);
+  animation: float 7s ease-in-out infinite;
+}
+.float-img img { width: 100%; height: auto; }
+.float-a { width: 190px; top: 2%; left: -70px; transform: rotate(-7deg); }
+.float-b { width: 160px; bottom: 6%; right: -56px; transform: rotate(8deg); animation-delay: -2.5s; }
+.float-c { width: 150px; bottom: 34%; left: -96px; transform: rotate(5deg); animation-delay: -4.5s; }
+@keyframes float { 0%,100% { translate: 0 0; } 50% { translate: 0 -16px; } }
+#confetti-mock { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+
+/* ---------- how it works ---------- */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); counter-reset: s; }
+.step {
+  background: var(--surface);
+  border: 3px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  box-shadow: 8px 8px 0 var(--brand-surface);
+}
+.step:nth-child(2) { box-shadow: 8px 8px 0 var(--secondary); }
+.step:nth-child(3) { box-shadow: 8px 8px 0 var(--success-brand); }
+.step-num {
+  font-family: var(--font-display); font-size: 40px; line-height: 1;
+  color: var(--primary); margin-bottom: var(--space-5); display: block;
+}
+.step h3 { margin-bottom: var(--space-3); }
+.step p { color: var(--ink-2); font-size: var(--text-sm); margin: 0; }
+.step-icon { width: 30px; height: 30px; margin-bottom: var(--space-4); color: var(--border-strong); }
+
+/* ---------- proof ---------- */
+.proof { background: var(--brand-surface); border-block: 3px solid var(--border-strong); }
+.quotes { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-6); }
+.quote {
+  background: var(--surface); border: 3px solid var(--border-strong);
+  border-radius: var(--radius-lg); padding: var(--space-8);
+  display: flex; flex-direction: column; gap: var(--space-6);
+}
+.quote blockquote { margin: 0; font-family: var(--font-display); font-size: clamp(20px, 2.2vw, 26px); line-height: 1.24; letter-spacing: -0.01em; }
+.quote figcaption { display: flex; align-items: center; gap: var(--space-4); margin-top: auto; }
+.quote figcaption img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 3px solid var(--border-strong); flex: none; }
+.quote figcaption b { display: block; font-size: var(--text-sm); }
+.quote figcaption small { font-size: var(--text-xs); color: var(--ink-2); font-family: var(--font-mono); letter-spacing: 0.04em; }
+
+/* ---------- pricing ---------- */
+.plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); align-items: start; }
+.plan {
+  background: var(--surface); border: 3px solid var(--border-strong);
+  border-radius: var(--radius-lg); padding: var(--space-8);
+  display: flex; flex-direction: column; gap: var(--space-5);
+}
+.plan.featured { background: var(--border-strong); color: #fff; box-shadow: 10px 10px 0 var(--primary); }
+.plan.featured h3, .plan.featured .price { color: #fff; }
+.plan-flag {
+  align-self: flex-start;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: var(--secondary); color: var(--border-strong);
+  border: 2px solid var(--border-strong); border-radius: var(--radius-pill); padding: 5px 11px;
+}
+.price { font-family: var(--font-display); font-size: 44px; line-height: 1; }
+.price small { font-family: var(--font-body); font-size: 14px; font-weight: 500; opacity: .75; }
+.plan p.plan-for { font-size: var(--text-sm); color: var(--ink-2); margin: 0; }
+.plan.featured p.plan-for { color: rgba(255,255,255,.78); }
+.plan ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); font-size: var(--text-sm); }
+.plan li { display: flex; gap: 10px; align-items: flex-start; }
+.plan li svg { width: 18px; height: 18px; flex: none; margin-top: 3px; color: var(--success-brand); }
+.plan.featured li svg { color: var(--secondary); }
+.plan .btn { width: 100%; margin-top: auto; }
+
+/* ---------- final cta ---------- */
+.final {
+  position: relative; overflow: hidden;
+  background: var(--primary); color: #fff;
+  border-block: 3px solid var(--border-strong);
+  text-align: center;
+}
+.final .container { position: relative; z-index: 2; }
+.final h2 { color: #fff; font-size: clamp(52px, 10vw, 132px); line-height: 0.94; letter-spacing: -0.03em; }
+.final p { color: rgba(255,255,255,.9); font-size: var(--text-lg); max-width: 46ch; margin: var(--space-6) auto var(--space-8); }
+#confetti-final { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+
+/* ---------- footer ---------- */
+.site-footer { background: var(--border-strong); color: rgba(255,255,255,.76); padding-block: var(--space-12); }
+.footer-top { display: flex; flex-wrap: wrap; gap: var(--space-8); justify-content: space-between; align-items: flex-start; }
+.site-footer .brand { color: #fff; }
+.footer-note { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.05em; color: var(--secondary); margin: var(--space-4) 0 0; }
+.footer-cols { display: flex; flex-wrap: wrap; gap: 56px; }
+.footer-cols h4 { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; margin: 0 0 var(--space-4); }
+.footer-cols ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.footer-cols a { font-size: var(--text-sm); text-decoration: none; }
+.footer-cols a:hover { color: var(--secondary); text-decoration: underline; }
+.footer-bottom {
+  display: flex; flex-wrap: wrap; gap: var(--space-4); justify-content: space-between;
+  border-top: 2px solid rgba(255,255,255,.18); margin-top: var(--space-12); padding-top: var(--space-6);
+  font-size: var(--text-xs); font-family: var(--font-mono); letter-spacing: 0.04em;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1024px) {
+  .container { padding-inline: var(--container-gutter-tablet); }
+  section { padding-block: var(--section-y-tablet); }
+  .grid-events { grid-template-columns: repeat(2, 1fr); }
+  .event-card.wide { grid-column: span 2; }
+  .mock-grid { grid-template-columns: 1fr; gap: var(--space-12); }
+  .phone-wrap { order: -1; }
+  .float-a { left: 0; } .float-b { right: 0; } .float-c { left: 0; bottom: 8%; }
+  .steps { grid-template-columns: 1fr; }
+  .plans { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .container { padding-inline: var(--container-gutter-phone); }
+  section { padding-block: var(--section-y-phone); }
+  .nav-links a:not(.btn-ghost) { display: none; }
+  .nav { min-height: 66px; }
+  .hero { min-height: auto; padding-block: 96px 72px; }
+  .hero-stats { gap: var(--space-6); }
+  .grid-events { grid-template-columns: 1fr; }
+  .event-card.wide { grid-column: span 1; }
+  .event-card.wide .event-media { aspect-ratio: 4 / 3; }
+  .quotes { grid-template-columns: 1fr; }
+  .hero-actions .btn { width: 100%; }
+  .phone { width: 100%; max-width: 300px; height: 610px; }
+  .float-img { display: none; }
+  .marquee-band { padding-block: 22px; }
+}
+
+/* ---------- reduced motion ---------- */
+.reduce-motion .marquee-track { animation: none !important; transform: none !important; }
+.reduce-motion .float-img { animation: none !important; }
+.reduce-motion .screens { transition: none !important; }
+.reduce-motion .occ-fill { transition: none !important; }
+.reduce-motion .hero h1 .ch { opacity: 1 !important; transform: none !important; transition: none !important; }
+.reduce-motion .event-card { transform: none !important; }
+.reduce-motion html, .reduce-motion body { scroll-behavior: auto; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header" data-od-id="site-header">
+  <div class="container nav">
+    <a class="brand" href="#hero" data-od-id="brand-logo" aria-label="Farmei — início">
+      <span class="logomark" aria-hidden="true"><svg viewBox="0 0 200 200"><text x="100" y="172" text-anchor="middle" font-size="160" fill="currentColor">f</text></svg></span>
+      <span class="wordmark">Farmei</span>
+    </a>
+    <nav class="nav-links" aria-label="Navegação principal" data-od-id="nav-links">
+      <a href="#rolando" data-od-id="nav-rolando">O que está rolando</a>
+      <a href="#app" data-od-id="nav-app">O app</a>
+      <a href="#como-funciona" data-od-id="nav-como">Como funciona</a>
+      <a href="#planos" data-od-id="nav-planos">Planos</a>
+      <a class="btn btn-ghost" href="#btn-create" data-od-id="nav-cta">Entrar</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- 1. HERO -->
+<section class="hero" id="hero" data-od-id="hero">
+  <div class="hero-media" data-od-id="hero-video" aria-hidden="true">
+    <video id="hero-video" autoplay muted loop playsinline preload="metadata"
+           poster="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1600&q=80">
+      <source src="https://cdn.pixabay.com/video/2015/11/07/1275-145116912_medium.mp4" type="video/mp4">
+      <source src="https://cdn.pixabay.com/video/2015/11/03/1258-144566586_medium.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="container">
+    <p class="hero-badge" data-od-id="hero-badge">
+      <span class="logomark" aria-hidden="true"><svg viewBox="0 0 200 200"><text x="100" y="172" text-anchor="middle" font-size="160" fill="currentColor">f</text></svg></span>
+      Eventos reais, gente de verdade
+    </p>
+    <h1 data-od-id="hero-headline" data-reveal>A galera junta, <em>de verdade</em>.</h1>
+    <p class="hero-sub" data-od-id="hero-subhead">
+      O Farmei é onde você marca o rolê que funciona pra todo mundo — e descobre o que já está
+      acontecendo na sua rua agora, com lotação em tempo real. Presencial, no corpo, na hora.
+    </p>
+    <div class="hero-actions" data-od-id="hero-actions">
+      <a class="btn btn-primary" id="btn-create" href="#app" data-od-id="hero-cta-primary">Criar meu rolê</a>
+      <a class="btn btn-secondary on-dark" id="btn-browse" href="#rolando" data-od-id="hero-cta-secondary">Ver o que está rolando</a>
+    </div>
+    <div class="hero-stats" data-od-id="hero-stats">
+      <div data-od-id="hero-stat-cidades"><b>7 cidades</b><span>onde o Farmei já está no ar</span></div>
+      <div data-od-id="hero-stat-tempo"><b>2 min</b><span>é o que leva pra fechar a data</span></div>
+      <div data-od-id="hero-stat-lotacao"><b>Ao vivo</b><span>lotação atualizada a cada inscrição</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. MARQUEE -->
+<div class="marquee-band" data-od-id="marquee-band-1" aria-hidden="true">
+  <div class="marquee-track">
+    <span>rolê com a galera</span><span>lotação em tempo real</span><span>energia presencial</span><span>12 vagas</span><span>quadra ocupada</span><span>bora marcar</span>
+    <span>rolê com a galera</span><span>lotação em tempo real</span><span>energia presencial</span><span>12 vagas</span><span>quadra ocupada</span><span>bora marcar</span>
+  </div>
+</div>
+<div class="marquee-band" data-od-id="marquee-band-2" aria-hidden="true">
+  <div class="marquee-track">
+    <span>churrasco de sábado</span><span>o melhor dia pra todo mundo</span><span>¡Vamos!</span><span>volley às 18h</span><span>últimas 3 vagas</span><span>todo mundo é bem-vindo</span>
+    <span>churrasco de sábado</span><span>o melhor dia pra todo mundo</span><span>¡Vamos!</span><span>volley às 18h</span><span>últimas 3 vagas</span><span>todo mundo é bem-vindo</span>
+  </div>
+</div>
+
+<!-- 3. EVENTS GRID -->
+<section id="rolando" data-od-id="events-section">
+  <div class="container">
+    <div class="section-head" data-od-id="events-head">
+      <div>
+        <p class="eyebrow" data-od-id="events-eyebrow">O que está rolando</p>
+        <h2 data-od-id="events-title">Perto de você, hoje à noite</h2>
+        <p class="lead" data-od-id="events-lead">
+          Bares, quadras e espaços abrem seus eventos aqui. Você vê a lotação subindo em tempo real e
+          entra com um toque — sem grupo de mensagem, sem lista perdida.
+        </p>
+      </div>
+    </div>
+
+    <div class="filter-row" data-od-id="events-filters">
+      <span class="chip" data-active="true" data-od-id="filter-todos">Tudo</span>
+      <span class="chip" data-od-id="filter-esporte">Esporte</span>
+      <span class="chip" data-od-id="filter-musica">Música</span>
+      <span class="chip" data-od-id="filter-privado">Rolês privados</span>
+    </div>
+
+    <div class="grid-events" data-od-id="events-grid">
+
+      <article class="event-card wide" data-tilt data-od-id="event-card-rock">
+        <div class="event-media">
+          <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1400&q=80" alt="Plateia de mãos levantadas em um show de rock lotado" loading="lazy" width="1400" height="788">
+          <span class="event-tag">Público · Música</span>
+        </div>
+        <div class="event-body">
+          <h3>Rock na Fábrica — noite de banda nova</h3>
+          <p class="event-place">Galpão 7, Vila Madalena · <b>sexta, 21h</b></p>
+          <div class="occ-row"><span>74 de 80 inscritos</span><span class="full">últimas 6 vagas</span></div>
+          <div class="occ-bar"><i class="occ-fill hot" data-occ="93"></i></div>
+          <div class="avatars">
+            <div class="stack" aria-hidden="true"><span>R</span><span class="alt">M</span><span>J</span><span class="more">+71</span></div>
+            <small>Rafa, Mari, Juli e mais 71 pessoas confirmadas</small>
+          </div>
+        </div>
+      </article>
+
+      <article class="event-card" data-tilt data-od-id="event-card-futebol">
+        <div class="event-media">
+          <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=900&q=80" alt="Jogadores disputando a bola em uma partida de futebol" loading="lazy" width="900" height="675">
+          <span class="event-tag">Público · Esporte</span>
+        </div>
+        <div class="event-body">
+          <h3>Futebol de salão de quinta</h3>
+          <p class="event-place">Quadra do Zé, Santa Cecília · <b>quinta, 20h</b></p>
+          <div class="occ-row"><span>9 de 12 vagas</span><span>3 vagas</span></div>
+          <div class="occ-bar"><i class="occ-fill" data-occ="75"></i></div>
+          <div class="avatars">
+            <div class="stack" aria-hidden="true"><span>T</span><span class="alt">D</span><span class="more">+7</span></div>
+            <small>Thiago, Dani e mais 7 na lista</small>
+          </div>
+        </div>
+      </article>
+
+      <article class="event-card" data-tilt data-od-id="event-card-volley">
+        <div class="event-media">
+          <img src="https://pixabay.com/get/gf12ed0dce5875495f7e7d8a214a1f8d76b531a7aea015724445e8659e11d95ff2139bfa7c6999f97ec4b82d4e73ebf29f262263d9ec9a149ec41ea0013244dbf_1280.jpg" alt="Grupo jogando vôlei na areia no fim da tarde" loading="lazy" width="1280" height="960">
+          <span class="event-tag">Público · Esporte</span>
+        </div>
+        <div class="event-body">
+          <h3>Volley de praia no pôr do sol</h3>
+          <p class="event-place">Posto 6, orla · <b>sábado, 17h30</b></p>
+          <div class="occ-row"><span>10 de 10 vagas</span><span class="full">lotado — entre na fila</span></div>
+          <div class="occ-bar"><i class="occ-fill hot" data-occ="100"></i></div>
+          <div class="avatars">
+            <div class="stack" aria-hidden="true"><span>C</span><span class="alt">L</span><span class="more">+8</span></div>
+            <small>Carol, Léo e mais 8 confirmados</small>
+          </div>
+        </div>
+      </article>
+
+      <article class="event-card" data-tilt data-od-id="event-card-pagode">
+        <div class="event-media">
+          <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=900&q=80" alt="Pessoas dançando e cantando juntas em uma festa" loading="lazy" width="900" height="675">
+          <span class="event-tag">Público · Música</span>
+        </div>
+        <div class="event-body">
+          <h3>Pagodinho no bar da esquina</h3>
+          <p class="event-place">Bar do Nando, Lapa · <b>domingo, 16h</b></p>
+          <div class="occ-row"><span>28 de 40 lugares</span><span>enchendo rápido</span></div>
+          <div class="occ-bar"><i class="occ-fill" data-occ="70"></i></div>
+          <div class="avatars">
+            <div class="stack" aria-hidden="true"><span>V</span><span class="alt">B</span><span class="more">+26</span></div>
+            <small>Vera, Bruno e mais 26 pessoas vão</small>
+          </div>
+        </div>
+      </article>
+
+      <article class="event-card" data-tilt data-od-id="event-card-churrasco">
+        <div class="event-media">
+          <img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=900&q=80" alt="Mesa de churrasco servida com amigos em volta" loading="lazy" width="900" height="675">
+          <span class="event-tag privado">Privado · Convite</span>
+        </div>
+        <div class="event-body">
+          <h3>Churrasco da firma</h3>
+          <p class="event-place">Quintal do Marcinho · <b>o app fechou: sábado, 13h</b></p>
+          <div class="occ-row"><span>14 de 16 marcaram os dias</span><span>data fechada</span></div>
+          <div class="occ-bar"><i class="occ-fill ok" data-occ="88"></i></div>
+          <div class="avatars">
+            <div class="stack" aria-hidden="true"><span>M</span><span class="alt">P</span><span class="more">+12</span></div>
+            <small>Sábado foi o único dia que serviu pra galera inteira</small>
+          </div>
+        </div>
+      </article>
+
+      <article class="event-card wide" data-tilt data-od-id="event-card-tabuleiro">
+        <div class="event-media">
+          <img src="https://images.unsplash.com/photo-1520880867055-1e30d1cb001c?auto=format&fit=crop&w=1400&q=80" alt="Amigos reunidos à mesa conversando e rindo" loading="lazy" width="1400" height="788">
+          <span class="event-tag privado">Privado · Convite</span>
+        </div>
+        <div class="event-body">
+          <h3>Jogo de tabuleiro na casa da Bia</h3>
+          <p class="event-place">Perdizes · <b>o app achou: terça, 19h30</b></p>
+          <div class="occ-row"><span>6 de 6 responderam</span><span>todo mundo pode</span></div>
+          <div class="occ-bar"><i class="occ-fill ok" data-occ="100"></i></div>
+          <div class="avatars">
+            <div class="stack" aria-hidden="true"><span>B</span><span class="alt">G</span><span>N</span><span class="more">+3</span></div>
+            <small>Bia, Gu, Nina e mais 3 — ninguém ficou de fora</small>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- 3b. APP MOCK -->
+<section class="mock-section" id="app" data-od-id="app-mock-section">
+  <canvas id="confetti-mock" aria-hidden="true"></canvas>
+  <div class="container">
+    <div class="mock-grid">
+      <div data-od-id="app-mock-copy">
+        <p class="eyebrow" style="color:var(--secondary)" data-od-id="app-eyebrow">Dentro do app</p>
+        <h2 data-od-id="app-title">Três telas e o rolê está de pé</h2>
+        <p class="lead" data-od-id="app-lead">
+          Você abre, cria, chama a galera. Cada pessoa marca os dias que consegue e o app aponta o melhor
+          dia pra todo mundo — não o dia de quem respondeu primeiro.
+        </p>
+        <div class="mock-flow" data-od-id="app-flow">
+          <div class="flow-step" data-flow="0" data-live="true">
+            <span class="num">01</span>
+            <div><h3>Home do app</h3><p>Rolês públicos perto de você e os convites da sua turma no mesmo lugar.</p></div>
+          </div>
+          <div class="flow-step" data-flow="1">
+            <span class="num">02</span>
+            <div><h3>Criar evento</h3><p>Nome, lugar, os dias possíveis e quem você quer chamar. Leva menos de um minuto.</p></div>
+          </div>
+          <div class="flow-step" data-flow="2">
+            <span class="num">03</span>
+            <div><h3>Data confirmada</h3><p>Quando todo mundo responde, o app trava o dia que serve pra galera inteira.</p></div>
+          </div>
+        </div>
+        <p class="mock-tagline" data-od-id="app-tagline">cria → convida → rolou</p>
+      </div>
+
+      <div class="phone-wrap" data-od-id="app-phone">
+        <div class="float-img float-a" aria-hidden="true">
+          <img src="https://images.unsplash.com/photo-1607748725046-cd194b716604?auto=format&fit=crop&w=500&q=80" alt="" loading="lazy">
+        </div>
+        <div class="float-img float-b" aria-hidden="true">
+          <img src="https://images.unsplash.com/photo-1629217855633-79a6925d6c47?auto=format&fit=crop&w=500&q=80" alt="" loading="lazy">
+        </div>
+        <div class="float-img float-c" aria-hidden="true">
+          <img src="https://images.unsplash.com/photo-1434648957308-5e6a859697e8?auto=format&fit=crop&w=500&q=80" alt="" loading="lazy">
+        </div>
+
+        <div class="phone">
+          <div class="screens" id="screens">
+
+            <div class="screen" role="group" aria-label="Tela: início do app">
+              <div class="screen-top"><strong>Rolando agora</strong><span class="dot"></span></div>
+              <div class="mini-tabs"><b>Perto de mim</b><i>Meus convites</i></div>
+              <div class="mini-row">
+                <span class="thumb"><img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=160&q=70" alt="" loading="lazy"></span>
+                <div style="flex:1"><p>Futebol de salão</p><small>quinta 20h · 3 vagas</small><span class="mini-bar"><i style="width:75%"></i></span></div>
+              </div>
+              <div class="mini-row">
+                <span class="thumb"><img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=160&q=70" alt="" loading="lazy"></span>
+                <div style="flex:1"><p>Rock na Fábrica</p><small>sexta 21h · 6 vagas</small><span class="mini-bar"><i style="width:93%"></i></span></div>
+              </div>
+              <div class="mini-row">
+                <span class="thumb"><img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=160&q=70" alt="" loading="lazy"></span>
+                <div style="flex:1"><p>Pagodinho do Nando</p><small>domingo 16h · 12 lugares</small><span class="mini-bar"><i style="width:70%"></i></span></div>
+              </div>
+              <div class="mini-row">
+                <span class="thumb"><img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=160&q=70" alt="" loading="lazy"></span>
+                <div style="flex:1"><p>Churrasco da firma</p><small>convite da Ju · responda</small><span class="mini-bar"><i style="width:88%"></i></span></div>
+              </div>
+            </div>
+
+            <div class="screen" role="group" aria-label="Tela: criar evento">
+              <div class="screen-top"><strong>Novo rolê</strong><span class="dot"></span></div>
+              <div class="mini-field"><label>Nome</label><span>Churrasco da firma</span></div>
+              <div class="mini-field"><label>Onde</label><span>Quintal do Marcinho</span></div>
+              <div class="mini-field"><label>Quem vai</label><span>16 pessoas convidadas</span></div>
+              <label style="font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)">Dias que eu consigo</label>
+              <div class="mini-days">
+                <span>qui 12</span><span class="pick">sex 13</span><span class="pick">sáb 14</span><span>dom 15</span>
+                <span>qui 19</span><span class="pick">sáb 21</span><span>dom 22</span><span>sex 27</span>
+              </div>
+              <span class="mini-cta">Convidar a galera</span>
+              <p class="mini-note">Cada pessoa marca os dias dela. Ninguém precisa combinar no grupo.</p>
+            </div>
+
+            <div class="screen" role="group" aria-label="Tela: data confirmada">
+              <div class="screen-top"><strong>Rolou!</strong><span class="dot"></span></div>
+              <div class="mini-hero"><small>melhor dia pra galera</small><b>sábado, 14</b><small>13h · quintal do Marcinho</small></div>
+              <div class="mini-row"><div style="flex:1"><p>14 de 16 podem no sábado</p><small>o dia com mais gente livre</small><span class="mini-bar"><i style="width:88%"></i></span></div></div>
+              <div class="mini-row"><div style="flex:1"><p>sexta 13 — 9 de 16</p><small>ficaria muita gente de fora</small><span class="mini-bar"><i style="width:56%;background:var(--brand-surface)"></i></span></div></div>
+              <span class="mini-cta">Avisar todo mundo</span>
+              <p class="mini-note">O convite entra no calendário de quem confirmou.</p>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="screen-dots" role="tablist" aria-label="Telas do app" data-od-id="app-screen-dots">
+          <button type="button" role="tab" aria-current="true" aria-label="Home do app"><i></i></button>
+          <button type="button" role="tab" aria-current="false" aria-label="Criar evento"><i></i></button>
+          <button type="button" role="tab" aria-current="false" aria-label="Data confirmada"><i></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. COMO FUNCIONA -->
+<section id="como-funciona" data-od-id="how-section">
+  <div class="container">
+    <div class="section-head" data-od-id="how-head">
+      <div>
+        <p class="eyebrow" data-od-id="how-eyebrow">Como funciona</p>
+        <h2 data-od-id="how-title">Cria, convida, rolou</h2>
+        <p class="lead" data-od-id="how-lead">
+          Serve pro almoço que planeja o Q3 e serve pro churrasco de domingo. Qualquer idade, qualquer
+          turma, qualquer motivo pra sair de casa.
+        </p>
+      </div>
+    </div>
+    <div class="steps" data-od-id="how-steps">
+      <div class="step" data-od-id="how-step-cria">
+        <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18M12 14v4M10 16h4"/></svg>
+        <span class="step-num">1</span>
+        <h3>Cria</h3>
+        <p>Dá um nome ao rolê, escolhe o lugar e marca os dias que você consegue. Churrasco, jogo de tabuleiro, almoço de trabalho — tanto faz, tudo cabe.</p>
+      </div>
+      <div class="step" data-od-id="how-step-convida">
+        <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+        <span class="step-num">2</span>
+        <h3>Convida</h3>
+        <p>Chama exatamente quem você quer. Cada pessoa abre e marca os dias dela em segundos — sem enquete perdida no meio de trezentas mensagens.</p>
+      </div>
+      <div class="step" data-od-id="how-step-rolou">
+        <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/><path d="M22 12a10 10 0 1 1-5-8.66"/></svg>
+        <span class="step-num">3</span>
+        <h3>Rolou</h3>
+        <p>O app cruza as respostas e mostra o melhor dia pra galera inteira. Data fechada, todo mundo avisado, você só precisa aparecer.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. SOCIAL PROOF -->
+<section class="proof" data-od-id="proof-section">
+  <div class="container">
+    <div class="section-head" data-od-id="proof-head">
+      <div>
+        <p class="eyebrow" data-od-id="proof-eyebrow">Quem já marcou</p>
+        <h2 data-od-id="proof-title">Gente que trocou o grupo parado por um rolê marcado</h2>
+      </div>
+    </div>
+    <div class="quotes" data-od-id="proof-quotes">
+
+      <figure class="quote" data-od-id="quote-futebol">
+        <blockquote>“Marcamos o futebol de quinta em 2 minutos. Antes a gente passava a semana inteira discutindo dia no grupo e no fim ninguém ia.”</blockquote>
+        <figcaption>
+          <img src="https://pixabay.com/get/g8c9a892bed085e78ffed590f192adc537f3fb688300f4532fda91c4acd0b41a679da3b8675754e30639406e72c2fd5e3ef0c9942f97dca75ad02a63d70fe6492_1280.jpg" alt="Thiago, participante de rolês de futebol" loading="lazy">
+          <div><b>Thiago Meireles</b><small>joga na quadra do Zé · Santa Cecília</small></div>
+        </figcaption>
+      </figure>
+
+      <figure class="quote" data-od-id="quote-show">
+        <blockquote>“A lotação em tempo real salvou o show. Vi que estava em 74 de 80 e saí de casa correndo — cheguei e ainda peguei lugar.”</blockquote>
+        <figcaption>
+          <img src="https://pixabay.com/get/gc529b6d567b723876ec58852fa49c44b69c3ac1ac31dfda2c9b21cd9234260ca1e00edc3163c94af2df0c77610cab26015b581f83a816c116542998a3c9e94eb_1280.jpg" alt="Mariana, frequentadora de shows" loading="lazy">
+          <div><b>Mariana Doria</b><small>vai a show toda sexta · Vila Madalena</small></div>
+        </figcaption>
+      </figure>
+
+      <figure class="quote" data-od-id="quote-churrasco">
+        <blockquote>“Achei o melhor dia pro churrasco da firma sem mandar uma mensagem sequer. Dezesseis pessoas, um sábado, todo mundo apareceu.”</blockquote>
+        <figcaption>
+          <img src="https://pixabay.com/get/g561ab29dd83532c29f070ef6ad69bbcf4a9f869a280af26aa57b6d7e44fd9c1f6933aa1e5fec4ba3fe36311365827762c5ceffef41a0e9194d254a5e08ac576a_1280.jpg" alt="Juliana, organizadora do churrasco da firma" loading="lazy">
+          <div><b>Juliana Prado</b><small>organiza o churrasco da firma · Perdizes</small></div>
+        </figcaption>
+      </figure>
+
+      <figure class="quote" data-od-id="quote-quadra">
+        <blockquote>“Abri a quadra no Farmei e ela virou ponto de encontro do bairro. Agora eu sei quantas pessoas vêm antes de acender a luz.”</blockquote>
+        <figcaption>
+          <img src="https://pixabay.com/get/ga38227a36f8233cf480d2c39846d377e6ae65b450b103cf85d3ac203a941e7fd7a6fa6a204d09322acbced8d74d7cc662f12993dabc9c435bc68da671c4ae275_1280.jpg" alt="Zé, dono da quadra de salão" loading="lazy">
+          <div><b>Zé Bonfim</b><small>dono da quadra do Zé · plano Org</small></div>
+        </figcaption>
+      </figure>
+
+    </div>
+  </div>
+</section>
+
+<!-- 6. PRICING -->
+<section id="planos" data-od-id="pricing-section">
+  <div class="container">
+    <div class="section-head" data-od-id="pricing-head">
+      <div>
+        <p class="eyebrow" data-od-id="pricing-eyebrow">Planos</p>
+        <h2 data-od-id="pricing-title">Marcar rolê é de graça. Sempre.</h2>
+        <p class="lead" data-od-id="pricing-lead">
+          Os planos pagos existem pra quem abre eventos pro público e precisa controlar lotação, lista e
+          check-in. Juntar a sua galera não custa nada.
+        </p>
+      </div>
+    </div>
+    <div class="plans" data-od-id="pricing-plans">
+
+      <div class="plan" data-od-id="plan-gratis">
+        <h3>Grátis</h3>
+        <p class="price">R$ 0 <small>pra sempre</small></p>
+        <p class="plan-for">Pra você e sua turma marcarem rolê sem burocracia.</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Rolês privados ilimitados</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Melhor dia pra galera inteira</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Convite por link, sem cadastro pra responder</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Ver os eventos públicos da sua cidade</li>
+        </ul>
+        <a class="btn btn-secondary" href="#btn-create" data-od-id="plan-gratis-cta">Começar de graça</a>
+      </div>
+
+      <div class="plan featured" data-od-id="plan-crew">
+        <span class="plan-flag">Mais escolhido</span>
+        <h3>Crew</h3>
+        <p class="price">R$ 19 <small>/ mês</small></p>
+        <p class="plan-for">Pra quem organiza rolê aberto e quer gente nova aparecendo.</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Tudo do Grátis</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Eventos públicos ilimitados</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Lotação máxima e barra em tempo real</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Fila de espera automática quando lota</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Avisos de última hora pra quem se inscreveu</li>
+        </ul>
+        <a class="btn btn-primary" href="#btn-create" data-od-id="plan-crew-cta">Assinar o Crew</a>
+      </div>
+
+      <div class="plan" data-od-id="plan-org">
+        <h3>Org / Galera</h3>
+        <p class="price">R$ 89 <small>/ mês por espaço</small></p>
+        <p class="plan-for">Pra bar, quadra e espaço que vive de gente entrando pela porta.</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Tudo do Crew</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Página própria do seu espaço</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Inscrição e confirmação de presença</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Check-in na porta pelo celular</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Exportar lista de quem veio</li>
+        </ul>
+        <a class="btn btn-secondary" href="#btn-create" data-od-id="plan-org-cta">Falar sobre o Org</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 7. CTA FINAL -->
+<section class="final" data-od-id="final-cta">
+  <canvas id="confetti-final" aria-hidden="true"></canvas>
+  <div class="container">
+    <h2 data-od-id="final-headline">Bora marcar?</h2>
+    <p data-od-id="final-sub">Escolhe o rolê, chama a galera e deixa o resto com o app. Todo mundo é bem-vindo — qualquer idade, qualquer tribo.</p>
+    <a class="btn btn-primary" href="#btn-create" style="background:var(--border-strong);border-color:#fff;box-shadow:6px 6px 0 #fff" data-od-id="final-cta-button">Criar meu rolê agora</a>
+  </div>
+</section>
+
+</main>
+
+<!-- 8. FOOTER -->
+<footer class="site-footer" data-od-id="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div data-od-id="footer-brand">
+        <a class="brand" href="#hero" aria-label="Farmei — início">
+          <span class="logomark" aria-hidden="true"><svg viewBox="0 0 200 200"><text x="100" y="172" text-anchor="middle" font-size="160" fill="currentColor">f</text></svg></span>
+          <span class="wordmark">Farmei</span>
+        </a>
+        <p class="footer-note" data-od-id="footer-note">Feito pra gente marcar rolê de verdade. ¡Vamos!</p>
+      </div>
+      <div class="footer-cols" data-od-id="footer-links">
+        <div>
+          <h4>O app</h4>
+          <ul>
+            <li><a href="#rolando">O que está rolando</a></li>
+            <li><a href="#app">Rolês privados</a></li>
+            <li><a href="#como-funciona">Como funciona</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Pra espaços</h4>
+          <ul>
+            <li><a href="#planos">Planos</a></li>
+            <li><a href="#planos">Check-in e lista</a></li>
+            <li><a href="#planos">Falar com a gente</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Farmei</h4>
+          <ul>
+            <li><a href="#hero">Sobre</a></li>
+            <li><a href="#hero">Privacidade</a></li>
+            <li><a href="#hero">Termos</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-od-id="footer-copyright">© 2026 Farmei</span>
+      <span data-od-id="footer-tagline">eventos reais entre pessoas reais</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+  function applyMotionPref() {
+    document.documentElement.classList.toggle("reduce-motion", mq.matches);
+    var v = document.getElementById("hero-video");
+    if (v) { if (mq.matches) { v.pause(); v.removeAttribute("autoplay"); } else { v.play().catch(function () {}); } }
+  }
+  applyMotionPref();
+  (mq.addEventListener ? mq.addEventListener("change", applyMotionPref) : mq.addListener(applyMotionPref));
+  var reduced = function () { return mq.matches; };
+
+  /* hero: letter-by-letter reveal, split per word so lines never break mid-word */
+  (function () {
+    var h = document.querySelector("[data-reveal]");
+    if (!h) return;
+    var i = 0;
+    var out = document.createDocumentFragment();
+    Array.prototype.forEach.call(h.childNodes, function (node) {
+      var em = node.nodeType === 1 && node.tagName === "EM";
+      (node.textContent || "").split(/(\s+)/).forEach(function (word) {
+        if (!word.trim()) return;
+        var w = document.createElement("span");
+        w.className = "word";
+        word.split("").forEach(function (c) {
+          var s = document.createElement("span");
+          s.className = "ch";
+          s.textContent = c;
+          s.style.transitionDelay = (i++ * 26) + "ms";
+          w.appendChild(s);
+        });
+        if (em) {
+          var wrap = document.createElement("em");
+          wrap.appendChild(w);
+          out.appendChild(wrap);
+        } else {
+          out.appendChild(w);
+        }
+      });
+    });
+    h.textContent = "";
+    h.appendChild(out);
+    requestAnimationFrame(function () {
+      Array.prototype.forEach.call(h.querySelectorAll(".ch"), function (s) { s.classList.add("on"); });
+    });
+  })();
+
+  /* occupancy bars fill when scrolled into view */
+  (function () {
+    var bars = document.querySelectorAll(".occ-fill");
+    var fill = function (el) { el.style.width = el.getAttribute("data-occ") + "%"; };
+    if (!("IntersectionObserver" in window)) { Array.prototype.forEach.call(bars, fill); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { fill(e.target); io.unobserve(e.target); } });
+    }, { threshold: 0.4 });
+    Array.prototype.forEach.call(bars, function (b) { io.observe(b); });
+  })();
+
+  /* 3D tilt on event cards (pointer only) */
+  (function () {
+    if (!window.matchMedia("(hover: hover)").matches) return;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-tilt]"), function (card) {
+      card.addEventListener("pointermove", function (e) {
+        if (reduced()) return;
+        var r = card.getBoundingClientRect();
+        var x = (e.clientX - r.left) / r.width - 0.5;
+        var y = (e.clientY - r.top) / r.height - 0.5;
+        card.style.transform = "rotateY(" + (x * 9).toFixed(2) + "deg) rotateX(" + (-y * 9).toFixed(2) + "deg) translateZ(6px)";
+      });
+      card.addEventListener("pointerleave", function () { card.style.transform = ""; });
+    });
+  })();
+
+  /* phone mock: auto-advancing screens + dots + swipe */
+  (function () {
+    var screens = document.getElementById("screens");
+    if (!screens) return;
+    var dots = document.querySelectorAll(".screen-dots button");
+    var flows = document.querySelectorAll(".flow-step");
+    var total = screens.children.length;
+    var idx = 0, timer = null;
+
+    function go(n) {
+      idx = (n + total) % total;
+      screens.style.transform = "translateX(" + (-idx * 100) + "%)";
+      Array.prototype.forEach.call(dots, function (d, i) { d.setAttribute("aria-current", String(i === idx)); });
+      Array.prototype.forEach.call(flows, function (f, i) { f.setAttribute("data-live", String(i === idx)); });
+    }
+    function autoplay() {
+      clearInterval(timer);
+      if (reduced()) return;
+      timer = setInterval(function () { go(idx + 1); }, 3200);
+    }
+    Array.prototype.forEach.call(dots, function (d, i) {
+      d.addEventListener("click", function () { go(i); autoplay(); });
+    });
+    Array.prototype.forEach.call(flows, function (f, i) {
+      f.addEventListener("click", function () { go(i); autoplay(); });
+    });
+
+    var startX = null;
+    screens.addEventListener("pointerdown", function (e) { startX = e.clientX; });
+    screens.addEventListener("pointerup", function (e) {
+      if (startX === null) return;
+      var d = e.clientX - startX;
+      startX = null;
+      if (Math.abs(d) > 40) { go(idx + (d < 0 ? 1 : -1)); autoplay(); }
+    });
+
+    go(0);
+    autoplay();
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) { clearInterval(timer); } else { autoplay(); }
+    });
+  })();
+
+  /* confetti — runs only while the host section is on screen */
+  function confetti(canvasId, colors) {
+    var canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    var ctx = canvas.getContext("2d");
+    var host = canvas.parentElement;
+    var bits = [], raf = null, running = false;
+
+    function size() {
+      canvas.width = host.offsetWidth;
+      canvas.height = host.offsetHeight;
+    }
+    function seed() {
+      bits = [];
+      var n = Math.max(24, Math.round(canvas.width / 22));
+      for (var i = 0; i < n; i++) {
+        bits.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          w: 6 + Math.random() * 8,
+          h: 9 + Math.random() * 12,
+          vy: 0.7 + Math.random() * 1.6,
+          vx: -0.5 + Math.random(),
+          rot: Math.random() * Math.PI,
+          vr: -0.05 + Math.random() * 0.1,
+          c: colors[i % colors.length]
+        });
+      }
+    }
+    function frame() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      bits.forEach(function (b) {
+        b.y += b.vy; b.x += b.vx; b.rot += b.vr;
+        if (b.y > canvas.height + 20) { b.y = -20; b.x = Math.random() * canvas.width; }
+        ctx.save();
+        ctx.translate(b.x, b.y);
+        ctx.rotate(b.rot);
+        ctx.fillStyle = b.c;
+        ctx.fillRect(-b.w / 2, -b.h / 2, b.w, b.h);
+        ctx.restore();
+      });
+      raf = requestAnimationFrame(frame);
+    }
+    function start() {
+      if (running || reduced()) return;
+      running = true; size(); seed(); frame();
+    }
+    function stop() {
+      running = false;
+      if (raf) cancelAnimationFrame(raf);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    window.addEventListener("resize", function () { if (running) { size(); seed(); } });
+    (mq.addEventListener ? mq.addEventListener("change", function () { stop(); }) : null);
+
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { e.isIntersecting ? start() : stop(); });
+      }, { threshold: 0.15 }).observe(host);
+    } else { start(); }
+  }
+  confetti("confetti-final", ["#F59E0B", "#FFEDD5", "#FDBA74", "#ffffff"]);
+  confetti("confetti-mock", ["#EA580B", "#F59E0B", "#FDBA74", "#16A34A"]);
+
+  /* filter chips are a visual state only in this static page */
+  Array.prototype.forEach.call(document.querySelectorAll(".chip"), function (chip) {
+    chip.setAttribute("tabindex", "0");
+    chip.addEventListener("click", function () {
+      document.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("data-active", "false"); });
+      chip.setAttribute("data-active", "true");
+    });
+  });
+})();
+</script>
+</body>
+</html>
