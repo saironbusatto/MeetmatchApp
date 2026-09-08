@@ -2,9 +2,9 @@ import { randomUUID } from "node:crypto";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
-import { suggestDate } from "@farmei/utils";
+import { suggestSlot, TIME_SLOTS } from "@farmei/utils";
 import { requireAuth } from "../middleware/auth";
-import { db, nowIso } from "../store";
+import { db, nowIso, type TimeSlot } from "../store";
 
 const createSchemaBase = z.object({
   title: z.string().min(1),
@@ -12,7 +12,8 @@ const createSchemaBase = z.object({
   locationText: z.string().optional(),
   dateWindowStart: z.string().date(),
   dateWindowEnd: z.string().date(),
-  keyPersonUserId: z.string().uuid().optional()
+  keyPersonUserId: z.string().uuid().optional(),
+  quorumMin: z.number().int().min(1).optional()
 });
 
 const createSchema = createSchemaBase
@@ -24,13 +25,15 @@ const updateSchema = createSchemaBase.partial();
 
 const participantSchema = z.object({
   email: z.string().email().optional(),
-  userId: z.string().uuid().optional()
+  userId: z.string().uuid().optional(),
+  indicatedBy: z.array(z.string().uuid()).optional()
 }).refine((v) => v.email || v.userId, { message: "email or userId is required" });
 
 const availabilitySchema = z.object({
   inviteToken: z.string().uuid().optional(),
   responses: z.array(z.object({
     date: z.string().date(),
+    slot: z.enum(TIME_SLOTS),
     response: z.enum(["YES", "MAYBE", "NO"])
   })).min(1)
 });
@@ -57,6 +60,27 @@ function getOrCreateParticipantByToken(token: string) {
   const participantId = db.participantsByInviteToken.get(token);
   if (!participantId) return null;
   return db.participants.get(participantId) ?? null;
+}
+
+function buildSlotVotes(eventId: string) {
+  const rows = [...db.availability.values()].filter((item) => item.eventId === eventId);
+  const completed = rows.filter((r) => {
+    const participant = db.participants.get(r.participantId);
+    return participant?.inviteStatus === "ACCEPTED";
+  });
+
+  const byPair = new Map<string, Array<{ participantId: string; choice: "YES" | "MAYBE" | "NO" }>>();
+  for (const row of completed) {
+    const key = `${row.date}|${row.slot}`;
+    const bucket = byPair.get(key) ?? [];
+    bucket.push({ participantId: row.participantId, choice: row.response });
+    byPair.set(key, bucket);
+  }
+
+  return [...byPair.entries()].map(([key, responses]) => {
+    const [date, slot] = key.split("|");
+    return { date: date!, slot: slot as TimeSlot, responses };
+  });
 }
 
 export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: string } } }>()
@@ -87,6 +111,7 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
       locationText: payload.locationText ?? null,
       status: "DRAFT" as const,
       confirmedDate: null,
+      confirmedSlot: null,
       createdAt: nowIso(),
       updatedAt: nowIso()
     };
@@ -97,7 +122,7 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
       dateWindowStart: payload.dateWindowStart,
       dateWindowEnd: payload.dateWindowEnd,
       keyPersonUserId: payload.keyPersonUserId ?? null,
-      keyPersonWeight: 3
+      quorumMin: payload.quorumMin ?? 1
     });
 
     const ownerParticipant = {
@@ -108,7 +133,8 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
       nameSnapshot: null,
       role: "OWNER" as const,
       inviteStatus: "ACCEPTED" as const,
-      inviteToken: randomUUID()
+      inviteToken: randomUUID(),
+      indicatedBy: null
     };
     db.participants.set(ownerParticipant.id, ownerParticipant);
     db.participantsByInviteToken.set(ownerParticipant.inviteToken, ownerParticipant.id);
@@ -146,7 +172,8 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
       ...found.settings,
       dateWindowStart: payload.dateWindowStart ?? found.settings.dateWindowStart,
       dateWindowEnd: payload.dateWindowEnd ?? found.settings.dateWindowEnd,
-      keyPersonUserId: payload.keyPersonUserId ?? found.settings.keyPersonUserId
+      keyPersonUserId: payload.keyPersonUserId ?? found.settings.keyPersonUserId,
+      quorumMin: payload.quorumMin ?? found.settings.quorumMin
     };
 
     if (nextSettings.dateWindowEnd < nextSettings.dateWindowStart) {
@@ -184,7 +211,8 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
       nameSnapshot: null,
       role: "INVITEE" as const,
       inviteStatus: "PENDING" as const,
-      inviteToken: randomUUID()
+      inviteToken: randomUUID(),
+      indicatedBy: payload.indicatedBy ?? null
     };
 
     db.participants.set(participant.id, participant);
@@ -235,7 +263,11 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
 
     for (const answer of payload.responses) {
       const existing = [...db.availability.values()].find(
-        (item) => item.eventId === eventId && item.participantId === participant.id && item.date === answer.date
+        (item) =>
+          item.eventId === eventId &&
+          item.participantId === participant.id &&
+          item.date === answer.date &&
+          item.slot === answer.slot
       );
 
       if (existing) {
@@ -246,6 +278,7 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
           eventId,
           participantId: participant.id,
           date: answer.date,
+          slot: answer.slot,
           response: answer.response
         };
         db.availability.set(row.id, row);
@@ -273,28 +306,34 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
     if (!found) return c.json({ message: "Event not found" }, 404);
     if (found.event.ownerId !== auth.userId) return c.json({ message: "Forbidden" }, 403);
 
-    const eventParticipants = [...db.participants.values()].filter((p) => p.eventId === eventId);
-    const rows = [...db.availability.values()].filter((item) => item.eventId === eventId);
-
-    const byDate = new Map<string, Array<{ participantId: string; response: "YES" | "MAYBE" | "NO" }>>();
-    for (const row of rows) {
-      const bucket = byDate.get(row.date) ?? [];
-      bucket.push({ participantId: row.participantId, response: row.response });
-      byDate.set(row.date, bucket);
-    }
-
-    const dates = [...byDate.entries()].map(([date, responses]) => ({ date, responses }));
-    if (dates.length === 0) {
+    const slotVotes = buildSlotVotes(eventId);
+    if (slotVotes.length === 0) {
       return c.json({ message: "No availability responses found" }, 409);
     }
 
+    const eventParticipants = [...db.participants.values()].filter((p) => p.eventId === eventId);
+    const acceptedParticipants = eventParticipants.filter((p) => p.inviteStatus === "ACCEPTED");
     const keyParticipant = eventParticipants.find((p) => p.userId === found.settings.keyPersonUserId);
-    const result = suggestDate({
-      participantCount: eventParticipants.length,
+    const indications = eventParticipants
+      .filter((p) => p.inviteStatus === "ACCEPTED" && p.indicatedBy && p.indicatedBy.length > 0)
+      .map((p) => ({ participantId: p.id, invitedBy: p.indicatedBy! }));
+
+    const result = suggestSlot({
+      slots: slotVotes,
+      participantCount: acceptedParticipants.length,
+      quorumMin: found.settings.quorumMin,
       keyPersonId: keyParticipant?.id ?? null,
-      keyPersonWeight: found.settings.keyPersonWeight,
-      dates
+      indications
     });
+
+    if (result.keyPersonBlocking) {
+      return c.json({
+        message: "Key person has not answered YES to any slot",
+        suggestion: null,
+        ranked: result.ranked,
+        keyPersonBlocking: true
+      }, 200);
+    }
 
     return c.json(result, 200);
   })
@@ -306,34 +345,49 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
     if (found.event.ownerId !== auth.userId) return c.json({ message: "Forbidden" }, 403);
     if (found.event.status === "CONFIRMED") return c.json({ message: "Event already confirmed" }, 409);
 
-    const rows = [...db.availability.values()].filter((item) => item.eventId === eventId);
-    const byDate = new Map<string, Array<{ participantId: string; response: "YES" | "MAYBE" | "NO" }>>();
-    for (const row of rows) {
-      const bucket = byDate.get(row.date) ?? [];
-      bucket.push({ participantId: row.participantId, response: row.response });
-      byDate.set(row.date, bucket);
-    }
-
-    const dates = [...byDate.entries()].map(([date, responses]) => ({ date, responses }));
-    if (dates.length === 0) return c.json({ message: "No availability responses found" }, 409);
+    const slotVotes = buildSlotVotes(eventId);
+    if (slotVotes.length === 0) return c.json({ message: "No availability responses found" }, 409);
 
     const eventParticipants = [...db.participants.values()].filter((p) => p.eventId === eventId);
+    const acceptedParticipants = eventParticipants.filter((p) => p.inviteStatus === "ACCEPTED");
     const keyParticipant = eventParticipants.find((p) => p.userId === found.settings.keyPersonUserId);
+    const indications = eventParticipants
+      .filter((p) => p.inviteStatus === "ACCEPTED" && p.indicatedBy && p.indicatedBy.length > 0)
+      .map((p) => ({ participantId: p.id, invitedBy: p.indicatedBy! }));
 
-    const suggestion = suggestDate({
-      participantCount: eventParticipants.length,
+    const result = suggestSlot({
+      slots: slotVotes,
+      participantCount: acceptedParticipants.length,
+      quorumMin: found.settings.quorumMin,
       keyPersonId: keyParticipant?.id ?? null,
-      keyPersonWeight: found.settings.keyPersonWeight,
-      dates
+      indications
     });
+
+    const winner = result.suggestion;
+    if (!winner) {
+      const updated = {
+        ...found.event,
+        status: "NO_DATE" as const,
+        updatedAt: nowIso()
+      };
+      db.events.set(eventId, updated);
+      return c.json({
+        message: "No pair meets key person gate and quorum",
+        event: updated,
+        suggestion: null,
+        ranked: result.ranked,
+        keyPersonBlocking: result.keyPersonBlocking
+      }, 200);
+    }
 
     const updated = {
       ...found.event,
       status: "CONFIRMED" as const,
-      confirmedDate: suggestion.date,
+      confirmedDate: winner.date,
+      confirmedSlot: winner.slot,
       updatedAt: nowIso()
     };
 
     db.events.set(eventId, updated);
-    return c.json({ event: updated, suggestion }, 200);
+    return c.json({ event: updated, suggestion: winner }, 200);
   });

@@ -1,3 +1,7 @@
+export type TimeSlot = "MANHA" | "TARDE" | "NOITE" | "ALTAS_HORAS";
+
+export const TIME_SLOTS: readonly TimeSlot[] = ["MANHA", "TARDE", "NOITE", "ALTAS_HORAS"];
+
 export enum EventType {
   PRIVATE = "PRIVATE",
   PUBLIC = "PUBLIC"
@@ -7,13 +11,15 @@ export enum EventStatus {
   DRAFT = "DRAFT",
   OPEN = "OPEN",
   CONFIRMED = "CONFIRMED",
+  NO_DATE = "NO_DATE",
   CANCELLED = "CANCELLED"
 }
 
 export enum ParticipantRole {
   OWNER = "OWNER",
   INVITEE = "INVITEE",
-  KEY_PERSON = "KEY_PERSON"
+  KEY_PERSON = "KEY_PERSON",
+  ROLE_ALEATORIO = "ROLE_ALEATORIO"
 }
 
 export enum InviteStatus {
@@ -51,6 +57,7 @@ export interface Event {
   locationText?: string | null;
   status: EventStatus;
   confirmedDate?: string | null;
+  confirmedSlot?: TimeSlot | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -60,7 +67,7 @@ export interface PrivateEventSettings {
   dateWindowStart: string;
   dateWindowEnd: string;
   keyPersonUserId?: string | null;
-  keyPersonWeight: number;
+  quorumMin: number;
 }
 
 export interface PublicEventSettings {
@@ -68,6 +75,7 @@ export interface PublicEventSettings {
   eventDate: string;
   eventTime?: string | null;
   capacity: number;
+  category?: string | null;
 }
 
 export interface EventParticipant {
@@ -78,6 +86,7 @@ export interface EventParticipant {
   nameSnapshot?: string | null;
   role: ParticipantRole;
   inviteStatus: InviteStatus;
+  indicatedBy?: string[] | null;
 }
 
 export interface AvailabilityResponse {
@@ -85,6 +94,7 @@ export interface AvailabilityResponse {
   eventId: string;
   participantId: string;
   date: string;
+  slot: TimeSlot;
   response: AvailabilityChoice;
 }
 
@@ -124,6 +134,7 @@ export interface CreatePrivateEventRequest {
   dateWindowStart: string;
   dateWindowEnd: string;
   keyPersonUserId?: string;
+  quorumMin?: number;
 }
 
 export interface CreatePublicEventRequest {

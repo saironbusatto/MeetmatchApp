@@ -3,9 +3,11 @@ import { and, eq } from "drizzle-orm";
 import { getDb } from "./db/client";
 import { userDevices as userDevicesTable, users as usersTable } from "./db/schema";
 
+export type TimeSlot = "MANHA" | "TARDE" | "NOITE" | "ALTAS_HORAS";
+
 export type EventType = "PRIVATE" | "PUBLIC";
-export type EventStatus = "DRAFT" | "OPEN" | "CONFIRMED" | "CANCELLED";
-export type ParticipantRole = "OWNER" | "INVITEE" | "KEY_PERSON";
+export type EventStatus = "DRAFT" | "OPEN" | "CONFIRMED" | "NO_DATE" | "CANCELLED";
+export type ParticipantRole = "OWNER" | "INVITEE" | "KEY_PERSON" | "ROLE_ALEATORIO";
 export type InviteStatus = "PENDING" | "ACCEPTED" | "DECLINED";
 export type AvailabilityResponse = "YES" | "MAYBE" | "NO";
 export type RegistrationStatus = "REGISTERED" | "CANCELLED";
@@ -28,6 +30,7 @@ export interface EventRecord {
   locationText: string | null;
   status: EventStatus;
   confirmedDate: string | null;
+  confirmedSlot: TimeSlot | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -37,7 +40,7 @@ export interface PrivateEventSettingsRecord {
   dateWindowStart: string;
   dateWindowEnd: string;
   keyPersonUserId: string | null;
-  keyPersonWeight: number;
+  quorumMin: number;
 }
 
 export interface EventParticipantRecord {
@@ -49,6 +52,7 @@ export interface EventParticipantRecord {
   role: ParticipantRole;
   inviteStatus: InviteStatus;
   inviteToken: string;
+  indicatedBy: string[] | null;
 }
 
 export interface AvailabilityRecord {
@@ -56,6 +60,7 @@ export interface AvailabilityRecord {
   eventId: string;
   participantId: string;
   date: string;
+  slot: TimeSlot;
   response: AvailabilityResponse;
 }
 

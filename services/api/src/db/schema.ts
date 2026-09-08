@@ -13,12 +13,13 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const eventTypeEnum = pgEnum("event_type", ["PRIVATE", "PUBLIC"]);
-export const eventStatusEnum = pgEnum("event_status", ["DRAFT", "OPEN", "CONFIRMED", "CANCELLED"]);
-export const participantRoleEnum = pgEnum("participant_role", ["OWNER", "INVITEE", "KEY_PERSON"]);
+export const eventStatusEnum = pgEnum("event_status", ["DRAFT", "OPEN", "CONFIRMED", "NO_DATE", "CANCELLED"]);
+export const participantRoleEnum = pgEnum("participant_role", ["OWNER", "INVITEE", "KEY_PERSON", "ROLE_ALEATORIO"]);
 export const inviteStatusEnum = pgEnum("invite_status", ["PENDING", "ACCEPTED", "DECLINED"]);
 export const availabilityResponseEnum = pgEnum("availability_response", ["YES", "MAYBE", "NO"]);
 export const registrationStatusEnum = pgEnum("registration_status", ["REGISTERED", "CANCELLED"]);
 export const devicePlatformEnum = pgEnum("device_platform", ["ios", "android", "web"]);
+export const timeSlotEnum = pgEnum("time_slot", ["MANHA", "TARDE", "NOITE", "ALTAS_HORAS"]);
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey(),
@@ -45,6 +46,7 @@ export const events = pgTable("events", {
   locationText: text("location_text"),
   status: eventStatusEnum("status").notNull(),
   confirmedDate: date("confirmed_date"),
+  confirmedSlot: timeSlotEnum("confirmed_slot"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull()
 });
@@ -54,7 +56,7 @@ export const privateEventSettings = pgTable("private_event_settings", {
   dateWindowStart: date("date_window_start").notNull(),
   dateWindowEnd: date("date_window_end").notNull(),
   keyPersonUserId: uuid("key_person_user_id"),
-  keyPersonWeight: numeric("key_person_weight", { precision: 4, scale: 2 }).notNull()
+  quorumMin: integer("quorum_min").notNull().default(1)
 });
 
 export const eventParticipants = pgTable("event_participants", {
@@ -65,16 +67,30 @@ export const eventParticipants = pgTable("event_participants", {
   nameSnapshot: text("name_snapshot"),
   role: participantRoleEnum("role").notNull(),
   inviteStatus: inviteStatusEnum("invite_status").notNull(),
-  inviteToken: uuid("invite_token").notNull().unique()
+  inviteToken: uuid("invite_token").notNull().unique(),
+  indicatedBy: uuid("indicated_by").array(),
+  inviteStatusActivatedAt: timestamp("invite_status_activated_at", { withTimezone: true })
 });
 
-export const availabilityResponses = pgTable("availability_responses", {
-  id: uuid("id").primaryKey(),
-  eventId: uuid("event_id").notNull(),
-  participantId: uuid("participant_id").notNull(),
-  date: date("date").notNull(),
-  response: availabilityResponseEnum("response").notNull()
-});
+export const availabilityResponses = pgTable(
+  "availability_responses",
+  {
+    id: uuid("id").primaryKey(),
+    eventId: uuid("event_id").notNull(),
+    participantId: uuid("participant_id").notNull(),
+    date: date("date").notNull(),
+    slot: timeSlotEnum("slot").notNull(),
+    response: availabilityResponseEnum("response").notNull()
+  },
+  (table) => ({
+    participantDateSlotUnique: uniqueIndex("availability_participant_date_slot_unique").on(
+      table.participantId,
+      table.date,
+      table.slot
+    ),
+    eventDateSlotIndex: uniqueIndex("availability_event_date_slot_unique").on(table.eventId, table.date, table.slot)
+  })
+);
 
 export const publicEventSettings = pgTable("public_event_settings", {
   eventId: uuid("event_id").primaryKey(),

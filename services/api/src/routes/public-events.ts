@@ -46,6 +46,7 @@ export const publicEventsRouter = new Hono<{ Variables: { auth: { userId: string
       locationText: payload.locationText ?? null,
       status: "OPEN" as const,
       confirmedDate: payload.eventDate,
+      confirmedSlot: null,
       createdAt: nowIso(),
       updatedAt: nowIso()
     };
