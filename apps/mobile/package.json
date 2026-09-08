@@ -10,7 +10,7 @@
     "android": "expo run:android",
     "web": "expo start --web",
     "build": "echo 'use \"eas build\" — see eas.json'",
-    "lint": "eslint . --ext .ts,.tsx",
+    "lint": "eslint .",
     "test": "echo 'no tests yet'",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },

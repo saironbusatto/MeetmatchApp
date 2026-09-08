@@ -7,7 +7,7 @@
   "types": "./src/index.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint src --ext .ts",
+    "lint": "eslint src",
     "test": "echo 'no tests yet'",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   }
