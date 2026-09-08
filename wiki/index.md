@@ -7,7 +7,7 @@ Visão, proposta de valor, públicos, jornadas e regras de negócio do Farmei.
 | Article | Summary | Updated |
 |---------|---------|---------|
 | [Product Overview](product/product-overview.md) | Visão geral, dois modos, público-alvo, proposta de valor e jornadas principais | 2026-05-16 |
-| [Business Rules](product/business-rules.md) | Algoritmo de melhor data, regras de eventos públicos, convites e decisões pendentes | 2026-05-16 |
+| [Business Rules](product/business-rules.md) | Modelo V2: grade dia×turno, quórum, key=gate, janela 1 dia, categorias, waitlist, presença/reputação, stickers | 2026-09-07 |
 
 ## architecture
 
@@ -16,8 +16,8 @@ Decisões técnicas, modelo de dados, contratos de API e design de sistema.
 | Article | Summary | Updated |
 |---------|---------|---------|
 | [System Design](architecture/system-design.md) | Monorepo, stack, módulos de domínio, estratégia de auth e convites | 2026-05-16 |
-| [Data Model](architecture/data-model.md) | Entidades, relações e contratos de API do Farmei | 2026-05-16 |
-| [Architectural Decisions](architecture/architectural-decisions.md) | ADRs: stack, auth, convites, ORM, waitlist, rebrand e decisões pendentes | 2026-05-17 |
+| [Data Model](architecture/data-model.md) | Entidades, relações e contratos de API do Farmei (alvo V2) | 2026-09-07 |
+| [Architectural Decisions](architecture/architectural-decisions.md) | ADRs: stack, auth, convites, ORM, waitlist (revogada → no MVP), rebrand, mobile e decisões pendentes | 2026-09-07 |
 | [Mobile Architecture](architecture/mobile-architecture.md) | Expo Router + NativeWind, integração com monorepo, sessão, deeplinks e push | 2026-05-17 |
 
 ## design-system

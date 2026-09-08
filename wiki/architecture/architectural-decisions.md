@@ -24,7 +24,7 @@ Registro compilado dos ADRs do Farmei. Cada decisão inclui o raciocínio e o qu
 | ADR-001 | Web-first, mobile depois (mobile **agora ativo**) | Maior risco era domínio, não plataforma — backend + web entregues; mobile entra em paralelo |
 | ADR-006 | Convites por link (sem email automático no MVP) | Email transacional não deve bloquear progresso |
 | ADR-007 | Algoritmo de data sem LLM | Lógica é matemática simples e testável; LLM é enriquecimento futuro |
-| ADR-010 | Sem waitlist no MVP | Aumenta complexidade do fluxo de inscrição desnecessariamente |
+| ADR-010 | Sem waitlist no MVP — **revogado 2026-09-07** | Modelo V2 (D28/D30): waitlist entra no MVP, fila ponderada pelo modo. Mais barato que perder inscrição para sempre |
 | ADR-011 | Mobile com Expo Router + NativeWind | Stack única, OTA updates, reaproveita 100% dos packages e tokens. Descartados: bare RN (overhead), Flutter (sem compartilhamento de tipos), Tamagui (sem ganho sobre NativeWind). Detalhes em [Mobile Architecture](mobile-architecture.md). |
 
 ### Rebrand
@@ -43,7 +43,7 @@ Essas são intenções registradas — não features para implementar agora:
 - **Algoritmo:** campo `reasoning` já previsto no response do suggestion endpoint para LLM futura (ADR-007)
 - **Mobile:** `packages/ui` deve ter componentes headless para Expo reutilizar (ADR-001)
 - **Geolocalização:** colunas lat/lng podem ser adicionadas ao schema sem breaking change (ARCHITECTURE.md §10)
-- **Waitlist:** tabela `public_event_waitlist` adicionável independentemente (ADR-010)
+- **Waitlist:** tabela `public_event_waitlist` — agora no MVP (D28/D30, revoga ADR-010); fila ponderada: FIFO em ordem de chegada, mais confiável primeiro em confiabilidade
 - **Migração DB (Alembic Pro mindset):** mudanças de schema no backend Oracle seguem rotina de migração versionada, revisão obrigatória e rollout seguro (ADR-012).
 
 ## Decisões pendentes

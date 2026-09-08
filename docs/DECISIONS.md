@@ -140,16 +140,18 @@
 
 ---
 
-## ADR-010 — Waitlist fora do MVP
+## ADR-010 — Waitlist fora do MVP (revogado)
 
 **Data:** 2026-05-16  
-**Status:** Aceito
+**Status:** Revisado em 2026-09-07 — **Revogado**
 
 **Contexto:** Eventos públicos podem lotar. Waitlist é útil mas aumenta a complexidade do fluxo de inscrição.
 
 **Decisão:** No MVP, ao atingir capacidade máxima, novas inscrições são bloqueadas com mensagem clara. Nenhuma waitlist implementada.
 
 **Ponto de evolução:** Tabela `public_event_waitlist` pode ser adicionada sem quebrar o fluxo principal.
+
+**Revisão (2026-09-07):** Modelo V2 **trouxe a waitlist para o MVP** (D28). "Entre na fila" vira verdade funcional: fila **ponderada pelo modo** (D30) — FIFO em ordem de chegada, mais confiável primeiro em confiabilidade; todos da fila avisados quando vaga abre. Ver [Business Rules — Modo público](../../wiki/product/business-rules.md).
 
 ---
 
