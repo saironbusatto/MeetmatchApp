@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Farmei — marque rolê de verdade com a galera</title>
-<meta name="description" content="Farmei é o app de eventos reais entre pessoas reais. Crie rolês privados, ache o melhor dia pra galera inteira e veja o que está rolando perto de você com lotação em tempo real.">
+<title>Farmei — marca rolê que de verdade acontece</title>
+<meta name="description" content="Farmei é o app de eventos reais entre pessoas reais. Marca rolê com todo mundo marcando dia E turno (manhã, tarde, noite, altas horas), quórum mínimo, pessoa-chave e 1 dia pra dar o bolo. Rolê público com confiabilidade, fila de espera e lotação em tempo real.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Limelight&family=Poppins:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -415,8 +415,8 @@ p { margin: 0 0 var(--space-4); }
 .mini-field span { font-size: 13px; font-weight: 600; }
 .mini-days { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 10px 0 14px; }
 .mini-days span {
-  text-align: center; font-family: var(--font-mono); font-size: 10px; font-weight: 600;
-  padding: 9px 0; border: 2px solid var(--border-strong); border-radius: 9px; background: var(--surface);
+  text-align: center; font-family: var(--font-mono); font-size: 9.5px; font-weight: 600; line-height: 1.35;
+  padding: 6px 2px; border: 2px solid var(--border-strong); border-radius: 9px; background: var(--surface);
 }
 .mini-days span.pick { background: var(--secondary); }
 .mini-cta {
@@ -487,32 +487,6 @@ p { margin: 0 0 var(--space-4); }
 .quote figcaption b { display: block; font-size: var(--text-sm); }
 .quote figcaption small { font-size: var(--text-xs); color: var(--ink-2); font-family: var(--font-mono); letter-spacing: 0.04em; }
 
-/* ---------- pricing ---------- */
-.plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); align-items: start; }
-.plan {
-  background: var(--surface); border: 3px solid var(--border-strong);
-  border-radius: var(--radius-lg); padding: var(--space-8);
-  display: flex; flex-direction: column; gap: var(--space-5);
-}
-.plan.featured { background: var(--border-strong); color: #fff; box-shadow: 10px 10px 0 var(--primary); }
-.plan.featured h3, .plan.featured .price { color: #fff; }
-.plan-flag {
-  align-self: flex-start;
-  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  background: var(--secondary); color: var(--border-strong);
-  border: 2px solid var(--border-strong); border-radius: var(--radius-pill); padding: 5px 11px;
-}
-.price { font-family: var(--font-display); font-size: 44px; line-height: 1; }
-.price small { font-family: var(--font-body); font-size: 14px; font-weight: 500; opacity: .75; }
-.plan p.plan-for { font-size: var(--text-sm); color: var(--ink-2); margin: 0; }
-.plan.featured p.plan-for { color: rgba(255,255,255,.78); }
-.plan ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); font-size: var(--text-sm); }
-.plan li { display: flex; gap: 10px; align-items: flex-start; }
-.plan li svg { width: 18px; height: 18px; flex: none; margin-top: 3px; color: var(--success-brand); }
-.plan.featured li svg { color: var(--secondary); }
-.plan .btn { width: 100%; margin-top: auto; }
-
 /* ---------- final cta ---------- */
 .final {
   position: relative; overflow: hidden;
@@ -551,7 +525,6 @@ p { margin: 0 0 var(--space-4); }
   .phone-wrap { order: -1; }
   .float-a { left: 0; } .float-b { right: 0; } .float-c { left: 0; bottom: 8%; }
   .steps { grid-template-columns: 1fr; }
-  .plans { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
   .container { padding-inline: var(--container-gutter-phone); }
@@ -596,7 +569,6 @@ p { margin: 0 0 var(--space-4); }
       <a href="#rolando" data-od-id="nav-rolando">O que está rolando</a>
       <a href="#app" data-od-id="nav-app">O app</a>
       <a href="#como-funciona" data-od-id="nav-como">Como funciona</a>
-      <a href="#planos" data-od-id="nav-planos">Planos</a>
       <a class="btn btn-ghost" href="#btn-create" data-od-id="nav-cta">Entrar</a>
     </nav>
   </div>
@@ -616,12 +588,14 @@ p { margin: 0 0 var(--space-4); }
   <div class="container">
     <p class="hero-badge" data-od-id="hero-badge">
       <span class="logomark" aria-hidden="true"><svg viewBox="0 0 200 200"><text x="100" y="172" text-anchor="middle" font-size="160" fill="currentColor">f</text></svg></span>
-      Eventos reais, gente de verdade
+      V2 · quórum, confiabilidade e fila de espera
     </p>
     <h1 data-od-id="hero-headline" data-reveal>A galera junta, <em>de verdade</em>.</h1>
     <p class="hero-sub" data-od-id="hero-subhead">
-      O Farmei é onde você marca o rolê que funciona pra todo mundo — e descobre o que já está
-      acontecendo na sua rua agora, com lotação em tempo real. Presencial, no corpo, na hora.
+      No Farmei cada pessoa marca o dia <b>e o turno</b> que consegue — manhã, tarde, noite ou altas horas.
+      O app cruza tudo, bate o quórum e trava o rolê: o escolhido confirma, a galera tem <b>1 dia pra dar o bolo</b>,
+      passou disso, todo mundo tem que ir. Rolê público segue vivo com lotação em tempo real, <b>confiabilidade</b>
+      pelo histórico de presença e <b>fila de espera</b> quando lota. Presencial, no corpo, na hora.
     </p>
     <div class="hero-actions" data-od-id="hero-actions">
       <a class="btn btn-primary" id="btn-create" href="#app" data-od-id="hero-cta-primary">Criar meu rolê</a>
@@ -629,8 +603,8 @@ p { margin: 0 0 var(--space-4); }
     </div>
     <div class="hero-stats" data-od-id="hero-stats">
       <div data-od-id="hero-stat-cidades"><b>7 cidades</b><span>onde o Farmei já está no ar</span></div>
-      <div data-od-id="hero-stat-tempo"><b>2 min</b><span>é o que leva pra fechar a data</span></div>
-      <div data-od-id="hero-stat-lotacao"><b>Ao vivo</b><span>lotação atualizada a cada inscrição</span></div>
+      <div data-od-id="hero-stat-tempo"><b>2 min</b><span>pra fechar a data — se quórum e key person topar</span></div>
+      <div data-od-id="hero-stat-lotacao"><b>Ao vivo</b><span>lotação, fila de espera e presença atualizadas</span></div>
     </div>
   </div>
 </section>
@@ -638,14 +612,14 @@ p { margin: 0 0 var(--space-4); }
 <!-- 2. MARQUEE -->
 <div class="marquee-band" data-od-id="marquee-band-1" aria-hidden="true">
   <div class="marquee-track">
-    <span>rolê com a galera</span><span>lotação em tempo real</span><span>energia presencial</span><span>12 vagas</span><span>quadra ocupada</span><span>bora marcar</span>
-    <span>rolê com a galera</span><span>lotação em tempo real</span><span>energia presencial</span><span>12 vagas</span><span>quadra ocupada</span><span>bora marcar</span>
+    <span>rolê com a galera</span><span>manhã · tarde · noite · altas horas</span><span>energia presencial</span><span>quórum batido</span><span>quadra ocupada</span><span>bora marcar</span>
+    <span>rolê com a galera</span><span>manhã · tarde · noite · altas horas</span><span>energia presencial</span><span>quórum batido</span><span>quadra ocupada</span><span>bora marcar</span>
   </div>
 </div>
 <div class="marquee-band" data-od-id="marquee-band-2" aria-hidden="true">
   <div class="marquee-track">
-    <span>churrasco de sábado</span><span>o melhor dia pra todo mundo</span><span>¡Vamos!</span><span>volley às 18h</span><span>últimas 3 vagas</span><span>todo mundo é bem-vindo</span>
-    <span>churrasco de sábado</span><span>o melhor dia pra todo mundo</span><span>¡Vamos!</span><span>volley às 18h</span><span>últimas 3 vagas</span><span>todo mundo é bem-vindo</span>
+    <span>churrasco de sábado</span><span>1 dia pra dar o bolo</span><span>¡Vamos!</span><span>volley às 18h</span><span>fila de espera</span><span>todo mundo é bem-vindo</span>
+    <span>churrasco de sábado</span><span>1 dia pra dar o bolo</span><span>¡Vamos!</span><span>volley às 18h</span><span>fila de espera</span><span>todo mundo é bem-vindo</span>
   </div>
 </div>
 
@@ -657,8 +631,9 @@ p { margin: 0 0 var(--space-4); }
         <p class="eyebrow" data-od-id="events-eyebrow">O que está rolando</p>
         <h2 data-od-id="events-title">Perto de você, hoje à noite</h2>
         <p class="lead" data-od-id="events-lead">
-          Bares, quadras e espaços abrem seus eventos aqui. Você vê a lotação subindo em tempo real e
-          entra com um toque — sem grupo de mensagem, sem lista perdida.
+          Bares, quadras e espaços abrem seus eventos aqui — cada um num modo de entrada: <b>ordem de chegada</b>
+          (primeiro a chegar, primeiro na lista) ou <b>confiabilidade</b> (quem tem histórico de comparecer entra
+          primeiro). Lota? <b>Vai pra fila de espera</b> e entra quando abrir vaga. Sem grupo perdido, sem lista no papel.
         </p>
       </div>
     </div>
@@ -667,6 +642,12 @@ p { margin: 0 0 var(--space-4); }
       <span class="chip" data-active="true" data-od-id="filter-todos">Tudo</span>
       <span class="chip" data-od-id="filter-esporte">Esporte</span>
       <span class="chip" data-od-id="filter-musica">Música</span>
+      <span class="chip" data-od-id="filter-gastronomia">Gastronomia</span>
+      <span class="chip" data-od-id="filter-cultural">Cultural</span>
+      <span class="chip" data-od-id="filter-roles">Rolês</span>
+      <span class="chip" data-od-id="filter-negocios">Negócios</span>
+      <span class="chip" data-od-id="filter-religioso">Religioso</span>
+      <span class="chip" data-od-id="filter-natureza">Natureza</span>
       <span class="chip" data-od-id="filter-privado">Rolês privados</span>
     </div>
 
@@ -680,7 +661,7 @@ p { margin: 0 0 var(--space-4); }
         <div class="event-body">
           <h3>Rock na Fábrica — noite de banda nova</h3>
           <p class="event-place">Galpão 7, Vila Madalena · <b>sexta, 21h</b></p>
-          <div class="occ-row"><span>74 de 80 inscritos</span><span class="full">últimas 6 vagas</span></div>
+          <div class="occ-row"><span>74 de 80 inscritos</span><span>ordem de chegada</span></div>
           <div class="occ-bar"><i class="occ-fill hot" data-occ="93"></i></div>
           <div class="avatars">
             <div class="stack" aria-hidden="true"><span>R</span><span class="alt">M</span><span>J</span><span class="more">+71</span></div>
@@ -697,7 +678,7 @@ p { margin: 0 0 var(--space-4); }
         <div class="event-body">
           <h3>Futebol de salão de quinta</h3>
           <p class="event-place">Quadra do Zé, Santa Cecília · <b>quinta, 20h</b></p>
-          <div class="occ-row"><span>9 de 12 vagas</span><span>3 vagas</span></div>
+          <div class="occ-row"><span>9 de 12 vagas</span><span class="hot-tag">modo confiável</span></div>
           <div class="occ-bar"><i class="occ-fill" data-occ="75"></i></div>
           <div class="avatars">
             <div class="stack" aria-hidden="true"><span>T</span><span class="alt">D</span><span class="more">+7</span></div>
@@ -714,11 +695,11 @@ p { margin: 0 0 var(--space-4); }
         <div class="event-body">
           <h3>Volley de praia no pôr do sol</h3>
           <p class="event-place">Posto 6, orla · <b>sábado, 17h30</b></p>
-          <div class="occ-row"><span>10 de 10 vagas</span><span class="full">lotado — entre na fila</span></div>
+          <div class="occ-row"><span>10 de 10 vagas</span><span class="full">lotado — fica na fila</span></div>
           <div class="occ-bar"><i class="occ-fill hot" data-occ="100"></i></div>
           <div class="avatars">
             <div class="stack" aria-hidden="true"><span>C</span><span class="alt">L</span><span class="more">+8</span></div>
-            <small>Carol, Léo e mais 8 confirmados</small>
+            <small>Carol, Léo e mais 8 confirmados · <b>6 na fila de espera</b></small>
           </div>
         </div>
       </article>
@@ -731,7 +712,7 @@ p { margin: 0 0 var(--space-4); }
         <div class="event-body">
           <h3>Pagodinho no bar da esquina</h3>
           <p class="event-place">Bar do Nando, Lapa · <b>domingo, 16h</b></p>
-          <div class="occ-row"><span>28 de 40 lugares</span><span>enchendo rápido</span></div>
+          <div class="occ-row"><span>28 de 40 lugares</span><span>ordem de chegada</span></div>
           <div class="occ-bar"><i class="occ-fill" data-occ="70"></i></div>
           <div class="avatars">
             <div class="stack" aria-hidden="true"><span>V</span><span class="alt">B</span><span class="more">+26</span></div>
@@ -748,11 +729,11 @@ p { margin: 0 0 var(--space-4); }
         <div class="event-body">
           <h3>Churrasco da firma</h3>
           <p class="event-place">Quintal do Marcinho · <b>o app fechou: sábado, 13h</b></p>
-          <div class="occ-row"><span>14 de 16 marcaram os dias</span><span>data fechada</span></div>
-          <div class="occ-bar"><i class="occ-fill ok" data-occ="88"></i></div>
+          <div class="occ-row"><span>quórum 12 · 11 no sábado</span><span>travado — janela fechou</span></div>
+          <div class="occ-bar"><i class="occ-fill ok" data-occ="92"></i></div>
           <div class="avatars">
-            <div class="stack" aria-hidden="true"><span>M</span><span class="alt">P</span><span class="more">+12</span></div>
-            <small>Sábado foi o único dia que serviu pra galera inteira</small>
+            <div class="stack" aria-hidden="true"><span>M</span><span class="alt">P</span><span class="more">+9</span></div>
+            <small>A galera inteira marca dia <b>e</b> turno — sábado 13h bateu quórum e ninguém deu o bolo</small>
           </div>
         </div>
       </article>
@@ -765,11 +746,11 @@ p { margin: 0 0 var(--space-4); }
         <div class="event-body">
           <h3>Jogo de tabuleiro na casa da Bia</h3>
           <p class="event-place">Perdizes · <b>o app achou: terça, 19h30</b></p>
-          <div class="occ-row"><span>6 de 6 responderam</span><span>todo mundo pode</span></div>
+          <div class="occ-row"><span>6 de 6 no sábado · tarde</span><span>key person ok</span></div>
           <div class="occ-bar"><i class="occ-fill ok" data-occ="100"></i></div>
           <div class="avatars">
             <div class="stack" aria-hidden="true"><span>B</span><span class="alt">G</span><span>N</span><span class="more">+3</span></div>
-            <small>Bia, Gu, Nina e mais 3 — ninguém ficou de fora</small>
+            <small>Bia marca os turnos que consegue e é a key person — o app casou todo mundo num par só</small>
           </div>
         </div>
       </article>
@@ -785,26 +766,26 @@ p { margin: 0 0 var(--space-4); }
     <div class="mock-grid">
       <div data-od-id="app-mock-copy">
         <p class="eyebrow" style="color:var(--secondary)" data-od-id="app-eyebrow">Dentro do app</p>
-        <h2 data-od-id="app-title">Três telas e o rolê está de pé</h2>
+        <h2 data-od-id="app-title">Da grade ao rolê travado, em três telas</h2>
         <p class="lead" data-od-id="app-lead">
-          Você abre, cria, chama a galera. Cada pessoa marca os dias que consegue e o app aponta o melhor
-          dia pra todo mundo — não o dia de quem respondeu primeiro.
+          Você cria, chama a galera e cada um marca o dia <b>e o turno</b> que consegue. O app cruza tudo,
+          bate o quórum na pessoa-chave e aponta o melhor par — não a data de quem respondeu primeiro.
         </p>
         <div class="mock-flow" data-od-id="app-flow">
           <div class="flow-step" data-flow="0" data-live="true">
             <span class="num">01</span>
-            <div><h3>Home do app</h3><p>Rolês públicos perto de você e os convites da sua turma no mesmo lugar.</p></div>
+            <div><h3>Home do app</h3><p>Rolês públicos com lotação ao vivo e os convites para gradear, de um tap só.</p></div>
           </div>
           <div class="flow-step" data-flow="1">
             <span class="num">02</span>
-            <div><h3>Criar evento</h3><p>Nome, lugar, os dias possíveis e quem você quer chamar. Leva menos de um minuto.</p></div>
+            <div><h3>Criar evento</h3><p>Nome, lugar, quem chamar — e o tamanho do quórum. Quer que uma pessoa chave precise topar? É só marcar.</p></div>
           </div>
           <div class="flow-step" data-flow="2">
             <span class="num">03</span>
-            <div><h3>Data confirmada</h3><p>Quando todo mundo responde, o app trava o dia que serve pra galera inteira.</p></div>
+            <div><h3>Janela de 1 dia</h3><p>Quórum fechado, o dono confirma o par e todo mundo tem 1 dia pra dar o bolo ou entrar. Depois, trava. Sem desistir em cima da hora.</p></div>
           </div>
         </div>
-        <p class="mock-tagline" data-od-id="app-tagline">cria → convida → rolou</p>
+        <p class="mock-tagline" data-od-id="app-tagline">cria → gradea → travou</p>
       </div>
 
       <div class="phone-wrap" data-od-id="app-phone">
@@ -826,11 +807,11 @@ p { margin: 0 0 var(--space-4); }
               <div class="mini-tabs"><b>Perto de mim</b><i>Meus convites</i></div>
               <div class="mini-row">
                 <span class="thumb"><img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=160&q=70" alt="" loading="lazy"></span>
-                <div style="flex:1"><p>Futebol de salão</p><small>quinta 20h · 3 vagas</small><span class="mini-bar"><i style="width:75%"></i></span></div>
+                <div style="flex:1"><p>Futebol de salão</p><small>quinta 20h · modo confiável · 3 vagas</small><span class="mini-bar"><i style="width:75%"></i></span></div>
               </div>
               <div class="mini-row">
                 <span class="thumb"><img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=160&q=70" alt="" loading="lazy"></span>
-                <div style="flex:1"><p>Rock na Fábrica</p><small>sexta 21h · 6 vagas</small><span class="mini-bar"><i style="width:93%"></i></span></div>
+                <div style="flex:1"><p>Rock na Fábrica</p><small>sexta 21h · ordem de chegada · 6 vagas</small><span class="mini-bar"><i style="width:93%"></i></span></div>
               </div>
               <div class="mini-row">
                 <span class="thumb"><img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=160&q=70" alt="" loading="lazy"></span>
@@ -838,7 +819,7 @@ p { margin: 0 0 var(--space-4); }
               </div>
               <div class="mini-row">
                 <span class="thumb"><img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=160&q=70" alt="" loading="lazy"></span>
-                <div style="flex:1"><p>Churrasco da firma</p><small>convite da Ju · responda</small><span class="mini-bar"><i style="width:88%"></i></span></div>
+                <div style="flex:1"><p>Churrasco da firma</p><small>convite da Ju · gradeia seu dia e turno</small><span class="mini-bar"><i style="width:88%"></i></span></div>
               </div>
             </div>
 
@@ -847,22 +828,23 @@ p { margin: 0 0 var(--space-4); }
               <div class="mini-field"><label>Nome</label><span>Churrasco da firma</span></div>
               <div class="mini-field"><label>Onde</label><span>Quintal do Marcinho</span></div>
               <div class="mini-field"><label>Quem vai</label><span>16 pessoas convidadas</span></div>
-              <label style="font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)">Dias que eu consigo</label>
-              <div class="mini-days">
-                <span>qui 12</span><span class="pick">sex 13</span><span class="pick">sáb 14</span><span>dom 15</span>
-                <span>qui 19</span><span class="pick">sáb 21</span><span>dom 22</span><span>sex 27</span>
+              <div class="mini-field"><label>Quórum</label><span>12 pra valer a pena</span></div>
+              <label style="font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)">Meus turnos possíveis</label>
+              <div class="mini-days" style="grid-template-columns:repeat(4, 1fr);gap:6px;margin-bottom:14px">
+                <span>sex 13<br>TARDE</span><span class="pick">sáb 14<br>MANHÃ</span><span class="pick">sáb 14<br>NOITE</span><span>dom 15<br>NOITE</span>
+                <span>sáb 21<br>ALTA HORAS</span><span class="pick">dom 22<br>TARDE</span><span>sex 27<br>NOITE</span>
               </div>
               <span class="mini-cta">Convidar a galera</span>
-              <p class="mini-note">Cada pessoa marca os dias dela. Ninguém precisa combinar no grupo.</p>
+              <p class="mini-note">Cada pessoa gradeia os turnos dela. Ninguém precisa combinar no grupo.</p>
             </div>
 
-            <div class="screen" role="group" aria-label="Tela: data confirmada">
-              <div class="screen-top"><strong>Rolou!</strong><span class="dot"></span></div>
-              <div class="mini-hero"><small>melhor dia pra galera</small><b>sábado, 14</b><small>13h · quintal do Marcinho</small></div>
-              <div class="mini-row"><div style="flex:1"><p>14 de 16 podem no sábado</p><small>o dia com mais gente livre</small><span class="mini-bar"><i style="width:88%"></i></span></div></div>
-              <div class="mini-row"><div style="flex:1"><p>sexta 13 — 9 de 16</p><small>ficaria muita gente de fora</small><span class="mini-bar"><i style="width:56%;background:var(--brand-surface)"></i></span></div></div>
-              <span class="mini-cta">Avisar todo mundo</span>
-              <p class="mini-note">O convite entra no calendário de quem confirmou.</p>
+            <div class="screen" role="group" aria-label="Tela: rolê travado">
+              <div class="screen-top"><strong>Rolê travado!</strong><span class="dot"></span></div>
+              <div class="mini-hero"><small>melhor par pra galera</small><b>sábado, 14 · manhã</b><small>13h · quintal do Marcinho</small></div>
+              <div class="mini-row"><div style="flex:1"><p>Quórum de 12 batido</p><small>14 no par · incluindo a key person</small><span class="mini-bar"><i style="width:92%"></i></span></div></div>
+              <div class="mini-row" style="margin-bottom:2px"><div style="flex:1"><p>Janela de 1 dia aberta</p><small>1 dia pra dar o bolo — depois trava</small><span class="mini-bar"><i style="width:74%;background:var(--brand-surface)"></i></span></div></div>
+              <span class="mini-cta">Fechar pros convidados</span>
+              <p class="mini-note">Se o quórum cair na janela, o app já re-marca num outro par automático.</p>
             </div>
 
           </div>
@@ -884,10 +866,10 @@ p { margin: 0 0 var(--space-4); }
     <div class="section-head" data-od-id="how-head">
       <div>
         <p class="eyebrow" data-od-id="how-eyebrow">Como funciona</p>
-        <h2 data-od-id="how-title">Cria, convida, rolou</h2>
+        <h2 data-od-id="how-title">Grade, quórum, confirma</h2>
         <p class="lead" data-od-id="how-lead">
-          Serve pro almoço que planeja o Q3 e serve pro churrasco de domingo. Qualquer idade, qualquer
-          turma, qualquer motivo pra sair de casa.
+          Funciona pro almoço que planeja o Q3 e pro churrasco de domingo. Qualquer turma, qualquer idade,
+          qualquer motivo pra sair de casa.
         </p>
       </div>
     </div>
@@ -895,20 +877,20 @@ p { margin: 0 0 var(--space-4); }
       <div class="step" data-od-id="how-step-cria">
         <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18M12 14v4M10 16h4"/></svg>
         <span class="step-num">1</span>
-        <h3>Cria</h3>
-        <p>Dá um nome ao rolê, escolhe o lugar e marca os dias que você consegue. Churrasco, jogo de tabuleiro, almoço de trabalho — tanto faz, tudo cabe.</p>
+        <h3>Cria com regras claras</h3>
+        <p>Nome, lugar e quem chamar — mais o quórum mínimo que precisa de pé. Quer que alguém chave precise topar? Marca a key person. Churrasco, tabuleiro, almoço de trabalho — tudo cabe.</p>
       </div>
       <div class="step" data-od-id="how-step-convida">
         <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
         <span class="step-num">2</span>
-        <h3>Convida</h3>
-        <p>Chama exatamente quem você quer. Cada pessoa abre e marca os dias dela em segundos — sem enquete perdida no meio de trezentas mensagens.</p>
+        <h3>Convidados gradeiam dia E turno</h3>
+        <p>Cada um marca os dias e os turnos que consegue — manhã, tarde, noite ou altas horas — em segundos. Sem enquete perdida no meio de trezentas mensagens, o conflito vira um par só.</p>
       </div>
       <div class="step" data-od-id="how-step-rolou">
         <svg class="step-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/><path d="M22 12a10 10 0 1 1-5-8.66"/></svg>
         <span class="step-num">3</span>
-        <h3>Rolou</h3>
-        <p>O app cruza as respostas e mostra o melhor dia pra galera inteira. Data fechada, todo mundo avisado, você só precisa aparecer.</p>
+        <h3>Janela de 1 dia e trava</h3>
+        <p>Quórum batido, dono confirma o melhor par. Todo mundo recebe alerta e tem 1 dia pra dar o bolo ou entrar — depois isso, trava. Se o quórum cair, o app re-marca sozinho.</p>
       </div>
     </div>
   </div>
@@ -926,7 +908,7 @@ p { margin: 0 0 var(--space-4); }
     <div class="quotes" data-od-id="proof-quotes">
 
       <figure class="quote" data-od-id="quote-futebol">
-        <blockquote>“Marcamos o futebol de quinta em 2 minutos. Antes a gente passava a semana inteira discutindo dia no grupo e no fim ninguém ia.”</blockquote>
+        <blockquote>“Marcamos o futebol de quinta em 2 minutos. Antes a gente passava a semana inteira discutindo dia no grupo e no fim ninguém ia. Agora dá pra até desempatar no critério de confiabilidade.”</blockquote>
         <figcaption>
           <img src="https://pixabay.com/get/g8c9a892bed085e78ffed590f192adc537f3fb688300f4532fda91c4acd0b41a679da3b8675754e30639406e72c2fd5e3ef0c9942f97dca75ad02a63d70fe6492_1280.jpg" alt="Thiago, participante de rolês de futebol" loading="lazy">
           <div><b>Thiago Meireles</b><small>joga na quadra do Zé · Santa Cecília</small></div>
@@ -934,7 +916,7 @@ p { margin: 0 0 var(--space-4); }
       </figure>
 
       <figure class="quote" data-od-id="quote-show">
-        <blockquote>“A lotação em tempo real salvou o show. Vi que estava em 74 de 80 e saí de casa correndo — cheguei e ainda peguei lugar.”</blockquote>
+        <blockquote>“Vi que o show estava lotado e cai na fila de espera. Alguém desistiu, entrei na vaga e ainda cheguei cedo — o dia marcado virou noite que não esqueço.”</blockquote>
         <figcaption>
           <img src="https://pixabay.com/get/gc529b6d567b723876ec58852fa49c44b69c3ac1ac31dfda2c9b21cd9234260ca1e00edc3163c94af2df0c77610cab26015b581f83a816c116542998a3c9e94eb_1280.jpg" alt="Mariana, frequentadora de shows" loading="lazy">
           <div><b>Mariana Doria</b><small>vai a show toda sexta · Vila Madalena</small></div>
@@ -942,7 +924,7 @@ p { margin: 0 0 var(--space-4); }
       </figure>
 
       <figure class="quote" data-od-id="quote-churrasco">
-        <blockquote>“Achei o melhor dia pro churrasco da firma sem mandar uma mensagem sequer. Dezesseis pessoas, um sábado, todo mundo apareceu.”</blockquote>
+        <blockquote>“16 pessoas na grade, um só par que fechou o quórum e a janela de 1 dia passou sem ninguém dar o bolo. Todo mundo apareceu no sábado.”</blockquote>
         <figcaption>
           <img src="https://pixabay.com/get/g561ab29dd83532c29f070ef6ad69bbcf4a9f869a280af26aa57b6d7e44fd9c1f6933aa1e5fec4ba3fe36311365827762c5ceffef41a0e9194d254a5e08ac576a_1280.jpg" alt="Juliana, organizadora do churrasco da firma" loading="lazy">
           <div><b>Juliana Prado</b><small>organiza o churrasco da firma · Perdizes</small></div>
@@ -950,10 +932,10 @@ p { margin: 0 0 var(--space-4); }
       </figure>
 
       <figure class="quote" data-od-id="quote-quadra">
-        <blockquote>“Abri a quadra no Farmei e ela virou ponto de encontro do bairro. Agora eu sei quantas pessoas vêm antes de acender a luz.”</blockquote>
+        <blockquote>“Abri a quadra no Farmei e ela virou ponto de encontro do bairro. Agora sei quantas pessoas vêm antes de acender a luz — e, se lotar, tem fila de espera que roda sozinha.”</blockquote>
         <figcaption>
           <img src="https://pixabay.com/get/ga38227a36f8233cf480d2c39846d377e6ae65b450b103cf85d3ac203a941e7fd7a6fa6a204d09322acbced8d74d7cc662f12993dabc9c435bc68da671c4ae275_1280.jpg" alt="Zé, dono da quadra de salão" loading="lazy">
-          <div><b>Zé Bonfim</b><small>dono da quadra do Zé · plano Org</small></div>
+          <div><b>Zé Bonfim</b><small>dono da quadra do Zé · São Paulo</small></div>
         </figcaption>
       </figure>
 
@@ -961,73 +943,12 @@ p { margin: 0 0 var(--space-4); }
   </div>
 </section>
 
-<!-- 6. PRICING -->
-<section id="planos" data-od-id="pricing-section">
-  <div class="container">
-    <div class="section-head" data-od-id="pricing-head">
-      <div>
-        <p class="eyebrow" data-od-id="pricing-eyebrow">Planos</p>
-        <h2 data-od-id="pricing-title">Marcar rolê é de graça. Sempre.</h2>
-        <p class="lead" data-od-id="pricing-lead">
-          Os planos pagos existem pra quem abre eventos pro público e precisa controlar lotação, lista e
-          check-in. Juntar a sua galera não custa nada.
-        </p>
-      </div>
-    </div>
-    <div class="plans" data-od-id="pricing-plans">
-
-      <div class="plan" data-od-id="plan-gratis">
-        <h3>Grátis</h3>
-        <p class="price">R$ 0 <small>pra sempre</small></p>
-        <p class="plan-for">Pra você e sua turma marcarem rolê sem burocracia.</p>
-        <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Rolês privados ilimitados</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Melhor dia pra galera inteira</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Convite por link, sem cadastro pra responder</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Ver os eventos públicos da sua cidade</li>
-        </ul>
-        <a class="btn btn-secondary" href="#btn-create" data-od-id="plan-gratis-cta">Começar de graça</a>
-      </div>
-
-      <div class="plan featured" data-od-id="plan-crew">
-        <span class="plan-flag">Mais escolhido</span>
-        <h3>Crew</h3>
-        <p class="price">R$ 19 <small>/ mês</small></p>
-        <p class="plan-for">Pra quem organiza rolê aberto e quer gente nova aparecendo.</p>
-        <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Tudo do Grátis</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Eventos públicos ilimitados</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Lotação máxima e barra em tempo real</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Fila de espera automática quando lota</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Avisos de última hora pra quem se inscreveu</li>
-        </ul>
-        <a class="btn btn-primary" href="#btn-create" data-od-id="plan-crew-cta">Assinar o Crew</a>
-      </div>
-
-      <div class="plan" data-od-id="plan-org">
-        <h3>Org / Galera</h3>
-        <p class="price">R$ 89 <small>/ mês por espaço</small></p>
-        <p class="plan-for">Pra bar, quadra e espaço que vive de gente entrando pela porta.</p>
-        <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Tudo do Crew</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Página própria do seu espaço</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Inscrição e confirmação de presença</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Check-in na porta pelo celular</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Exportar lista de quem veio</li>
-        </ul>
-        <a class="btn btn-secondary" href="#btn-create" data-od-id="plan-org-cta">Falar sobre o Org</a>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- 7. CTA FINAL -->
+<!-- 6. CTA FINAL -->
 <section class="final" data-od-id="final-cta">
   <canvas id="confetti-final" aria-hidden="true"></canvas>
   <div class="container">
     <h2 data-od-id="final-headline">Bora marcar?</h2>
-    <p data-od-id="final-sub">Escolhe o rolê, chama a galera e deixa o resto com o app. Todo mundo é bem-vindo — qualquer idade, qualquer tribo.</p>
+    <p data-od-id="final-sub">Cria com quórum e key person, convida e deixa o app bater o par. Se for público, entra na fila quando lotar. Todo mundo é bem-vindo — qualquer idade, qualquer tribo.</p>
     <a class="btn btn-primary" href="#btn-create" style="background:var(--border-strong);border-color:#fff;box-shadow:6px 6px 0 #fff" data-od-id="final-cta-button">Criar meu rolê agora</a>
   </div>
 </section>
@@ -1043,7 +964,7 @@ p { margin: 0 0 var(--space-4); }
           <span class="logomark" aria-hidden="true"><svg viewBox="0 0 200 200"><text x="100" y="172" text-anchor="middle" font-size="160" fill="currentColor">f</text></svg></span>
           <span class="wordmark">Farmei</span>
         </a>
-        <p class="footer-note" data-od-id="footer-note">Feito pra gente marcar rolê de verdade. ¡Vamos!</p>
+        <p class="footer-note" data-od-id="footer-note">Feito pra gente marcar rolê de verdade — com quórum, key person e 1 dia pra dar o bolo. ¡Vamos!</p>
       </div>
       <div class="footer-cols" data-od-id="footer-links">
         <div>
@@ -1052,14 +973,6 @@ p { margin: 0 0 var(--space-4); }
             <li><a href="#rolando">O que está rolando</a></li>
             <li><a href="#app">Rolês privados</a></li>
             <li><a href="#como-funciona">Como funciona</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4>Pra espaços</h4>
-          <ul>
-            <li><a href="#planos">Planos</a></li>
-            <li><a href="#planos">Check-in e lista</a></li>
-            <li><a href="#planos">Falar com a gente</a></li>
           </ul>
         </div>
         <div>
@@ -1074,7 +987,7 @@ p { margin: 0 0 var(--space-4); }
     </div>
     <div class="footer-bottom">
       <span data-od-id="footer-copyright">© 2026 Farmei</span>
-      <span data-od-id="footer-tagline">eventos reais entre pessoas reais</span>
+      <span data-od-id="footer-tagline">rolês que acontecem, gente que aparece</span>
     </div>
   </div>
 </footer>
