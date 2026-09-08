@@ -10,7 +10,8 @@ export type EventStatus = "DRAFT" | "OPEN" | "CONFIRMED" | "NO_DATE" | "CANCELLE
 export type ParticipantRole = "OWNER" | "INVITEE" | "KEY_PERSON" | "ROLE_ALEATORIO";
 export type InviteStatus = "PENDING" | "ACCEPTED" | "DECLINED";
 export type AvailabilityResponse = "YES" | "MAYBE" | "NO";
-export type RegistrationStatus = "REGISTERED" | "CANCELLED";
+export type RegistrationStatus = "REGISTERED" | "CANCELLED" | "WAITLIST";
+export type AdmissionMode = "FIRST_COME" | "CONFIAVEL";
 
 export interface UserRecord {
   id: string;
@@ -31,6 +32,7 @@ export interface EventRecord {
   status: EventStatus;
   confirmedDate: string | null;
   confirmedSlot: TimeSlot | null;
+  confirmationWindowEndsAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -70,6 +72,7 @@ export interface PublicEventSettingsRecord {
   eventTime: string | null;
   capacity: number;
   category: string | null;
+  admissionMode: AdmissionMode;
 }
 
 export interface PublicRegistrationRecord {
@@ -77,6 +80,7 @@ export interface PublicRegistrationRecord {
   eventId: string;
   userId: string;
   status: RegistrationStatus;
+  position: number | null;
   createdAt: string;
 }
 

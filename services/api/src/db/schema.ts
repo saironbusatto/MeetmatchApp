@@ -17,7 +17,8 @@ export const eventStatusEnum = pgEnum("event_status", ["DRAFT", "OPEN", "CONFIRM
 export const participantRoleEnum = pgEnum("participant_role", ["OWNER", "INVITEE", "KEY_PERSON", "ROLE_ALEATORIO"]);
 export const inviteStatusEnum = pgEnum("invite_status", ["PENDING", "ACCEPTED", "DECLINED"]);
 export const availabilityResponseEnum = pgEnum("availability_response", ["YES", "MAYBE", "NO"]);
-export const registrationStatusEnum = pgEnum("registration_status", ["REGISTERED", "CANCELLED"]);
+export const registrationStatusEnum = pgEnum("registration_status", ["REGISTERED", "CANCELLED", "WAITLIST"]);
+export const admissionModeEnum = pgEnum("admission_mode", ["FIRST_COME", "CONFIAVEL"]);
 export const devicePlatformEnum = pgEnum("device_platform", ["ios", "android", "web"]);
 export const timeSlotEnum = pgEnum("time_slot", ["MANHA", "TARDE", "NOITE", "ALTAS_HORAS"]);
 
@@ -47,6 +48,7 @@ export const events = pgTable("events", {
   status: eventStatusEnum("status").notNull(),
   confirmedDate: date("confirmed_date"),
   confirmedSlot: timeSlotEnum("confirmed_slot"),
+  confirmationWindowEndsAt: timestamp("confirmation_window_ends_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull()
 });
@@ -97,7 +99,8 @@ export const publicEventSettings = pgTable("public_event_settings", {
   eventDate: date("event_date").notNull(),
   eventTime: time("event_time"),
   capacity: integer("capacity").notNull(),
-  category: text("category")
+  category: text("category"),
+  admissionMode: admissionModeEnum("admission_mode").notNull().default("FIRST_COME")
 });
 
 export const publicEventRegistrations = pgTable("public_event_registrations", {
@@ -105,6 +108,7 @@ export const publicEventRegistrations = pgTable("public_event_registrations", {
   eventId: uuid("event_id").notNull(),
   userId: uuid("user_id").notNull(),
   status: registrationStatusEnum("status").notNull(),
+  position: integer("position"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull()
 });
 

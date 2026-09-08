@@ -25,7 +25,8 @@ const createSchema = z.object({
   eventDate: z.string().date(),
   eventTime: z.string().optional(),
   capacity: z.number().int().positive(),
-  category: z.string().optional()
+  category: z.string().optional(),
+  admissionMode: z.enum(["FIRST_COME", "CONFIAVEL"]).optional()
 });
 
 const updateSchema = createSchema.partial();
@@ -47,6 +48,7 @@ export const publicEventsRouter = new Hono<{ Variables: { auth: { userId: string
       status: "OPEN" as const,
       confirmedDate: payload.eventDate,
       confirmedSlot: null,
+      confirmationWindowEndsAt: null,
       createdAt: nowIso(),
       updatedAt: nowIso()
     };
@@ -57,7 +59,8 @@ export const publicEventsRouter = new Hono<{ Variables: { auth: { userId: string
       eventDate: payload.eventDate,
       eventTime: payload.eventTime ?? null,
       capacity: payload.capacity,
-      category: payload.category ?? null
+      category: payload.category ?? null,
+      admissionMode: payload.admissionMode ?? "FIRST_COME"
     });
 
     return c.json({ event }, 201);
@@ -114,7 +117,8 @@ export const publicEventsRouter = new Hono<{ Variables: { auth: { userId: string
         eventDate: payload.eventDate ?? currentSettings.eventDate,
         eventTime: payload.eventTime ?? currentSettings.eventTime,
         capacity: payload.capacity ?? currentSettings.capacity,
-        category: payload.category ?? currentSettings.category
+        category: payload.category ?? currentSettings.category,
+        admissionMode: payload.admissionMode ?? currentSettings.admissionMode
       });
     }
 
@@ -139,14 +143,32 @@ export const publicEventsRouter = new Hono<{ Variables: { auth: { userId: string
     if (!settings) return c.json({ message: "Event settings not found" }, 404);
 
     const active = [...db.registrations.values()].filter((r) => r.eventId === event.id && r.status === "REGISTERED");
-    if (active.find((r) => r.userId === auth.userId)) return c.json({ message: "Already registered" }, 409);
-    if (active.length >= settings.capacity) return c.json({ message: "Event is full" }, 409);
+    const waitlist = [...db.registrations.values()].filter((r) => r.eventId === event.id && r.status === "WAITLIST");
+    const mineActive = active.find((r) => r.userId === auth.userId);
+    const mineWaitlist = waitlist.find((r) => r.userId === auth.userId);
+    if (mineActive) return c.json({ message: "Already registered" }, 409);
+    if (mineWaitlist) return c.json({ message: "Already in waitlist" }, 409);
 
+    if (active.length < settings.capacity) {
+      const registration = {
+        id: randomUUID(),
+        eventId: event.id,
+        userId: auth.userId,
+        status: "REGISTERED" as const,
+        position: null,
+        createdAt: nowIso()
+      };
+      db.registrations.set(registration.id, registration);
+      return c.json({ registration }, 201);
+    }
+
+    const nextPosition = waitlist.reduce((max, r) => Math.max(max, r.position ?? 0), 0) + 1;
     const registration = {
       id: randomUUID(),
       eventId: event.id,
       userId: auth.userId,
-      status: "REGISTERED" as const,
+      status: "WAITLIST" as const,
+      position: nextPosition,
       createdAt: nowIso()
     };
     db.registrations.set(registration.id, registration);
@@ -157,11 +179,37 @@ export const publicEventsRouter = new Hono<{ Variables: { auth: { userId: string
     const event = db.events.get(c.req.param("id"));
     if (!event || event.type !== "PUBLIC") return c.json({ message: "Event not found" }, 404);
 
-    const registration = [...db.registrations.values()].find((r) => r.eventId === event.id && r.userId === auth.userId && r.status === "REGISTERED");
+    const registration = [...db.registrations.values()].find(
+      (r) => r.eventId === event.id && r.userId === auth.userId && (r.status === "REGISTERED" || r.status === "WAITLIST")
+    );
     if (!registration) return c.json({ message: "Registration not found" }, 404);
 
-    db.registrations.set(registration.id, { ...registration, status: "CANCELLED" });
+    db.registrations.set(registration.id, { ...registration, status: "CANCELLED", position: null });
+
+    if (registration.status === "REGISTERED") {
+      const waitlist = [...db.registrations.values()]
+        .filter((r) => r.eventId === event.id && r.status === "WAITLIST")
+        .sort((a, b) => (a.position ?? Number.MAX_SAFE_INTEGER) - (b.position ?? Number.MAX_SAFE_INTEGER));
+      const next = waitlist[0];
+      if (next) {
+        const promoted = { ...next, status: "REGISTERED" as const, position: null };
+        db.registrations.set(next.id, promoted);
+        return c.json({ ok: true, promoted }, 200);
+      }
+    }
+
     return c.json({ ok: true }, 200);
+  })
+  .get("/:id/waitlist", (c) => {
+    const auth = c.get("auth");
+    const event = db.events.get(c.req.param("id"));
+    if (!event || event.type !== "PUBLIC") return c.json({ message: "Event not found" }, 404);
+    if (event.ownerId !== auth.userId) return c.json({ message: "Forbidden" }, 403);
+
+    const waitlist = [...db.registrations.values()]
+      .filter((r) => r.eventId === event.id && r.status === "WAITLIST")
+      .sort((a, b) => (a.position ?? Number.MAX_SAFE_INTEGER) - (b.position ?? Number.MAX_SAFE_INTEGER));
+    return c.json({ waitlist }, 200);
   })
   .get("/:id/registrations", (c) => {
     const auth = c.get("auth");
@@ -173,9 +221,9 @@ export const publicEventsRouter = new Hono<{ Variables: { auth: { userId: string
     const rows = [...db.registrations.values()].filter((r) => r.eventId === event.id);
 
     if (format === "csv") {
-      const header = "registration_id,user_id,status,created_at";
+      const header = "registration_id,user_id,status,position,created_at";
       const lines = rows.map((r) =>
-        [r.id, r.userId, r.status, r.createdAt].map(csvEscape).join(",")
+        [r.id, r.userId, r.status, r.position ?? "", r.createdAt].map(csvEscape).join(",")
       );
       return c.body([header, ...lines].join("\n"), 200, {
         "Content-Type": "text/csv; charset=utf-8"

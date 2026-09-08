@@ -38,6 +38,8 @@ const availabilitySchema = z.object({
   })).min(1)
 });
 
+const CONFIRMATION_WINDOW_MS = 24 * 60 * 60 * 1000;
+
 function getEventOr404(eventId: string) {
   const event = db.events.get(eventId);
   if (!event || event.type !== "PRIVATE") {
@@ -50,6 +52,118 @@ function getEventOr404(eventId: string) {
   }
 
   return { event, settings };
+}
+
+function suggestionResult(found: NonNullable<ReturnType<typeof getEventOr404>>) {
+  const slotVotes = buildSlotVotes(found.event.id);
+  const eventParticipants = [...db.participants.values()].filter((p) => p.eventId === found.event.id);
+  const acceptedParticipants = eventParticipants.filter((p) => p.inviteStatus === "ACCEPTED");
+  const keyParticipant = eventParticipants.find((p) => p.userId === found.settings.keyPersonUserId);
+  const indications = eventParticipants
+    .filter((p) => p.inviteStatus === "ACCEPTED" && p.indicatedBy && p.indicatedBy.length > 0)
+    .map((p) => ({ participantId: p.id, invitedBy: p.indicatedBy! }));
+
+  return suggestSlot({
+    slots: slotVotes,
+    participantCount: acceptedParticipants.length,
+    quorumMin: found.settings.quorumMin,
+    keyPersonId: keyParticipant?.id ?? null,
+    indications
+  });
+}
+
+function windowOpen(event: { status: string; confirmationWindowEndsAt: string | null }) {
+  if (event.status !== "CONFIRMED") return false;
+  if (!event.confirmationWindowEndsAt) return false;
+  return Date.now() <= new Date(event.confirmationWindowEndsAt).getTime();
+}
+
+function startConfirmationWindow() {
+  return new Date(Date.now() + CONFIRMATION_WINDOW_MS).toISOString();
+}
+
+function setAvailabilityResponse(
+  eventId: string,
+  participantId: string,
+  date: string,
+  slot: TimeSlot,
+  response: "YES" | "MAYBE" | "NO"
+) {
+  const existing = [...db.availability.values()].find(
+    (item) =>
+      item.eventId === eventId &&
+      item.participantId === participantId &&
+      item.date === date &&
+      item.slot === slot
+  );
+
+  if (existing) {
+    db.availability.set(existing.id, { ...existing, response });
+  } else {
+    const row = {
+      id: randomUUID(),
+      eventId,
+      participantId,
+      date,
+      slot,
+      response
+    };
+    db.availability.set(row.id, row);
+  }
+}
+
+/**
+ * Reavalia o par confirmado dentro da janela de 1 dia (D17/D18).
+ * - Se o par atual ainda tem quórum (e key pessoa YES) → mantém.
+ * - Se o par atual perdeu quórum → re-match para o próximo melhor par com quórum
+ *   e reabre a janela (+1 dia), ou NO_DATE se não houver candidato.
+ */
+function recomputeConfirmation(eventId: string) {
+  const found = getEventOr404(eventId);
+  if (!found) return null;
+  const { event } = found;
+  if (event.status !== "CONFIRMED" || !windowOpen(event)) return null;
+
+  const confirmedDate = event.confirmedDate;
+  const confirmedSlot = event.confirmedSlot;
+
+  const result = suggestionResult(found);
+  const currentPairEligible = result.ranked.some(
+    (r) =>
+      r.date === confirmedDate &&
+      r.slot === confirmedSlot &&
+      r.quorumMet &&
+      r.keyPersonState === "YES"
+  );
+
+  if (currentPairEligible) {
+    return { event, rematched: false, noDate: false, suggestion: result.suggestion };
+  }
+
+  const winner = result.suggestion;
+  if (!winner) {
+    const updated = {
+      ...event,
+      status: "NO_DATE" as const,
+      confirmedDate: null,
+      confirmedSlot: null,
+      confirmationWindowEndsAt: null,
+      updatedAt: nowIso()
+    };
+    db.events.set(eventId, updated);
+    return { event: updated, rematched: false, noDate: true, suggestion: null };
+  }
+
+  const updated = {
+    ...event,
+    status: "CONFIRMED" as const,
+    confirmedDate: winner.date,
+    confirmedSlot: winner.slot,
+    confirmationWindowEndsAt: startConfirmationWindow(),
+    updatedAt: nowIso()
+  };
+  db.events.set(eventId, updated);
+  return { event: updated, rematched: true, noDate: false, suggestion: winner };
 }
 
 function isParticipant(eventId: string, userId: string) {
@@ -112,6 +226,7 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
       status: "DRAFT" as const,
       confirmedDate: null,
       confirmedSlot: null,
+      confirmationWindowEndsAt: null,
       createdAt: nowIso(),
       updatedAt: nowIso()
     };
@@ -285,6 +400,14 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
       }
     }
 
+    const outcome = found.event.status === "CONFIRMED" && windowOpen(found.event)
+      ? recomputeConfirmation(eventId)
+      : null;
+
+    if (outcome) {
+      return c.json({ ok: true, ...outcome }, 200);
+    }
+
     return c.json({ ok: true }, 200);
   })
   .get("/:id/availability", (c) => {
@@ -348,20 +471,7 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
     const slotVotes = buildSlotVotes(eventId);
     if (slotVotes.length === 0) return c.json({ message: "No availability responses found" }, 409);
 
-    const eventParticipants = [...db.participants.values()].filter((p) => p.eventId === eventId);
-    const acceptedParticipants = eventParticipants.filter((p) => p.inviteStatus === "ACCEPTED");
-    const keyParticipant = eventParticipants.find((p) => p.userId === found.settings.keyPersonUserId);
-    const indications = eventParticipants
-      .filter((p) => p.inviteStatus === "ACCEPTED" && p.indicatedBy && p.indicatedBy.length > 0)
-      .map((p) => ({ participantId: p.id, invitedBy: p.indicatedBy! }));
-
-    const result = suggestSlot({
-      slots: slotVotes,
-      participantCount: acceptedParticipants.length,
-      quorumMin: found.settings.quorumMin,
-      keyPersonId: keyParticipant?.id ?? null,
-      indications
-    });
+    const result = suggestionResult(found);
 
     const winner = result.suggestion;
     if (!winner) {
@@ -385,9 +495,38 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
       status: "CONFIRMED" as const,
       confirmedDate: winner.date,
       confirmedSlot: winner.slot,
+      confirmationWindowEndsAt: startConfirmationWindow(),
       updatedAt: nowIso()
     };
 
     db.events.set(eventId, updated);
     return c.json({ event: updated, suggestion: winner }, 200);
+  })
+  .post("/:id/dia-do-bolo", zValidator("json", z.object({ action: z.enum(["leave", "join"]) })), (c) => {
+    const auth = c.get("auth");
+    const eventId = c.req.param("id");
+    const { action } = c.req.valid("json");
+    const found = getEventOr404(eventId);
+    if (!found) return c.json({ message: "Event not found" }, 404);
+    if (found.event.status !== "CONFIRMED") return c.json({ message: "Event is not confirmed" }, 409);
+    if (!windowOpen(found.event)) return c.json({ message: "Confirmation window is closed" }, 409);
+
+    const confirmedDate = found.event.confirmedDate;
+    const confirmedSlot = found.event.confirmedSlot;
+    if (!confirmedDate || !confirmedSlot) return c.json({ message: "Event has no confirmed pair" }, 409);
+
+    const participant = [...db.participants.values()].find(
+      (p) => p.eventId === eventId && p.userId === auth.userId
+    );
+    if (!participant) return c.json({ message: "Not a participant of this event" }, 403);
+
+    const response = action === "leave" ? "NO" : "YES";
+    setAvailabilityResponse(eventId, participant.id, confirmedDate, confirmedSlot, response);
+
+    const outcome = recomputeConfirmation(eventId);
+    if (!outcome) {
+      return c.json({ event: found.event, rematched: false, noDate: false }, 200);
+    }
+
+    return c.json(outcome, 200);
   });

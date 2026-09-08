@@ -36,8 +36,11 @@ export enum AvailabilityChoice {
 
 export enum RegistrationStatus {
   REGISTERED = "REGISTERED",
-  CANCELLED = "CANCELLED"
+  CANCELLED = "CANCELLED",
+  WAITLIST = "WAITLIST"
 }
+
+export type AdmissionMode = "FIRST_COME" | "CONFIAVEL";
 
 export interface User {
   id: string;
@@ -58,6 +61,7 @@ export interface Event {
   status: EventStatus;
   confirmedDate?: string | null;
   confirmedSlot?: TimeSlot | null;
+  confirmationWindowEndsAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -76,6 +80,7 @@ export interface PublicEventSettings {
   eventTime?: string | null;
   capacity: number;
   category?: string | null;
+  admissionMode?: AdmissionMode;
 }
 
 export interface EventParticipant {
@@ -103,6 +108,7 @@ export interface PublicEventRegistration {
   eventId: string;
   userId: string;
   status: RegistrationStatus;
+  position?: number | null;
   createdAt: string;
 }
 
@@ -145,6 +151,7 @@ export interface CreatePublicEventRequest {
   eventTime?: string;
   capacity: number;
   category?: string;
+  admissionMode?: AdmissionMode;
 }
 
 export interface ApiErrorResponse {
