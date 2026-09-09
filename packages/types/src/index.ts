@@ -164,9 +164,12 @@ export interface CreatePublicEventRequest {
 }
 
 export interface ApiErrorResponse {
-  message: string;
+  message?: string;
   code?: string;
   details?: unknown;
+  error?: {
+    issues?: Array<{ message?: string; path?: Array<string | number> }>;
+  };
 }
 
 /** Par (dia × turno) sugerido — shape V2 (gate + quórum). Em modo fixo, slot é uma hora (ex. "18:00"). */

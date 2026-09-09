@@ -26,6 +26,24 @@ export class ApiError extends Error {
 
 type Method = "GET" | "POST" | "PUT" | "DELETE";
 
+function errorMessageFrom(payload?: ApiErrorResponse): string | undefined {
+  if (!payload) return undefined;
+  if (payload.message) return payload.message;
+
+  const details = payload.details as { fieldErrors?: Record<string, string[]> } | undefined;
+  const fieldErrors = details?.fieldErrors;
+  if (fieldErrors) {
+    const first = Object.values(fieldErrors).find((msgs) => msgs && msgs.length > 0)?.[0];
+    if (first) return first;
+  }
+
+  const error = payload.error as { issues?: Array<{ message?: string; path?: Array<string | number> }> } | undefined;
+  const issue = error?.issues?.[0];
+  if (issue) return `${issue.message ?? "Invalid"}${issue.path && issue.path.length ? ` (${issue.path.join(".")})` : ""}`;
+
+  return undefined;
+}
+
 function joinUrl(base: string, path: string): string {
   if (path.startsWith("http")) return path;
   return `${base.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
@@ -48,7 +66,7 @@ export function createApiClient(token: () => string | null) {
 
     if (!response.ok) {
       const payload = (await response.json().catch(() => undefined)) as ApiErrorResponse | undefined;
-      throw new ApiError(payload?.message ?? `HTTP ${response.status}`, response.status, payload);
+      throw new ApiError(errorMessageFrom(payload) ?? `HTTP ${response.status}`, response.status, payload);
     }
 
     if (response.status === 204) return undefined as TResponse;

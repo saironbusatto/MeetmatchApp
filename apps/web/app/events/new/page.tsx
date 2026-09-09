@@ -61,6 +61,11 @@ export default function NewEventPage(): JSX.Element {
         const data = await api.privateEvents.create({ title, dateWindowStart: dateStart, dateWindowEnd: dateEnd, quorumMin, matchingMode: "FAIXA" });
         router.push(`/events/${data.event.id}`);
       } else {
+        if (!eventDate) {
+          setError("Escolhe a data do evento (é obrigatória).");
+          setLoading(false);
+          return;
+        }
         const data = await api.publicEvents.create({ title, eventDate, eventSlot: eventSlot || undefined, capacity, admissionMode });
         router.push(`/events/${data.event.id}/host`);
       }
@@ -194,7 +199,17 @@ export default function NewEventPage(): JSX.Element {
                 label="Data início"
                 type="date"
                 value={dateStart}
-                onChange={(e) => setDateStart(e.target.value)}
+                onChange={(e) => {
+                  const start = e.target.value;
+                  setDateStart(start);
+                  if (!start) return;
+                  const next = new Date(`${start}T00:00:00Z`);
+                  next.setUTCDate(next.getUTCDate() + 30);
+                  const suggested = next.toISOString().slice(0, 10);
+                  if (!dateEnd || dateEnd < start) {
+                    setDateEnd(suggested);
+                  }
+                }}
                 required
               />
               <StyledInput
@@ -204,6 +219,9 @@ export default function NewEventPage(): JSX.Element {
                 onChange={(e) => setDateEnd(e.target.value)}
                 required
               />
+              <p style={{ fontFamily: T.fontBody, fontSize: 12, color: T.ink400, margin: "-12px 0 0" }}>
+                Sugerimos 30 dias de janela — dá pra ajustar.
+              </p>
               <div>
                 <p style={sectionTitleStyle}>Quórum mínimo</p>
                 <p style={{ fontFamily: T.fontBody, fontSize: 13, color: T.ink500, margin: "0 0 10px" }}>
