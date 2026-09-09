@@ -6,6 +6,7 @@ import { Avatar } from "~/components/ui/Avatar";
 import { T } from "~/components/ui/tokens";
 import { useApi } from "~/lib/useApi";
 import { usePublicEvent } from "~/lib/queries";
+import { SLOT_LABELS } from "~/lib/dates";
 
 interface Attendee {
   id: string;
@@ -92,7 +93,7 @@ export default function HostPanel() {
           </Text>
           {settings?.eventDate && (
             <Text style={{ fontFamily: T.fontMono, fontSize: 12, color: T.ink600 }}>
-              {settings.eventDate}{settings.eventTime ? ` · ${settings.eventTime}` : ""}
+              {settings.eventDate}{settings.eventSlot ? ` · ${SLOT_LABELS[settings.eventSlot]}` : ""}
             </Text>
           )}
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 10 }}>

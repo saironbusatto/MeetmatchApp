@@ -38,3 +38,18 @@ export function formatShortDate(date: string): string {
 export function formatWindow(start: string, end: string): string {
   return `${formatLongDate(start)} → ${formatLongDate(end)}`;
 }
+
+/** "18:00" → "18h00" */
+export function formatTime(slot: string): string {
+  return /^\d{2}:\d{2}$/.test(slot) ? `${slot.replace(":", "h")}` : slot;
+}
+
+/**
+ * Rótulo exibível de um slot confirmado/sugerido.
+ * Modo faixa → SLOT_LABELS; modo fixo (ou valor fora do enum) → hora "18h00".
+ */
+export function formatSlot(slot: string | null | undefined, mode?: "FAIXA" | "FIXO"): string {
+  if (!slot) return "—";
+  if (mode === "FIXO" || !(slot in SLOT_LABELS)) return formatTime(slot);
+  return SLOT_LABELS[slot as TimeSlot];
+}

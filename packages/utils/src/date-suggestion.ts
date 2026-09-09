@@ -29,10 +29,10 @@ export interface SlotResponse {
   choice: SlotChoice;
 }
 
-/** Um par (dia, turno) já votado. */
+/** Um par (dia, turno) já votado. Em modo "horário fixo", slot é uma hora (ex. "18:00"). */
 export interface SlotVote {
   date: string; // ISO date (yyyy-mm-dd)
-  slot: TimeSlot;
+  slot: string;
   responses: SlotResponse[];
 }
 
@@ -54,11 +54,13 @@ export interface SuggestSlotInput {
   keyPersonId: string | null;
   /** Indicações ativas por participante (opcional). */
   indications?: Indication[];
+  /** Ordem dos slots para desempate (default: TIME_SLOTS). Em modo fixo, usar os horários candidatos. */
+  slotOrder?: readonly string[];
 }
 
 export interface SlotSuggestion {
   date: string;
-  slot: TimeSlot;
+  slot: string;
   score: number;
   confidence: number;
   /** Quantidade de YES no par (contagem do quórum, D15). */
@@ -155,26 +157,39 @@ export function maxPossibleSlotScore(
   return sum > 0 ? sum : participantCount;
 }
 
-/** Ordenação estável: score desc, depois par mais cedo (data, depois turno) — business-rules. */
-export function sortSlots<T extends { date: string; slot: TimeSlot; score: number }>(a: T, b: T): number {
+/** Ordenação estável: score desc, depois par mais cedo (data, depois slot) — business-rules. */
+export function sortSlots<T extends { date: string; slot: string; score: number }>(
+  a: T,
+  b: T,
+  order: readonly string[] = TIME_SLOTS
+): number {
   if (b.score !== a.score) return b.score - a.score;
   if (a.date !== b.date) return a.date.localeCompare(b.date);
-  return TIME_SLOTS.indexOf(a.slot) - TIME_SLOTS.indexOf(b.slot);
+  const ia = order.indexOf(a.slot);
+  const ib = order.indexOf(b.slot);
+  if (ia !== -1 || ib !== -1) return (ia === -1 ? order.length : ia) - (ib === -1 ? order.length : ib);
+  return a.slot.localeCompare(b.slot);
 }
 
-function slotLabel(slot: TimeSlot): string {
+/**
+ * Rótulo humano de um slot. Turnos conhecidos viram "manhã"/"noite" etc.;
+ * horários fixos (ex. "18:00") viram "18h00".
+ */
+export function slotLabel(slot: string): string {
   const map: Record<TimeSlot, string> = {
     MANHA: "manhã",
     TARDE: "tarde",
     NOITE: "noite",
     ALTAS_HORAS: "altas horas"
   };
-  return map[slot];
+  if (slot in map) return map[slot as TimeSlot];
+  if (/^\d{2}:\d{2}$/.test(slot)) return `${slot.replace(":", "h")}`;
+  return slot;
 }
 
 function formatSlotReasoning(
   dateISO: string,
-  slot: TimeSlot,
+  slot: string,
   yesCount: number,
   participantCount: number,
   keyPersonState: "YES" | "MAYBE" | "NO" | "NO_RESPONSE"
@@ -230,7 +245,8 @@ export function suggestSlot(input: SuggestSlotInput): SuggestSlotResult {
     .sort((a, b) =>
       sortSlots(
         { ...a, date: a.vote.date, slot: a.vote.slot },
-        { ...b, date: b.vote.date, slot: b.vote.slot }
+        { ...b, date: b.vote.date, slot: b.vote.slot },
+        input.slotOrder
       )
     );
 

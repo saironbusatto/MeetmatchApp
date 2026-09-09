@@ -4,6 +4,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { requireAuth } from "../middleware/auth";
 import { db, nowIso } from "../store";
+import { TIME_SLOTS } from "@farmei/utils";
 
 const FORMULA_PREFIXES = new Set(["=", "+", "-", "@", "\t", "\r"]);
 
@@ -23,7 +24,7 @@ const createSchema = z.object({
   description: z.string().optional(),
   locationText: z.string().optional(),
   eventDate: z.string().date(),
-  eventTime: z.string().optional(),
+  eventSlot: z.enum(TIME_SLOTS).optional(),
   capacity: z.number().int().positive(),
   category: z.string().optional(),
   admissionMode: z.enum(["FIRST_COME", "CONFIAVEL"]).optional()
@@ -57,7 +58,7 @@ export const publicEventsRouter = new Hono<{ Variables: { auth: { userId: string
     db.publicSettings.set(eventId, {
       eventId,
       eventDate: payload.eventDate,
-      eventTime: payload.eventTime ?? null,
+      eventSlot: payload.eventSlot ?? null,
       capacity: payload.capacity,
       category: payload.category ?? null,
       admissionMode: payload.admissionMode ?? "FIRST_COME"
@@ -115,7 +116,7 @@ export const publicEventsRouter = new Hono<{ Variables: { auth: { userId: string
       db.publicSettings.set(event.id, {
         ...currentSettings,
         eventDate: payload.eventDate ?? currentSettings.eventDate,
-        eventTime: payload.eventTime ?? currentSettings.eventTime,
+        eventSlot: payload.eventSlot ?? currentSettings.eventSlot,
         capacity: payload.capacity ?? currentSettings.capacity,
         category: payload.category ?? currentSettings.category,
         admissionMode: payload.admissionMode ?? currentSettings.admissionMode

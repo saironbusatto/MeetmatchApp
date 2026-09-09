@@ -7,9 +7,9 @@ import Link from "next/link";
 import { T } from "@/components/ui/tokens";
 import { PrimaryButton } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { formatLongDate, SLOT_LABELS } from "@/lib/dates";
+import { formatLongDate, formatSlot } from "@/lib/dates";
 import type { CSSProperties, JSX } from "react";
-import type { TimeSlot } from "@farmei/types";
+import type { MatchingMode } from "@farmei/types";
 
 interface EventItem {
   id: string;
@@ -20,7 +20,8 @@ interface EventItem {
   dateWindowStart?: string;
   dateWindowEnd?: string;
   confirmedDate?: string | null;
-  confirmedSlot?: TimeSlot | null;
+  confirmedSlot?: string | null;
+  matchingMode?: MatchingMode;
 }
 
 export default function DashboardPage(): JSX.Element {
@@ -43,6 +44,7 @@ export default function DashboardPage(): JSX.Element {
           dateWindowEnd: item.settings.dateWindowEnd,
           confirmedDate: item.event.confirmedDate,
           confirmedSlot: item.event.confirmedSlot,
+          matchingMode: item.settings.matchingMode ?? "FAIXA",
         }))
       ))
       .catch(() => null);
@@ -200,7 +202,7 @@ export default function DashboardPage(): JSX.Element {
                 )}
                 {ev.confirmedDate && ev.confirmedSlot && (
                   <p style={{ ...cardDateStyle, color: T.success, fontWeight: 700 }}>
-                    {formatLongDate(ev.confirmedDate)} · {SLOT_LABELS[ev.confirmedSlot]}
+                    {formatLongDate(ev.confirmedDate)} · {formatSlot(ev.confirmedSlot, ev.matchingMode)}
                   </p>
                 )}
                 {ev.dateWindowStart && ev.dateWindowEnd && (

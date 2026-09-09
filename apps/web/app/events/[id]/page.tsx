@@ -3,11 +3,12 @@
 import { useAuth } from "@/lib/auth";
 import { createApiClient, ApiError } from "@/lib/client";
 import Link from "next/link";
-import { useEffect, useState, type JSX } from "react";
+import { useEffect, useRef, useState, type JSX } from "react";
 import { T } from "@/components/ui/tokens";
 import { PrimaryButton, SecondaryButton, GhostButton } from "@/components/ui/Button";
+import { QuorumStepper } from "@/components/ui/QuorumStepper";
 import { Card } from "@/components/ui/Card";
-import { formatLongDate, SLOT_LABELS } from "@/lib/dates";
+import { formatLongDate, formatSlot } from "@/lib/dates";
 import type { CSSProperties } from "react";
 import type { PrivateEventDetail, SlotSuggestion } from "@farmei/types";
 
@@ -34,6 +35,20 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   const [keyPersonBlocking, setKeyPersonBlocking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [quorumDraft, setQuorumDraft] = useState(1);
+  const quorumDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (detail?.settings?.quorumMin != null) setQuorumDraft(detail.settings.quorumMin);
+  }, [detail?.settings?.quorumMin]);
+
+  useEffect(() => {
+    if (quorumDebounce.current !== null) clearTimeout(quorumDebounce.current);
+    if (!detail?.settings || quorumDraft === detail.settings.quorumMin) return;
+    quorumDebounce.current = setTimeout(() => {
+      saveConfig({ quorumMin: quorumDraft });
+    }, 550);
+  }, [quorumDraft]);
 
   useEffect(() => {
     params.then((p) => setId(p.id));
@@ -141,8 +156,8 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               <span>🎉</span>
               <span>
                 Fechou: <strong>{formatLongDate(event.confirmedDate)}</strong> de{" "}
-                <strong>{event.confirmedSlot ? SLOT_LABELS[event.confirmedSlot] : "—"}</strong>.
-                A IA cruzou a disponibilidade de todo mundo.
+                <strong>{formatSlot(event.confirmedSlot, settings?.matchingMode)}</strong>.
+                Cruzamos a disponibilidade de todo mundo.
               </span>
             </div>
           )}
@@ -199,6 +214,11 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                 Quórum mínimo: <strong>{settings.quorumMin}</strong>{" "}
                 {settings.keyPersonUserId ? "· pessoa-chave definida" : "· sem pessoa-chave"}
               </p>
+              {settings.matchingMode === "FIXO" && (
+                <p style={{ fontFamily: T.fontBody, fontSize: 15, color: T.ink500, marginTop: 4 }}>
+                  Horários: <strong>{(settings.fixedSlots ?? []).map((t) => formatSlot(t, "FIXO")).join(" · ")}</strong>
+                </p>
+              )}
             </Card>
           )}
 
@@ -206,23 +226,18 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
             <div style={{ marginTop: 12 }}>
               <div style={sparkBoxStyle}>
                 <span>✦</span>
-                <span>Config da IA da Farmei — a sugestão dá peso extra pra pessoa-chave e só fecha com o quórum.</span>
+                <span>A melhor data pra todo mundo — a sugestão dá peso extra pra pessoa-chave e só fecha com o quórum.</span>
               </div>
               <Card noShadow>
                 <p style={sectionTitleStyle}>Quórum mínimo</p>
-                <div style={chipsStyle}>
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => saveConfig({ quorumMin: n })}
-                      disabled={saving}
-                      style={chipStyle(settings?.quorumMin === n)}
-                    >
-                      {n}
-                    </button>
-                  ))}
-                </div>
+                <p style={{ fontFamily: T.fontBody, fontSize: 13, color: T.ink500, margin: "0 0 10px" }}>
+                  Quantas pessoas precisam poder ir pra fechar? Segure o botão pra mudar rápido.
+                </p>
+                <QuorumStepper
+                  value={quorumDraft}
+                  onChange={setQuorumDraft}
+                  disabled={saving}
+                />
                 <p style={sectionTitleStyle}>Pessoa-chave</p>
                 <div style={chipsStyle}>
                   <button
@@ -250,13 +265,13 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               </Card>
 
               <div style={{ marginTop: 16 }}>
-                <p style={sectionTitleStyle}>Sugestão da IA</p>
+                <p style={sectionTitleStyle}>Sugestão de data</p>
                 {suggestion ? (
                   <Card noShadow>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
                       <div>
                         <p style={{ fontFamily: T.fontBody, fontSize: 16, fontWeight: 700, color: T.ink, margin: 0 }}>
-                          {formatLongDate(suggestion.date)} · {SLOT_LABELS[suggestion.slot]}
+                          {formatLongDate(suggestion.date)} · {formatSlot(suggestion.slot, settings?.matchingMode)}
                         </p>
                         <p style={{ fontFamily: T.fontBody, fontSize: 14, color: T.ink500, margin: "6px 0 0" }}>
                           {suggestion.yesCount} confirmados ·{" "}
@@ -270,7 +285,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                     <p style={{ ...sparkBoxStyle, marginTop: 12 }}>🧠 {suggestion.reasoning}</p>
                     {keyPersonBlocking && (
                       <p style={{ ...hintStyle, color: T.warn, fontWeight: 600 }}>
-                        Esperando a pessoa-chave responder — a IA não fecha sem ela.
+                        Esperando a pessoa-chave responder — a sugestão não fecha sem ela.
                       </p>
                     )}
                     <div style={{ marginTop: 16 }}>

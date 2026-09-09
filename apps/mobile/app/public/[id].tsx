@@ -5,6 +5,7 @@ import { PrimaryButton, SecondaryButton } from "~/components/ui/Button";
 import { T } from "~/components/ui/tokens";
 import { usePublicEvent, useRegisterPublicEvent, useUnregisterPublicEvent } from "~/lib/queries";
 import { useSession } from "~/lib/store";
+import { SLOT_LABELS } from "~/lib/dates";
 import { useState } from "react";
 
 function occupancyColor(pct: number) {
@@ -100,7 +101,7 @@ export default function PublicEventDetail() {
           </Text>
           {settings?.eventDate && (
             <Text style={{ fontFamily: T.fontMonoBold, fontSize: 15, color: T.ink600 }}>
-              {settings.eventDate}{settings.eventTime ? ` · ${settings.eventTime}` : ""}
+              {settings.eventDate}{settings.eventSlot ? ` · ${SLOT_LABELS[settings.eventSlot]}` : ""}
             </Text>
           )}
         </View>

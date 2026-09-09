@@ -6,10 +6,10 @@ import { useEffect, useState, useCallback, Fragment, type JSX } from "react";
 import { T } from "@/components/ui/tokens";
 import { PrimaryButton } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { SLOTS, SLOT_SHORT, formatShortDate } from "@/lib/dates";
+import { SLOTS, SLOT_SHORT, formatShortDate, formatTime } from "@/lib/dates";
 import type { CSSProperties } from "react";
 import { AvailabilityChoice } from "@farmei/types";
-import type { PrivateEventDetail, TimeSlot } from "@farmei/types";
+import type { PrivateEventDetail, MatchingMode } from "@farmei/types";
 
 function buildDays(start: string, end: string): string[] {
   const days: string[] = [];
@@ -103,10 +103,10 @@ export default function AvailabilityPage({ params }: { params: Promise<{ id: str
         .filter(([, choice]) => choice !== null)
         .map(([key, choice]) => {
           const [date, slot] = key.split("|");
-          return { date: date!, slot: slot as TimeSlot, response: (choice ?? "YES") as AvailabilityChoice };
+          return { date: date!, slot: slot!, response: (choice ?? "YES") as AvailabilityChoice };
         });
       if (responses.length === 0) {
-        setError("Marca pelo menos um dia e turno que você consiga.");
+        setError("Marca pelo menos um dia e horário que você consiga.");
         setSaving(false);
         return;
       }
@@ -121,6 +121,16 @@ export default function AvailabilityPage({ params }: { params: Promise<{ id: str
 
   const markedCount = Object.values(marks).filter((c) => c !== null).length;
 
+  const mode: MatchingMode = detail?.settings?.matchingMode ?? "FAIXA";
+  const fixedTimes = detail?.settings?.fixedSlots ?? [];
+  const columns: Array<{ key: string; label: string }> =
+    mode === "FIXO"
+      ? fixedTimes.map((t) => ({ key: t, label: formatTime(t) }))
+      : SLOTS.map(({ slot }) => ({ key: slot, label: SLOT_SHORT[slot] }));
+  if (mode === "FIXO" && columns.length === 0) {
+    columns.push({ key: "18:00", label: "18h00" });
+  }
+
   const pageStyle: CSSProperties = { maxWidth: 900, margin: "0 auto", padding: "40px 24px 80px" };
   const titleStyle: CSSProperties = { fontFamily: T.fontDisplay, fontSize: 32, fontWeight: 800, letterSpacing: "-0.02em", color: T.ink, marginBottom: 8 };
   const subStyle: CSSProperties = { fontFamily: T.fontBody, fontSize: 15, color: T.ink500, marginBottom: 28 };
@@ -132,7 +142,7 @@ export default function AvailabilityPage({ params }: { params: Promise<{ id: str
     <main style={pageStyle}>
       <h1 style={titleStyle}>Disponibilidade</h1>
       <p style={subStyle}>
-        Clica em cada <strong>dia × turno</strong> pra marcar se você consegue. O ciclo é Sim → Talvez → Não.
+        Clica em cada <strong>dia × {mode === "FIXO" ? "hora" : "turno"}</strong> pra marcar se você consegue. O ciclo é Sim → Talvez → Não.
       </p>
 
       {error && <div style={errorBoxStyle}>{error}</div>}
@@ -161,15 +171,15 @@ export default function AvailabilityPage({ params }: { params: Promise<{ id: str
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: `120px repeat(${SLOTS.length}, minmax(110px, 1fr))`,
+                gridTemplateColumns: `120px repeat(${columns.length}, minmax(110px, 1fr))`,
                 gap: 6,
                 minWidth: 560,
               }}
             >
               <div />
-              {SLOTS.map(({ slot }) => (
-                <div key={slot} style={{ fontFamily: T.fontMono, fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: T.ink400, textAlign: "center", textTransform: "uppercase", padding: "8px 0 12px" }}>
-                  {SLOT_SHORT[slot]}
+              {columns.map(({ key, label }) => (
+                <div key={key} style={{ fontFamily: T.fontMono, fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: T.ink400, textAlign: "center", textTransform: "uppercase", padding: "8px 0 12px" }}>
+                  {label}
                 </div>
               ))}
               {days.map((date) => {
@@ -183,14 +193,14 @@ export default function AvailabilityPage({ params }: { params: Promise<{ id: str
                         {formatShortDate(date)}
                       </span>
                     </div>
-                    {SLOTS.map(({ slot }) => {
-                      const choice = marks[`${date}|${slot}`] ?? null;
+                    {columns.map(({ key, label }) => {
+                      const choice = marks[`${date}|${key}`] ?? null;
                       const cfg = choice ? CHOICE_STYLE[choice] : null;
                       return (
                         <button
-                          key={`${date}-${slot}`}
-                          onClick={() => toggle(date, slot)}
-                          title={`${short} ${formatShortDate(date)} — ${SLOT_SHORT[slot]}`}
+                          key={`${date}-${key}`}
+                          onClick={() => toggle(date, key)}
+                          title={`${short} ${formatShortDate(date)} — ${label}`}
                           style={{
                             aspectRatio: "1.35",
                             borderRadius: 10,
@@ -218,7 +228,7 @@ export default function AvailabilityPage({ params }: { params: Promise<{ id: str
               {saving ? "Salvando..." : `Salvar disponibilidade${markedCount > 0 ? ` (${markedCount})` : ""}`}
             </PrimaryButton>
             <p style={{ fontFamily: T.fontBody, fontSize: 13, color: T.ink400, marginTop: 10, textAlign: "center" }}>
-              Deixa em branco o que você não marcou — a IA só considera o que você confirmou.
+              Deixa em branco o que você não marcou — só consideramos o que você confirmou.
             </p>
           </div>
         </Card>

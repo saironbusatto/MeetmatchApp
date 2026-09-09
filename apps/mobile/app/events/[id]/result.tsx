@@ -89,7 +89,7 @@ export default function ResultScreen() {
               Esperando a pessoa-chave
             </Text>
             <Text style={{ fontFamily: T.fontBody, fontSize: 13, color: "#7A5A10", lineHeight: 19 }}>
-              O algoritmo da Farmei prioriza o horário da pessoa-chave do grupo. Ela ainda não respondeu com "sim" — pede pra ela marcar disponibilidade.
+              O algoritmo da Farmei prioriza a faixa da pessoa-chave do grupo. Ela ainda não respondeu com "sim" — pede pra ela marcar disponibilidade.
             </Text>
           </View>
         )}

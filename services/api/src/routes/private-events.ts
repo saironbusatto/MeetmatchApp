@@ -4,7 +4,15 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { suggestSlot, TIME_SLOTS } from "@farmei/utils";
 import { requireAuth } from "../middleware/auth";
-import { db, nowIso, type TimeSlot } from "../store";
+import { db, nowIso, type MatchingMode } from "../store";
+
+const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+function isFixedMode(matchingMode: MatchingMode | undefined): boolean {
+  return matchingMode === "FIXO";
+}
+
+const MATCHING_MODES = z.enum(["FAIXA", "FIXO"]);
 
 const createSchemaBase = z.object({
   title: z.string().min(1),
@@ -13,12 +21,37 @@ const createSchemaBase = z.object({
   dateWindowStart: z.string().date(),
   dateWindowEnd: z.string().date(),
   keyPersonUserId: z.string().uuid().optional(),
-  quorumMin: z.number().int().min(1).optional()
+  quorumMin: z.number().int().min(1).optional(),
+  matchingMode: MATCHING_MODES.optional(),
+  fixedSlots: z.array(z.string()).optional()
 });
 
 const createSchema = createSchemaBase
   .refine((v) => v.dateWindowEnd >= v.dateWindowStart, {
     message: "dateWindowEnd must be greater than or equal to dateWindowStart"
+  })
+  .superRefine((v, ctx) => {
+    if (v.matchingMode === "FIXO") {
+      const slots = v.fixedSlots ?? [];
+      if (slots.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["fixedSlots"],
+          message: "fixedSlots are required when matchingMode is FIXO"
+        });
+        return;
+      }
+      for (const s of slots) {
+        if (!TIME_RE.test(s)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["fixedSlots"],
+            message: `Invalid fixed slot "${s}" — expected HH:MM (24h)`
+          });
+          return;
+        }
+      }
+    }
   });
 
 const updateSchema = createSchemaBase.partial();
@@ -33,7 +66,7 @@ const availabilitySchema = z.object({
   inviteToken: z.string().uuid().optional(),
   responses: z.array(z.object({
     date: z.string().date(),
-    slot: z.enum(TIME_SLOTS),
+    slot: z.string().min(1),
     response: z.enum(["YES", "MAYBE", "NO"])
   })).min(1)
 });
@@ -68,7 +101,8 @@ function suggestionResult(found: NonNullable<ReturnType<typeof getEventOr404>>) 
     participantCount: acceptedParticipants.length,
     quorumMin: found.settings.quorumMin,
     keyPersonId: keyParticipant?.id ?? null,
-    indications
+    indications,
+    slotOrder: isFixedMode(found.settings.matchingMode) ? found.settings.fixedSlots ?? [] : TIME_SLOTS
   });
 }
 
@@ -86,7 +120,7 @@ function setAvailabilityResponse(
   eventId: string,
   participantId: string,
   date: string,
-  slot: TimeSlot,
+  slot: string,
   response: "YES" | "MAYBE" | "NO"
 ) {
   const existing = [...db.availability.values()].find(
@@ -193,7 +227,7 @@ function buildSlotVotes(eventId: string) {
 
   return [...byPair.entries()].map(([key, responses]) => {
     const [date, slot] = key.split("|");
-    return { date: date!, slot: slot as TimeSlot, responses };
+    return { date: date!, slot: slot!, responses };
   });
 }
 
@@ -237,7 +271,9 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
       dateWindowStart: payload.dateWindowStart,
       dateWindowEnd: payload.dateWindowEnd,
       keyPersonUserId: payload.keyPersonUserId ?? null,
-      quorumMin: payload.quorumMin ?? 1
+      quorumMin: payload.quorumMin ?? 1,
+      matchingMode: payload.matchingMode ?? "FAIXA",
+      fixedSlots: payload.matchingMode === "FIXO" ? payload.fixedSlots ?? [] : null
     });
 
     const ownerParticipant = {
@@ -288,7 +324,16 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
       dateWindowStart: payload.dateWindowStart ?? found.settings.dateWindowStart,
       dateWindowEnd: payload.dateWindowEnd ?? found.settings.dateWindowEnd,
       keyPersonUserId: payload.keyPersonUserId ?? found.settings.keyPersonUserId,
-      quorumMin: payload.quorumMin ?? found.settings.quorumMin
+      quorumMin: payload.quorumMin ?? found.settings.quorumMin,
+      matchingMode: payload.matchingMode ?? found.settings.matchingMode ?? "FAIXA",
+      fixedSlots:
+        payload.matchingMode === "FIXO"
+          ? payload.fixedSlots ?? found.settings.fixedSlots ?? []
+          : payload.matchingMode === "FAIXA"
+            ? null
+            : found.settings.matchingMode === "FIXO"
+              ? found.settings.fixedSlots ?? []
+              : null
     };
 
     if (nextSettings.dateWindowEnd < nextSettings.dateWindowStart) {
@@ -446,7 +491,8 @@ export const privateEventsRouter = new Hono<{ Variables: { auth: { userId: strin
       participantCount: acceptedParticipants.length,
       quorumMin: found.settings.quorumMin,
       keyPersonId: keyParticipant?.id ?? null,
-      indications
+      indications,
+      slotOrder: isFixedMode(found.settings.matchingMode) ? found.settings.fixedSlots ?? [] : TIME_SLOTS
     });
 
     if (result.keyPersonBlocking) {

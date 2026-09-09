@@ -4,24 +4,33 @@ import { useAuth } from "@/lib/auth";
 import { createApiClient, ApiError } from "@/lib/client";
 import { useRouter } from "next/navigation";
 import { useState, type JSX } from "react";
+import type { TimeSlot, MatchingMode } from "@farmei/types";
+import { SLOTS } from "@/lib/dates";
 import { T } from "@/components/ui/tokens";
 import { PrimaryButton } from "@/components/ui/Button";
 import { StyledInput, StyledSelect } from "@/components/ui/Input";
+import { QuorumStepper } from "@/components/ui/QuorumStepper";
 import { Card } from "@/components/ui/Card";
 import type { CSSProperties } from "react";
+
+type Choice = "PRIVATE" | "PUBLIC";
+
+const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 export default function NewEventPage(): JSX.Element {
   const router = useRouter();
   const { token } = useAuth();
   const api = createApiClient(() => token);
-  const [type, setType] = useState<"PRIVATE" | "PUBLIC">("PRIVATE");
+  const [type, setType] = useState<Choice>("PRIVATE");
   const [title, setTitle] = useState("");
   const [dateStart, setDateStart] = useState("");
   const [dateEnd, setDateEnd] = useState("");
   const [eventDate, setEventDate] = useState("");
-  const [eventTime, setEventTime] = useState("");
+  const [eventSlot, setEventSlot] = useState<TimeSlot | "">("");
   const [capacity, setCapacity] = useState(10);
   const [quorumMin, setQuorumMin] = useState(1);
+  const [matchingMode, setMatchingMode] = useState<MatchingMode>("FAIXA");
+  const [fixedSlotsInput, setFixedSlotsInput] = useState("");
   const [admissionMode, setAdmissionMode] = useState<"FIRST_COME" | "CONFIAVEL">("FIRST_COME");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,10 +42,26 @@ export default function NewEventPage(): JSX.Element {
 
     try {
       if (type === "PRIVATE") {
-        const data = await api.privateEvents.create({ title, dateWindowStart: dateStart, dateWindowEnd: dateEnd, quorumMin });
+        if (matchingMode === "FIXO") {
+          const slots = fixedSlotsInput.split(",").map((s) => s.trim()).filter(Boolean);
+          if (slots.length === 0) {
+            setError("Digita ao menos um horário candidato (ex: 18:00, 20:00).");
+            setLoading(false);
+            return;
+          }
+          if (!slots.every((s) => TIME_RE.test(s))) {
+            setError("Horários precisam ser HH:MM (24h), separados por vírgula — ex: 18:00, 20:00.");
+            setLoading(false);
+            return;
+          }
+          const data = await api.privateEvents.create({ title, dateWindowStart: dateStart, dateWindowEnd: dateEnd, quorumMin, matchingMode: "FIXO", fixedSlots: slots });
+          router.push(`/events/${data.event.id}`);
+          return;
+        }
+        const data = await api.privateEvents.create({ title, dateWindowStart: dateStart, dateWindowEnd: dateEnd, quorumMin, matchingMode: "FAIXA" });
         router.push(`/events/${data.event.id}`);
       } else {
-        const data = await api.publicEvents.create({ title, eventDate, eventTime: eventTime || undefined, capacity, admissionMode });
+        const data = await api.publicEvents.create({ title, eventDate, eventSlot: eventSlot || undefined, capacity, admissionMode });
         router.push(`/events/${data.event.id}/host`);
       }
     } catch (e) {
@@ -82,26 +107,6 @@ export default function NewEventPage(): JSX.Element {
     alignItems: "flex-start",
   };
 
-  const chipsStyle: CSSProperties = {
-    display: "flex",
-    gap: 8,
-    flexWrap: "wrap",
-  };
-
-  const chipStyle = (active: boolean): CSSProperties => ({
-    minWidth: 44,
-    height: 44,
-    padding: "0 8px",
-    borderRadius: 999,
-    border: `2px solid ${active ? T.vermillion : T.ink100}`,
-    background: active ? T.vermillion : T.white,
-    color: active ? T.white : T.ink,
-    fontFamily: T.fontBody,
-    fontSize: 16,
-    fontWeight: 700,
-    cursor: "pointer",
-  });
-
   const errorStyle: CSSProperties = {
     background: T.vermillionSoft,
     border: `1px solid ${T.vermillion}`,
@@ -111,6 +116,26 @@ export default function NewEventPage(): JSX.Element {
     fontSize: 14,
     color: T.vermillion,
   };
+
+  const chipsStyle: CSSProperties = {
+    display: "flex",
+    gap: 8,
+    flexWrap: "wrap",
+  };
+
+  const chipStyle = (active: boolean): CSSProperties => ({
+    minWidth: 44,
+    height: 44,
+    padding: "0 14px",
+    borderRadius: 999,
+    border: `2px solid ${active ? T.vermillion : T.ink100}`,
+    background: active ? T.vermillion : T.white,
+    color: active ? T.white : T.ink,
+    fontFamily: T.fontBody,
+    fontSize: 15,
+    fontWeight: 700,
+    cursor: "pointer",
+  });
 
   return (
     <main style={pageStyle}>
@@ -125,7 +150,7 @@ export default function NewEventPage(): JSX.Element {
             value={type}
             onChange={(e) => setType(e.target.value as "PRIVATE" | "PUBLIC")}
           >
-            <option value="PRIVATE">Privado (IA escolhe a melhor data)</option>
+            <option value="PRIVATE">Privado (a melhor data pra todo mundo)</option>
             <option value="PUBLIC">Público (data fixa, inscrições abertas)</option>
           </StyledSelect>
 
@@ -142,10 +167,28 @@ export default function NewEventPage(): JSX.Element {
               <div style={sparkBoxStyle}>
                 <span>✨</span>
                 <span>
-                  A IA cruza a disponibilidade de todo mundo e sugere o melhor par
-                  dia&nbsp;×&nbsp;turno dentro da janela.
+                  {matchingMode === "FAIXA"
+                    ? "O sistema cruza a disponibilidade de todo mundo e sugere o melhor par dia × turno dentro da janela."
+                    : "Você define os horários candidatos e o sistema cruza a disponibilidade de todo mundo pra cada hora."}
                 </span>
               </div>
+              <p style={sectionTitleStyle}>Como a gente combina?</p>
+              <div style={chipsStyle}>
+                <button type="button" onClick={() => setMatchingMode("FAIXA")} style={chipStyle(matchingMode === "FAIXA")}>
+                  Por faixa
+                </button>
+                <button type="button" onClick={() => setMatchingMode("FIXO")} style={chipStyle(matchingMode === "FIXO")}>
+                  Horário fixo
+                </button>
+              </div>
+              {matchingMode === "FIXO" && (
+                <StyledInput
+                  label="Horários candidatos"
+                  placeholder="Ex: 18:00, 20:00, 22:00"
+                  value={fixedSlotsInput}
+                  onChange={(e) => setFixedSlotsInput(e.target.value)}
+                />
+              )}
               <p style={sectionTitleStyle}>Janela de datas</p>
               <StyledInput
                 label="Data início"
@@ -163,19 +206,10 @@ export default function NewEventPage(): JSX.Element {
               />
               <div>
                 <p style={sectionTitleStyle}>Quórum mínimo</p>
-                <div style={chipsStyle}>
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => setQuorumMin(n)}
-                      style={chipStyle(quorumMin === n)}
-                      title={`${n} pessoa(s)`}
-                    >
-                      {n}
-                    </button>
-                  ))}
-                </div>
+                <p style={{ fontFamily: T.fontBody, fontSize: 13, color: T.ink500, margin: "0 0 10px" }}>
+                  Quantas pessoas precisam poder ir pra fechar? Segure o botão pra mudar rápido.
+                </p>
+                <QuorumStepper value={quorumMin} onChange={setQuorumMin} />
               </div>
             </>
           ) : (
@@ -187,12 +221,16 @@ export default function NewEventPage(): JSX.Element {
                 onChange={(e) => setEventDate(e.target.value)}
                 required
               />
-              <StyledInput
-                label="Horário (opcional)"
-                type="time"
-                value={eventTime}
-                onChange={(e) => setEventTime(e.target.value)}
-              />
+              <StyledSelect
+                label="Faixa (opcional)"
+                value={eventSlot}
+                onChange={(e) => setEventSlot(e.target.value as TimeSlot | "")}
+              >
+                <option value="">Sem faixa</option>
+                {SLOTS.map((s) => (
+                  <option key={s.slot} value={s.slot}>{s.label}</option>
+                ))}
+              </StyledSelect>
               <StyledInput
                 label="Capacidade máxima"
                 type="number"

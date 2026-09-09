@@ -4,6 +4,7 @@ import { getDb } from "./db/client";
 import { userDevices as userDevicesTable, users as usersTable } from "./db/schema";
 
 export type TimeSlot = "MANHA" | "TARDE" | "NOITE" | "ALTAS_HORAS";
+export type MatchingMode = "FAIXA" | "FIXO";
 
 export type EventType = "PRIVATE" | "PUBLIC";
 export type EventStatus = "DRAFT" | "OPEN" | "CONFIRMED" | "NO_DATE" | "CANCELLED";
@@ -31,7 +32,7 @@ export interface EventRecord {
   locationText: string | null;
   status: EventStatus;
   confirmedDate: string | null;
-  confirmedSlot: TimeSlot | null;
+  confirmedSlot: string | null;
   confirmationWindowEndsAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -43,6 +44,8 @@ export interface PrivateEventSettingsRecord {
   dateWindowEnd: string;
   keyPersonUserId: string | null;
   quorumMin: number;
+  matchingMode: MatchingMode;
+  fixedSlots: string[] | null;
 }
 
 export interface EventParticipantRecord {
@@ -62,14 +65,14 @@ export interface AvailabilityRecord {
   eventId: string;
   participantId: string;
   date: string;
-  slot: TimeSlot;
+  slot: string;
   response: AvailabilityResponse;
 }
 
 export interface PublicEventSettingsRecord {
   eventId: string;
   eventDate: string;
-  eventTime: string | null;
+  eventSlot: TimeSlot | null;
   capacity: number;
   category: string | null;
   admissionMode: AdmissionMode;

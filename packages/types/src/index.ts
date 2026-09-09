@@ -60,11 +60,15 @@ export interface Event {
   locationText?: string | null;
   status: EventStatus;
   confirmedDate?: string | null;
-  confirmedSlot?: TimeSlot | null;
+  /** Turno (faixa) ou hora fixa (ex. "18:00") conforme o matchingMode do evento. */
+  confirmedSlot?: string | null;
   confirmationWindowEndsAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
+
+/** Como o evento privado cruza as respostas: por faixa (dia × turno) ou por hora fixa (dia × hora). */
+export type MatchingMode = "FAIXA" | "FIXO";
 
 export interface PrivateEventSettings {
   eventId: string;
@@ -72,12 +76,15 @@ export interface PrivateEventSettings {
   dateWindowEnd: string;
   keyPersonUserId?: string | null;
   quorumMin: number;
+  matchingMode?: MatchingMode;
+  /** Horários candidatos quando matchingMode = FIXO (ex. ["18:00", "20:00"]). */
+  fixedSlots?: string[] | null;
 }
 
 export interface PublicEventSettings {
   eventId: string;
   eventDate: string;
-  eventTime?: string | null;
+  eventSlot?: TimeSlot | null;
   capacity: number;
   category?: string | null;
   admissionMode?: AdmissionMode;
@@ -99,7 +106,7 @@ export interface AvailabilityResponse {
   eventId: string;
   participantId: string;
   date: string;
-  slot: TimeSlot;
+  slot: string;
   response: AvailabilityChoice;
 }
 
@@ -141,6 +148,8 @@ export interface CreatePrivateEventRequest {
   dateWindowEnd: string;
   keyPersonUserId?: string;
   quorumMin?: number;
+  matchingMode?: MatchingMode;
+  fixedSlots?: string[];
 }
 
 export interface CreatePublicEventRequest {
@@ -148,7 +157,7 @@ export interface CreatePublicEventRequest {
   description?: string;
   locationText?: string;
   eventDate: string;
-  eventTime?: string;
+  eventSlot?: TimeSlot;
   capacity: number;
   category?: string;
   admissionMode?: AdmissionMode;
@@ -160,10 +169,10 @@ export interface ApiErrorResponse {
   details?: unknown;
 }
 
-/** Par (dia × turno) sugerido pela IA — shape V2 (gate + quórum). */
+/** Par (dia × turno) sugerido — shape V2 (gate + quórum). Em modo fixo, slot é uma hora (ex. "18:00"). */
 export interface SlotSuggestion {
   date: string;
-  slot: TimeSlot;
+  slot: string;
   score: number;
   confidence: number;
   yesCount: number;
@@ -190,7 +199,7 @@ export interface AvailabilityRow {
   eventId: string;
   participantId: string;
   date: string;
-  slot: TimeSlot;
+  slot: string;
   response: AvailabilityChoice;
 }
 
@@ -198,7 +207,7 @@ export interface AvailabilitySubmitRequest {
   inviteToken?: string;
   responses: Array<{
     date: string;
-    slot: TimeSlot;
+    slot: string;
     response: AvailabilityChoice;
   }>;
 }

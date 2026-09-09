@@ -58,7 +58,9 @@ export const privateEventSettings = pgTable("private_event_settings", {
   dateWindowStart: date("date_window_start").notNull(),
   dateWindowEnd: date("date_window_end").notNull(),
   keyPersonUserId: uuid("key_person_user_id"),
-  quorumMin: integer("quorum_min").notNull().default(1)
+  quorumMin: integer("quorum_min").notNull().default(1),
+  matchingMode: text("matching_mode").notNull().default("FAIXA"),
+  fixedSlots: text("fixed_slots").array()
 });
 
 export const eventParticipants = pgTable("event_participants", {
@@ -97,7 +99,7 @@ export const availabilityResponses = pgTable(
 export const publicEventSettings = pgTable("public_event_settings", {
   eventId: uuid("event_id").primaryKey(),
   eventDate: date("event_date").notNull(),
-  eventTime: time("event_time"),
+  eventSlot: text("event_slot"),
   capacity: integer("capacity").notNull(),
   category: text("category"),
   admissionMode: admissionModeEnum("admission_mode").notNull().default("FIRST_COME")

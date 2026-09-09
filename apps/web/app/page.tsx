@@ -155,11 +155,11 @@ export default function HomePage(): JSX.Element {
         <div style={circleSmStyle} />
         <p style={eyebrowStyle}>Eventos sem fricção</p>
         <h1 style={headlineStyle}>
-          Let&apos;s find a time<br />that works.
+          Bora achar um tempo<br />que funcione pra todo mundo.
         </h1>
         <p style={subtitleStyle}>
-          Planeje eventos privados com IA ou crie eventos públicos com lotação em tempo real.
-          Simples assim.
+          Planeje eventos privados e ache a melhor data pra todo mundo, ou crie eventos públicos com
+          lotação em tempo real. Simples assim.
         </p>
         <div style={ctaRowStyle}>
           <Link href="/signup" style={primaryCtaStyle}>
@@ -174,9 +174,9 @@ export default function HomePage(): JSX.Element {
       <div style={featuresStyle}>
         <div style={featureCardStyle}>
           <div style={iconStyle}>🗓</div>
-          <h3 style={featureTitleStyle}>IA escolhe a melhor data</h3>
+          <h3 style={featureTitleStyle}>Melhor data pra todo mundo</h3>
           <p style={featureDescStyle}>
-            Convide participantes, cada um marca sua disponibilidade. A IA cruza tudo e
+            Convide participantes, cada um marca sua disponibilidade. O sistema cruza tudo e
             sugere o melhor dia — com peso especial pra quem não pode faltar.
           </p>
         </div>
