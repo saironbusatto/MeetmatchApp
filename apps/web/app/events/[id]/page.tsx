@@ -168,10 +168,21 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
             )}
             {isOwner && (
               <SecondaryButton
-                onClick={() => {
-                  const link = prompt("Link de convite (copie e mande pro convidado):");
-                  if (link?.trim()) navigator.clipboard?.writeText(link.trim());
+                onClick={async () => {
+                  const email = prompt("Email do convidado:");
+                  if (!email?.trim() || !email.includes("@")) return;
+                  setSaving(true);
+                  try {
+                    const res = await api.privateEvents.invite(id, { email: email.trim() });
+                    navigator.clipboard?.writeText(res.inviteLink);
+                    alert("Link de convite copiado! Mande pra " + email.trim());
+                  } catch (e) {
+                    setError(e instanceof ApiError ? e.message : "Não deu pra criar o convite.");
+                  } finally {
+                    setSaving(false);
+                  }
                 }}
+                disabled={saving}
               >
                 Convidar
               </SecondaryButton>
