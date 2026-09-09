@@ -5,7 +5,7 @@ import { AIButton } from "~/components/ui/Button";
 import { Sparkle } from "~/components/ui/Sparkle";
 import { T } from "~/components/ui/tokens";
 import { usePrivateEventSuggestion, useConfirmEvent } from "~/lib/queries";
-import { formatLongDate, SLOT_LABELS } from "~/lib/dates";
+import { formatLongDate, formatSlot } from "~/lib/dates";
 import type { SlotSuggestion } from "@farmei/types";
 
 function pct(n: number) {
@@ -29,7 +29,7 @@ function GateCard({ suggestion }: { suggestion: SlotSuggestion }) {
       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
         <Sparkle size={18} color={T.vermillion} />
         <Text style={{ fontFamily: T.fontBodySemiBold, fontSize: 14, color: T.ink }}>
-          {formatLongDate(suggestion.date)} · {SLOT_LABELS[suggestion.slot]}
+          {formatLongDate(suggestion.date)} · {formatSlot(suggestion.slot)}
         </Text>
       </View>
       {lines.map((l) => (
@@ -98,7 +98,7 @@ export default function ResultScreen() {
           <>
             <Text style={{ fontFamily: T.fontBody, fontSize: 15, color: T.ink700, lineHeight: 22 }}>
               Melhor par <Text style={{ fontWeight: "800" }}>{formatLongDate(data.suggestion.date)}</Text> ·{" "}
-              <Text style={{ fontWeight: "800" }}>{SLOT_LABELS[data.suggestion.slot]}</Text>, baseado em {pct(data.suggestion.confidence)} de confiança.
+              <Text style={{ fontWeight: "800" }}>{formatSlot(data.suggestion.slot)}</Text>, baseado em {pct(data.suggestion.confidence)} de confiança.
             </Text>
 
             <GateCard suggestion={data.suggestion} />
@@ -118,7 +118,7 @@ export default function ResultScreen() {
                 {data.ranked.slice(1, 4).map((r: SlotSuggestion) => (
                   <View key={`${r.date}|${r.slot}`} style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: T.white, borderWidth: 1, borderColor: T.ink100, borderRadius: 12, paddingVertical: 10, paddingHorizontal: 14 }}>
                     <Text style={{ fontFamily: T.fontBodyMedium, fontSize: 13, color: T.ink700 }}>
-                      {formatLongDate(r.date)} · {SLOT_LABELS[r.slot]}
+                      {formatLongDate(r.date)} · {formatSlot(r.slot)}
                     </Text>
                     <Text style={{ fontFamily: T.fontMono, fontSize: 11, color: T.ink400 }}>{pct(r.confidence)}</Text>
                   </View>
