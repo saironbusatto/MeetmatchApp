@@ -1,114 +1,79 @@
 "use client";
 
 import { useAuth } from "@/lib/auth";
-import { getApiBaseUrl } from "@/lib/api";
+import { createApiClient } from "@/lib/client";
 import { useEffect, useState } from "react";
 import { T } from "@/components/ui/tokens";
-import { PrimaryButton, SecondaryButton } from "@/components/ui/Button";
+import { PrimaryButton, GhostButton } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import type { CSSProperties, JSX } from "react";
+import type { Event, PublicEventSettings } from "@farmei/types";
 
-const API = getApiBaseUrl();
-
-interface PublicEvent {
+interface PublicEventItem {
   id: string;
-  title: string;
-  description?: string;
-  eventDate?: string;
-  maxCapacity?: number;
-  currentCount?: number;
+  detail: {
+    event: Event;
+    settings: PublicEventSettings;
+  };
 }
+
+type MyState = { eventId: string; status: "REGISTERED" | "WAITLIST" | null; position?: number | null };
 
 export default function PublicPage(): JSX.Element {
   const { token } = useAuth();
-  const [events, setEvents] = useState<PublicEvent[]>([]);
-  const [registering, setRegistering] = useState<string | null>(null);
-  const [registered, setRegistered] = useState<Set<string>>(new Set());
+  const api = createApiClient(() => token);
+  const [events, setEvents] = useState<PublicEventItem[]>([]);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [myEvents, setMyEvents] = useState<Record<string, MyState>>({});
 
   useEffect(() => {
     if (!token) return;
-    fetch(`${API}/public-events`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((data) => {
-        const mapped = (data.data ?? []).map((item: any): PublicEvent => ({
-          id: item.event.id,
-          title: item.event.title ?? "",
-          description: item.event.description,
-          eventDate: item.settings?.eventDate,
-          maxCapacity: item.settings?.maxCapacity,
-          currentCount: item.settings?.currentCount,
-        }));
-        setEvents(mapped);
-      });
+    api.publicEvents
+      .list()
+      .then((data) => setEvents(data.data.map((d) => ({ id: d.event.id, detail: { event: d.event, settings: d.settings as PublicEventSettings } }))))
+      .catch(() => null);
   }, [token]);
 
   async function register(eventId: string) {
     if (!token) return;
-    setRegistering(eventId);
-    const res = await fetch(`${API}/public-events/${eventId}/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({}),
-    });
-    setRegistering(null);
-    if (res.ok) {
-      setRegistered((prev) => new Set([...prev, eventId]));
-      setEvents((prev) =>
-        prev.map((e) =>
-          e.id === eventId
-            ? { ...e, currentCount: (e.currentCount ?? 0) + 1 }
-            : e
-        )
-      );
+    setBusy(eventId);
+    try {
+      const res = await api.publicEvents.register(eventId);
+      setMyEvents((prev) => ({
+        ...prev,
+        [eventId]: {
+          eventId,
+          status: res.registration.status,
+          position: res.registration.position ?? null,
+        },
+      }));
+    } catch {
+      setMyEvents((prev) => ({ ...prev, [eventId]: { eventId, status: null } }));
+    } finally {
+      setBusy(null);
     }
   }
 
-  const pageStyle: CSSProperties = {
-    maxWidth: 1024,
-    margin: "0 auto",
-    padding: "40px 24px 80px",
-  };
+  async function unregister(eventId: string) {
+    if (!token) return;
+    setBusy(eventId);
+    try {
+      await api.publicEvents.unregister(eventId);
+      setMyEvents((prev) => ({ ...prev, [eventId]: { eventId, status: null } }));
+    } finally {
+      setBusy(null);
+    }
+  }
 
-  const headerStyle: CSSProperties = {
-    marginBottom: 40,
-  };
-
-  const titleStyle: CSSProperties = {
-    fontFamily: T.fontDisplay,
-    fontSize: 36,
-    fontWeight: 800,
-    letterSpacing: "-0.02em",
-    color: T.ink,
-    margin: 0,
-  };
-
-  const eyebrowStyle: CSSProperties = {
-    fontFamily: T.fontBody,
-    fontSize: 12,
-    fontWeight: 600,
-    letterSpacing: "0.1em",
-    textTransform: "uppercase",
-    color: T.vermillion,
-    marginBottom: 8,
-  };
-
-  const gridStyle: CSSProperties = {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-    gap: 20,
-  };
-
-  const emptyStyle: CSSProperties = {
-    fontFamily: T.fontBody,
-    fontSize: 16,
-    color: T.ink400,
-    padding: "60px 0",
-    textAlign: "center",
-  };
+  const pageStyle: CSSProperties = { maxWidth: 1024, margin: "0 auto", padding: "40px 24px 80px" };
+  const titleStyle: CSSProperties = { fontFamily: T.fontDisplay, fontSize: 36, fontWeight: 800, letterSpacing: "-0.02em", color: T.ink, margin: 0 };
+  const eyebrowStyle: CSSProperties = { fontFamily: T.fontBody, fontSize: 12, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: T.vermillion, marginBottom: 8 };
+  const gridStyle: CSSProperties = { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 20 };
+  const emptyStyle: CSSProperties = { fontFamily: T.fontBody, fontSize: 16, color: T.ink400, padding: "60px 0", textAlign: "center" };
 
   return (
     <main style={pageStyle}>
-      <div style={headerStyle}>
+      <div style={{ marginBottom: 40 }}>
         <p style={eyebrowStyle}>Feed aberto</p>
         <h1 style={titleStyle}>Eventos públicos</h1>
       </div>
@@ -117,27 +82,17 @@ export default function PublicPage(): JSX.Element {
         <div style={emptyStyle}>Nenhum evento público disponível no momento.</div>
       ) : (
         <div style={gridStyle}>
-          {events.map((ev) => {
-            const pct = ev.maxCapacity
-              ? Math.min(100, Math.round(((ev.currentCount ?? 0) / ev.maxCapacity) * 100))
-              : 0;
-            const isFull = ev.maxCapacity !== undefined && (ev.currentCount ?? 0) >= ev.maxCapacity;
-            const isRegistered = registered.has(ev.id);
-
-            const barColor = pct >= 90 ? T.vermillion : pct >= 60 ? T.warn : T.success;
+          {events.map(({ id, detail }) => {
+            const ev = detail.event;
+            const settings = detail.settings;
+            const my = myEvents[id]?.status;
+            const capacity = settings.capacity ?? 0;
 
             return (
-              <Card key={ev.id} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {ev.eventDate && (
-                  <div
-                    style={{
-                      fontFamily: T.fontMono,
-                      fontSize: 12,
-                      color: T.ink400,
-                      letterSpacing: "0.04em",
-                    }}
-                  >
-                    {new Date(ev.eventDate + "T12:00:00").toLocaleDateString("pt-BR", {
+              <Card key={id} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {settings.eventDate && (
+                  <div style={{ fontFamily: T.fontMono, fontSize: 12, color: T.ink400, letterSpacing: "0.04em" }}>
+                    {new Date(settings.eventDate + "T12:00:00").toLocaleDateString("pt-BR", {
                       weekday: "long",
                       day: "2-digit",
                       month: "long",
@@ -145,110 +100,67 @@ export default function PublicPage(): JSX.Element {
                   </div>
                 )}
 
-                <h3
-                  style={{
-                    fontFamily: T.fontDisplay,
-                    fontSize: 20,
-                    fontWeight: 700,
-                    color: T.ink,
-                    margin: 0,
-                  }}
-                >
+                <h3 style={{ fontFamily: T.fontDisplay, fontSize: 20, fontWeight: 700, color: T.ink, margin: 0 }}>
                   {ev.title}
                 </h3>
 
                 {ev.description && (
-                  <p
-                    style={{
-                      fontFamily: T.fontBody,
-                      fontSize: 14,
-                      color: T.ink500,
-                      margin: 0,
-                      lineHeight: 1.5,
-                    }}
-                  >
+                  <p style={{ fontFamily: T.fontBody, fontSize: 14, color: T.ink500, margin: 0, lineHeight: 1.5 }}>
                     {ev.description}
                   </p>
                 )}
 
-                {ev.maxCapacity !== undefined && (
-                  <div>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: 6,
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontFamily: T.fontBody,
-                          fontSize: 13,
-                          color: T.ink500,
-                        }}
-                      >
-                        {ev.currentCount ?? 0} / {ev.maxCapacity} inscritos
-                      </span>
-                      <span
-                        style={{
-                          fontFamily: T.fontMono,
-                          fontSize: 12,
-                          fontWeight: 700,
-                          color: barColor,
-                        }}
-                      >
-                        {pct}%
-                      </span>
-                    </div>
-                    <div
-                      style={{
-                        height: 8,
-                        background: T.ink100,
-                        borderRadius: 999,
-                        overflow: "hidden",
-                      }}
-                    >
-                      <div
-                        style={{
-                          height: "100%",
-                          width: `${pct}%`,
-                          background: barColor,
-                          borderRadius: 999,
-                          transition: "width 0.3s",
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
+                <p style={{ fontFamily: T.fontBody, fontSize: 13, color: T.ink500, margin: 0 }}>
+                  {capacity > 0 ? `Capacidade: ${capacity} pessoas` : "Sem limite de vagas"}
+                  {settings.admissionMode === "CONFIAVEL" && " · entrada a critério do host"}
+                </p>
 
-                {isRegistered ? (
-                  <div
-                    style={{
-                      padding: "12px 16px",
-                      background: T.successSoft,
-                      border: `1px solid ${T.success}`,
-                      borderRadius: 12,
-                      fontFamily: T.fontBody,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      color: T.success,
-                      textAlign: "center",
-                    }}
-                  >
-                    ✓ Inscrito!
-                  </div>
-                ) : isFull ? (
-                  <SecondaryButton disabled fullWidth style={{ opacity: 0.4 }}>
-                    Lotado
-                  </SecondaryButton>
+                {my === "REGISTERED" ? (
+                  <>
+                    <div
+                      style={{
+                        padding: "12px 16px",
+                        background: T.successSoft,
+                        border: `1px solid ${T.success}`,
+                        borderRadius: 12,
+                        fontFamily: T.fontBody,
+                        fontSize: 14,
+                        fontWeight: 600,
+                        color: T.success,
+                        textAlign: "center",
+                      }}
+                    >
+                      ✓ Inscrito!
+                    </div>
+                    <GhostButton onClick={() => unregister(id)} disabled={busy === id}>
+                      Sair
+                    </GhostButton>
+                  </>
+                ) : my === "WAITLIST" ? (
+                  <>
+                    <div
+                      style={{
+                        padding: "12px 16px",
+                        background: T.spark + "33",
+                        border: `1px solid ${T.spark}`,
+                        borderRadius: 12,
+                        fontFamily: T.fontBody,
+                        fontSize: 14,
+                        fontWeight: 600,
+                        color: T.ink,
+                        textAlign: "center",
+                      }}
+                    >
+                      Você está na fila
+                      {myEvents[id]?.position ? ` · posição ${myEvents[id].position}` : ""}
+                    </div>
+                    <GhostButton onClick={() => unregister(id)} disabled={busy === id}>
+                      Sair da fila
+                    </GhostButton>
+                  </>
                 ) : (
-                  <PrimaryButton
-                    onClick={() => register(ev.id)}
-                    disabled={registering === ev.id}
-                    fullWidth
-                  >
-                    {registering === ev.id ? "Inscrevendo..." : "Quero ir!"}
+                  <PrimaryButton onClick={() => register(id)} disabled={busy === id} fullWidth>
+                    {busy === id ? "Inscrevendo..." : "Quero ir!"}
                   </PrimaryButton>
                 )}
               </Card>

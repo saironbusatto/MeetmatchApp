@@ -1,54 +1,61 @@
 "use client";
 
 import { useAuth } from "@/lib/auth";
-import { getApiBaseUrl } from "@/lib/api";
+import { createApiClient } from "@/lib/client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { T } from "@/components/ui/tokens";
 import { PrimaryButton } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { formatLongDate, SLOT_LABELS } from "@/lib/dates";
 import type { CSSProperties, JSX } from "react";
-
-const API = getApiBaseUrl();
+import type { TimeSlot } from "@farmei/types";
 
 interface EventItem {
   id: string;
   title: string;
   type: "PRIVATE" | "PUBLIC";
+  status?: string;
   eventDate?: string;
   dateWindowStart?: string;
   dateWindowEnd?: string;
+  confirmedDate?: string | null;
+  confirmedSlot?: TimeSlot | null;
 }
 
 export default function DashboardPage(): JSX.Element {
   const { user, token } = useAuth();
+  const api = createApiClient(() => token);
   const [privateEvents, setPrivateEvents] = useState<EventItem[]>([]);
   const [publicEvents, setPublicEvents] = useState<EventItem[]>([]);
 
   useEffect(() => {
     if (!token) return;
-    const headers = { Authorization: `Bearer ${token}` };
-    fetch(`${API}/private-events`, { headers })
-      .then((r) => r.json())
+    api.privateEvents
+      .list()
       .then((data) => setPrivateEvents(
-        (data.data ?? []).map((item: any) => ({
-          id: item.event?.id ?? item.id,
-          title: item.event?.title ?? item.title ?? "Sem título",
+        data.data.map((item) => ({
+          id: item.event.id,
+          title: item.event.title ?? "Sem título",
           type: "PRIVATE" as const,
-          dateWindowStart: item.settings?.dateWindowStart,
-          dateWindowEnd: item.settings?.dateWindowEnd,
+          status: item.event.status,
+          dateWindowStart: item.settings.dateWindowStart,
+          dateWindowEnd: item.settings.dateWindowEnd,
+          confirmedDate: item.event.confirmedDate,
+          confirmedSlot: item.event.confirmedSlot,
         }))
       ))
       .catch(() => null);
 
-    fetch(`${API}/public-events`, { headers })
-      .then((r) => r.json())
+    api.publicEvents
+      .list()
       .then((data) => setPublicEvents(
-        (data.data ?? []).map((item: any) => ({
-          id: item.event?.id ?? item.id,
-          title: item.event?.title ?? item.title ?? "Sem título",
+        data.data.map((item) => ({
+          id: item.event.id,
+          title: item.event.title ?? "Sem título",
           type: "PUBLIC" as const,
-          eventDate: item.settings?.eventDate,
+          status: item.event.status,
+          eventDate: (item.settings as { eventDate?: string }).eventDate,
         }))
       ))
       .catch(() => null);
@@ -135,6 +142,16 @@ export default function DashboardPage(): JSX.Element {
     marginBottom: 16,
   };
 
+  const statusBadge = (status?: string): CSSProperties | null => {
+    if (status === "CONFIRMED")
+      return { background: T.successSoft, color: T.success, border: `1px solid ${T.success}` };
+    if (status === "NO_DATE")
+      return { background: T.ink100, color: T.ink500, border: `1px solid ${T.ink100}` };
+    if (status === "CANCELLED")
+      return { background: T.vermillionSoft, color: T.vermillion, border: `1px solid ${T.vermillion}` };
+    return null;
+  };
+
   return (
     <main style={pageStyle}>
       <div style={headerStyle}>
@@ -163,12 +180,28 @@ export default function DashboardPage(): JSX.Element {
               style={{ textDecoration: "none" }}
             >
               <Card style={{ cursor: "pointer" }}>
-                <span style={badgeStyle(ev.type)}>
-                  {ev.type === "PRIVATE" ? "Privado" : "Público"}
+                <span style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <span style={badgeStyle(ev.type)}>
+                    {ev.type === "PRIVATE" ? "Privado" : "Público"}
+                  </span>
+                  {(() => {
+                    const sb = statusBadge(ev.status);
+                    if (!sb) return null;
+                    return (
+                      <span style={{ ...sb, padding: "3px 10px", borderRadius: 999, fontFamily: T.fontBody, fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                        {ev.status === "CONFIRMED" ? "Confirmado" : ev.status === "NO_DATE" ? "Sem data" : ev.status === "CANCELLED" ? "Cancelado" : ev.status}
+                      </span>
+                    );
+                  })()}
                 </span>
                 <h3 style={cardTitleStyle}>{ev.title}</h3>
                 {ev.eventDate && (
                   <p style={cardDateStyle}>{new Date(ev.eventDate).toLocaleDateString("pt-BR")}</p>
+                )}
+                {ev.confirmedDate && ev.confirmedSlot && (
+                  <p style={{ ...cardDateStyle, color: T.success, fontWeight: 700 }}>
+                    {formatLongDate(ev.confirmedDate)} · {SLOT_LABELS[ev.confirmedSlot]}
+                  </p>
                 )}
                 {ev.dateWindowStart && ev.dateWindowEnd && (
                   <p style={cardDateStyle}>

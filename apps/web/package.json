@@ -13,7 +13,9 @@
   "dependencies": {
     "@chenglou/pretext": "^0.0.7",
     "@farmei/design-tokens": "workspace:*",
+    "@farmei/types": "workspace:^",
     "@farmei/ui": "workspace:*",
+    "@farmei/utils": "workspace:^",
     "@tanstack/react-virtual": "^3.13.24",
     "next": "16.2.6",
     "react": "19.1.0",

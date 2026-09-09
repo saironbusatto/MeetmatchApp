@@ -1,50 +1,47 @@
 "use client";
 
 import { useAuth } from "@/lib/auth";
-import { getApiBaseUrl } from "@/lib/api";
+import { createApiClient, ApiError } from "@/lib/client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type JSX } from "react";
 import { T } from "@/components/ui/tokens";
 import { PrimaryButton } from "@/components/ui/Button";
 import { StyledInput, StyledSelect } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
-import type { CSSProperties, JSX } from "react";
-
-const API = getApiBaseUrl();
+import type { CSSProperties } from "react";
 
 export default function NewEventPage(): JSX.Element {
   const router = useRouter();
   const { token } = useAuth();
+  const api = createApiClient(() => token);
   const [type, setType] = useState<"PRIVATE" | "PUBLIC">("PRIVATE");
   const [title, setTitle] = useState("");
   const [dateStart, setDateStart] = useState("");
   const [dateEnd, setDateEnd] = useState("");
   const [eventDate, setEventDate] = useState("");
+  const [eventTime, setEventTime] = useState("");
   const [capacity, setCapacity] = useState(10);
+  const [quorumMin, setQuorumMin] = useState(1);
+  const [admissionMode, setAdmissionMode] = useState<"FIRST_COME" | "CONFIAVEL">("FIRST_COME");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function create() {
     if (!token) return;
     setLoading(true);
+    setError(null);
 
-    if (type === "PRIVATE") {
-      const res = await fetch(`${API}/private-events`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ title, dateWindowStart: dateStart, dateWindowEnd: dateEnd })
-      });
-      const data = await res.json();
+    try {
+      if (type === "PRIVATE") {
+        const data = await api.privateEvents.create({ title, dateWindowStart: dateStart, dateWindowEnd: dateEnd, quorumMin });
+        router.push(`/events/${data.event.id}`);
+      } else {
+        const data = await api.publicEvents.create({ title, eventDate, eventTime: eventTime || undefined, capacity, admissionMode });
+        router.push(`/events/${data.event.id}/host`);
+      }
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Não deu pra criar o evento.");
       setLoading(false);
-      if (res.ok) router.push(`/events/${data.event.id}`);
-    } else {
-      const res = await fetch(`${API}/public-events`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ title, eventDate, capacity })
-      });
-      const data = await res.json();
-      setLoading(false);
-      if (res.ok) router.push(`/events/${data.event.id}/host`);
     }
   }
 
@@ -71,19 +68,12 @@ export default function NewEventPage(): JSX.Element {
     margin: "24px 0 12px",
   };
 
-  const hintStyle: CSSProperties = {
-    fontFamily: T.fontBody,
-    fontSize: 13,
-    color: T.ink400,
-    marginTop: 6,
-  };
-
   const sparkBoxStyle: CSSProperties = {
     background: T.spark + "22",
     border: `1px solid ${T.spark}`,
     borderRadius: 12,
     padding: "12px 16px",
-    marginBottom: 20,
+    marginBottom: 4,
     fontFamily: T.fontBody,
     fontSize: 14,
     color: T.ink600,
@@ -92,9 +82,41 @@ export default function NewEventPage(): JSX.Element {
     alignItems: "flex-start",
   };
 
+  const chipsStyle: CSSProperties = {
+    display: "flex",
+    gap: 8,
+    flexWrap: "wrap",
+  };
+
+  const chipStyle = (active: boolean): CSSProperties => ({
+    minWidth: 44,
+    height: 44,
+    padding: "0 8px",
+    borderRadius: 999,
+    border: `2px solid ${active ? T.vermillion : T.ink100}`,
+    background: active ? T.vermillion : T.white,
+    color: active ? T.white : T.ink,
+    fontFamily: T.fontBody,
+    fontSize: 16,
+    fontWeight: 700,
+    cursor: "pointer",
+  });
+
+  const errorStyle: CSSProperties = {
+    background: T.vermillionSoft,
+    border: `1px solid ${T.vermillion}`,
+    borderRadius: 12,
+    padding: "12px 16px",
+    fontFamily: T.fontBody,
+    fontSize: 14,
+    color: T.vermillion,
+  };
+
   return (
     <main style={pageStyle}>
       <h1 style={titleStyle}>Novo evento</h1>
+
+      {error && <div style={{ ...errorStyle, marginBottom: 16 }}>{error}</div>}
 
       <Card>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -120,8 +142,8 @@ export default function NewEventPage(): JSX.Element {
               <div style={sparkBoxStyle}>
                 <span>✨</span>
                 <span>
-                  A IA vai cruzar a disponibilidade de todos os participantes e sugerir
-                  a melhor data dentro da janela que você definir.
+                  A IA cruza a disponibilidade de todo mundo e sugere o melhor par
+                  dia&nbsp;×&nbsp;turno dentro da janela.
                 </span>
               </div>
               <p style={sectionTitleStyle}>Janela de datas</p>
@@ -139,6 +161,22 @@ export default function NewEventPage(): JSX.Element {
                 onChange={(e) => setDateEnd(e.target.value)}
                 required
               />
+              <div>
+                <p style={sectionTitleStyle}>Quórum mínimo</p>
+                <div style={chipsStyle}>
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      onClick={() => setQuorumMin(n)}
+                      style={chipStyle(quorumMin === n)}
+                      title={`${n} pessoa(s)`}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </>
           ) : (
             <>
@@ -149,17 +187,28 @@ export default function NewEventPage(): JSX.Element {
                 onChange={(e) => setEventDate(e.target.value)}
                 required
               />
-              <div>
-                <StyledInput
-                  label="Capacidade máxima"
-                  type="number"
-                  min={1}
-                  value={capacity}
-                  onChange={(e) => setCapacity(Number(e.target.value))}
-                  required
-                />
-                <p style={hintStyle}>Número máximo de inscrições aceitas.</p>
-              </div>
+              <StyledInput
+                label="Horário (opcional)"
+                type="time"
+                value={eventTime}
+                onChange={(e) => setEventTime(e.target.value)}
+              />
+              <StyledInput
+                label="Capacidade máxima"
+                type="number"
+                min={1}
+                value={capacity}
+                onChange={(e) => setCapacity(Number(e.target.value))}
+                required
+              />
+              <StyledSelect
+                label="Entrada"
+                value={admissionMode}
+                onChange={(e) => setAdmissionMode(e.target.value as "FIRST_COME" | "CONFIAVEL")}
+              >
+                <option value="FIRST_COME">Primeiro a chegar (com fila de espera)</option>
+                <option value="CONFIAVEL">Quem eu confio</option>
+              </StyledSelect>
             </>
           )}
 
