@@ -21,6 +21,7 @@ export default function HostPanel() {
   const api = useApi();
   const { data: eventData, isLoading: loadingEvent } = usePublicEvent(id);
   const [attendees, setAttendees] = useState<Attendee[]>([]);
+  const [waitlist, setWaitlist] = useState<{ id: string; position: number }[]>([]);
   const [loadingReg, setLoadingReg] = useState(true);
 
   const event = (eventData as any)?.event;
@@ -40,7 +41,10 @@ export default function HostPanel() {
           colorIdx: i % 7,
         })));
       })
-      .catch(() => setAttendees([]))
+      .catch(() => setAttendees([]));
+    api.publicEvents.getWaitlist(id)
+      .then((res: any) => setWaitlist(res?.waitlist ?? []))
+      .catch(() => setWaitlist([]))
       .finally(() => setLoadingReg(false));
   }, [id]);
 
@@ -91,19 +95,18 @@ export default function HostPanel() {
               {settings.eventDate}{settings.eventTime ? ` · ${settings.eventTime}` : ""}
             </Text>
           )}
-          <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
-            <View style={{ flex: 1, backgroundColor: T.ink50, borderRadius: 10, padding: 12, alignItems: "center" }}>
-              <Text style={{ fontFamily: T.fontMonoBold, fontSize: 22, color: T.ink }}>{confirmed}</Text>
-              <Text style={{ fontFamily: T.fontBody, fontSize: 11, color: T.ink500, marginTop: 2 }}>inscritos</Text>
-            </View>
-            <View style={{ flex: 1, backgroundColor: T.successSoft, borderRadius: 10, padding: 12, alignItems: "center" }}>
-              <Text style={{ fontFamily: T.fontMonoBold, fontSize: 22, color: T.success }}>{arrived}</Text>
-              <Text style={{ fontFamily: T.fontBody, fontSize: 11, color: T.success, marginTop: 2 }}>chegaram</Text>
-            </View>
-            <View style={{ flex: 1, backgroundColor: T.vermillionSoft, borderRadius: 10, padding: 12, alignItems: "center" }}>
-              <Text style={{ fontFamily: T.fontMonoBold, fontSize: 22, color: T.vermillion }}>{settings?.capacity ?? "—"}</Text>
-              <Text style={{ fontFamily: T.fontBody, fontSize: 11, color: T.vermillion, marginTop: 2 }}>lotação</Text>
-            </View>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 10 }}>
+            {[
+              { v: confirmed, label: "inscritos", bg: T.ink50, fg: T.ink },
+              { v: arrived, label: "chegaram", bg: T.successSoft, fg: T.success },
+              { v: waitlist.length || "—", label: "na fila", bg: T.warnSoft, fg: "#9D6B0C" },
+              { v: settings?.capacity ?? "—", label: "lotação", bg: T.vermillionSoft, fg: T.vermillion },
+            ].map((s) => (
+              <View key={s.label} style={{ width: "48%", backgroundColor: s.bg, borderRadius: 10, padding: 12, alignItems: "center" }}>
+                <Text style={{ fontFamily: T.fontMonoBold, fontSize: 22, color: s.fg }}>{s.v}</Text>
+                <Text style={{ fontFamily: T.fontBody, fontSize: 11, color: s.fg, marginTop: 2 }}>{s.label}</Text>
+              </View>
+            ))}
           </View>
         </View>
 
@@ -139,6 +142,29 @@ export default function HostPanel() {
                 </Pressable>
               </View>
             ))}
+          </View>
+        )}
+
+        {/* Waitlist */}
+        {waitlist.length > 0 && (
+          <View style={{ gap: 8 }}>
+            <Text style={{ fontFamily: T.fontBodySemiBold, fontSize: 11, color: T.ink500, letterSpacing: 0.6, textTransform: "uppercase", paddingHorizontal: 4 }}>
+              Fila de espera ({waitlist.length})
+            </Text>
+            {waitlist.map((w) => (
+              <View key={w.id} style={{ flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: T.white, borderWidth: 1, borderColor: T.warnSoft, borderRadius: 12, padding: 12 }}>
+                <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: T.warnSoft, alignItems: "center", justifyContent: "center" }}>
+                  <Text style={{ fontFamily: T.fontMonoBold, fontSize: 13, color: "#9D6B0C" }}>{w.position}</Text>
+                </View>
+                <Text style={{ flex: 1, fontFamily: T.fontBodySemiBold, fontSize: 14, color: T.ink }}>Inscrito aguardando vaga</Text>
+                <Text style={{ fontFamily: T.fontBody, fontSize: 11, color: T.ink400 }}>
+                  {w.position === 1 ? "próximo" : "auto-entra"}
+                </Text>
+              </View>
+            ))}
+            <Text style={{ fontFamily: T.fontBody, fontSize: 12, color: T.ink500, paddingHorizontal: 4 }}>
+              Quando alguém desistir, a primeira pessoa da fila entra automaticamente.
+            </Text>
           </View>
         )}
 

@@ -1,11 +1,15 @@
 import { useRouter, useLocalSearchParams, Stack } from "expo-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 import { AppHeader } from "~/components/ui/AppHeader";
 import { AIButton } from "~/components/ui/Button";
 import { Sparkle } from "~/components/ui/Sparkle";
 import { T } from "~/components/ui/tokens";
-import { useSubmitAvailability, usePrivateEvent } from "~/lib/queries";
+import { useSubmitAvailability, usePrivateEvent, useAvailability } from "~/lib/queries";
+import { useSession } from "~/lib/store";
+import { daysInWindow, SLOTS } from "~/lib/dates";
+import { AvailabilityChoice } from "@farmei/types";
+import type { TimeSlot } from "@farmei/types";
 
 type Choice = 0 | 1 | 2 | 3; // 0=unset, 1=yes, 2=maybe, 3=no
 
@@ -16,49 +20,75 @@ const CHOICE_STYLE: Record<Choice, { bg: string; fg: string; border: string; lab
   3: { bg: T.ink,       fg: T.white,     border: T.ink,       label: "✕" },
 };
 
-const RESPONSE_MAP: Record<Choice, "YES" | "MAYBE" | "NO" | null> = {
-  0: null, 1: "YES", 2: "MAYBE", 3: "NO",
+const RESPONSE_MAP: Record<Choice, AvailabilityChoice | null> = {
+  0: null, 1: AvailabilityChoice.YES, 2: AvailabilityChoice.MAYBE, 3: AvailabilityChoice.NO,
 };
 
-function daysInWindow(start: string, end: string): Array<{ date: string; d: string; n: number }> {
-  const days = [];
-  const cur = new Date(start);
-  const last = new Date(end);
-  const DAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-  while (cur <= last && days.length < 28) {
-    days.push({ date: cur.toISOString().split("T")[0], d: DAYS[cur.getDay()], n: cur.getDate() });
-    cur.setDate(cur.getDate() + 1);
-  }
-  return days;
+const SHORT_SLOT: Record<TimeSlot, string> = {
+  MANHA: "Manhã",
+  TARDE: "Tarde",
+  NOITE: "Noite",
+  ALTAS_HORAS: "Alta",
+};
+
+function cellKey(date: string, slot: TimeSlot) {
+  return `${date}|${slot}`;
 }
 
 export default function AvailabilityScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const user = useSession((s) => s.user);
   const { data } = usePrivateEvent(id);
+  const { data: availData } = useAvailability(id);
   const settings = (data as any)?.settings;
+  const participants = (data as any)?.participants ?? [];
+  const event = (data as any)?.event;
   const days = settings?.dateWindowStart
     ? daysInWindow(settings.dateWindowStart, settings.dateWindowEnd)
     : [];
 
   const [state, setState] = useState<Record<string, Choice>>({});
+  const hydrated = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const { mutateAsync, isPending } = useSubmitAvailability(id);
 
-  const cycle = (date: string) =>
-    setState((s) => ({ ...s, [date]: (((s[date] ?? 0) + 1) % 4) as Choice }));
+  useEffect(() => {
+    if (hydrated.current || !availData || !user?.id) return;
+    const mine = participants.find((p: any) => p.userId === user.id);
+    if (!mine) return;
+    const rows = (availData as any).availability ?? [];
+    const next: Record<string, Choice> = {};
+    for (const row of rows) {
+      if (row.participantId !== mine.id) continue;
+      const choice = row.response === "YES" ? 1 : row.response === "MAYBE" ? 2 : 3;
+      next[cellKey(row.date, row.slot)] = choice;
+    }
+    hydrated.current = true;
+    setState(next);
+  }, [availData, user?.id, participants.length]);
+
+  const cycle = (date: string, slot: TimeSlot) =>
+    setState((s) => ({ ...s, [cellKey(date, slot)]: (((s[cellKey(date, slot)] ?? 0) + 1) % 4) as Choice }));
 
   const answered = Object.values(state).filter((v) => v !== 0).length;
 
   async function handleSubmit() {
     const responses = Object.entries(state)
       .filter(([, v]) => v !== 0)
-      .map(([date, v]) => ({ date, response: RESPONSE_MAP[v as Choice]! }));
-    if (responses.length === 0) { setError("Marca pelo menos um dia."); return; }
+      .map(([key, v]) => {
+        const [date, slot] = key.split("|");
+        return { date, slot: slot as TimeSlot, response: RESPONSE_MAP[v as Choice]! };
+      });
+    if (responses.length === 0) { setError("Marca pelo menos um dia e turno."); return; }
     setError(null);
     try {
-      await mutateAsync(responses);
-      router.replace(`/events/${id}/result` as any);
+      await mutateAsync({ responses });
+      if (event?.ownerId && event.ownerId === user?.id) {
+        router.replace(`/events/${id}/result` as any);
+      } else {
+        router.replace(`/events/${id}` as any);
+      }
     } catch (e: any) {
       setError(e?.message ?? "Erro ao enviar.");
     }
@@ -75,32 +105,52 @@ export default function AvailabilityScreen() {
           <Text style={{ color: T.success, fontFamily: T.fontBodySemiBold }}>✓ sim</Text>{"  "}
           <Text style={{ color: "#9D6B0C", fontFamily: T.fontBodySemiBold }}>~ talvez</Text>{"  "}
           <Text style={{ color: T.ink, fontFamily: T.fontBodySemiBold }}>✕ não</Text>
+          {"  "}— pode marcar manhã E noite do mesmo dia.
         </Text>
 
-        {/* Calendar grid */}
-        <View style={{ backgroundColor: T.white, borderWidth: 1, borderColor: T.ink100, borderRadius: 20, padding: 14 }}>
+        {/* Day × turno grid */}
+        <View style={{ backgroundColor: T.white, borderWidth: 1, borderColor: T.ink100, borderRadius: 20, padding: 12 }}>
           {settings?.dateWindowStart && (
-            <Text style={{ fontFamily: T.fontMonoBold, fontSize: 11, color: T.ink500, letterSpacing: 0.5, textTransform: "uppercase", marginBottom: 12 }}>
+            <Text style={{ fontFamily: T.fontMonoBold, fontSize: 11, color: T.ink500, letterSpacing: 0.5, textTransform: "uppercase", marginBottom: 10 }}>
               {settings.dateWindowStart} — {settings.dateWindowEnd}
             </Text>
           )}
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-            {days.map((day) => {
-              const choice = (state[day.date] ?? 0) as Choice;
-              const st = CHOICE_STYLE[choice];
-              return (
-                <Pressable
-                  key={day.date}
-                  onPress={() => cycle(day.date)}
-                  style={{ width: "22%", backgroundColor: st.bg, borderWidth: 1.5, borderColor: st.border, borderRadius: 14, paddingVertical: 10, alignItems: "center", gap: 2 }}
-                >
-                  <Text style={{ fontFamily: T.fontBody, fontSize: 11, color: st.fg, opacity: 0.85 }}>{day.d}</Text>
-                  <Text style={{ fontFamily: T.fontMonoBold, fontSize: 18, color: st.fg, lineHeight: 22 }}>{day.n}</Text>
-                  <Text style={{ fontSize: 12, fontFamily: T.fontBodySemiBold, color: st.fg, marginTop: 2 }}>{st.label}</Text>
-                </Pressable>
-              );
-            })}
+
+          {/* Header: turnos */}
+          <View style={{ flexDirection: "row", marginBottom: 8 }}>
+            <View style={{ width: 44 }} />
+            {SLOTS.map((slot) => (
+              <Text
+                key={slot}
+                style={{ flex: 1, textAlign: "center", fontFamily: T.fontBodySemiBold, fontSize: 10, color: T.ink500, letterSpacing: 0.4, textTransform: "uppercase" }}
+              >
+                {SHORT_SLOT[slot]}
+              </Text>
+            ))}
           </View>
+
+          {/* Linhas: dias */}
+          {days.map((day) => (
+            <View key={day.date} style={{ flexDirection: "row", alignItems: "center", marginBottom: 6 }}>
+              <View style={{ width: 44, alignItems: "center" }}>
+                <Text style={{ fontFamily: T.fontBody, fontSize: 10, color: T.ink500 }}>{day.weekday}</Text>
+                <Text style={{ fontFamily: T.fontMonoBold, fontSize: 14, color: T.ink, lineHeight: 16 }}>{day.dayNumber}</Text>
+              </View>
+              {SLOTS.map((slot) => {
+                const choice = (state[cellKey(day.date, slot)] ?? 0) as Choice;
+                const st = CHOICE_STYLE[choice];
+                return (
+                  <Pressable
+                    key={slot}
+                    onPress={() => cycle(day.date, slot)}
+                    style={{ flex: 1, marginHorizontal: 2, aspectRatio: 1.15, backgroundColor: st.bg, borderWidth: 1.5, borderColor: st.border, borderRadius: 10, alignItems: "center", justifyContent: "center" }}
+                  >
+                    <Text style={{ fontFamily: T.fontBodySemiBold, fontSize: 13, color: st.fg }}>{st.label}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ))}
         </View>
 
         {/* Progress banner */}
@@ -108,7 +158,7 @@ export default function AvailabilityScreen() {
           <View style={{ flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: T.spark, borderWidth: 2, borderColor: T.ink, borderRadius: 16, padding: 14 }}>
             <Sparkle size={20} color={T.ink} />
             <Text style={{ flex: 1, fontFamily: T.fontBodyMedium, fontSize: 13, color: T.ink, lineHeight: 19 }}>
-              {answered} de {days.length} dias marcados. Submete quando terminar.
+              {answered} {answered === 1 ? "turno marcado" : "turnos marcados"}. Submete quando terminar.
             </Text>
           </View>
         )}

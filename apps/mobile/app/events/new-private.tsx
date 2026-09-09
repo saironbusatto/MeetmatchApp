@@ -14,6 +14,7 @@ export default function NewPrivate() {
   const [windowStart, setWindowStart] = useState("");
   const [windowEnd, setWindowEnd] = useState("");
   const [duration, setDuration] = useState("1h");
+  const [quorum, setQuorum] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const { mutateAsync, isPending } = useCreatePrivateEvent();
 
@@ -26,6 +27,7 @@ export default function NewPrivate() {
         title: title.trim(),
         dateWindowStart: windowStart,
         dateWindowEnd: windowEnd,
+        quorumMin: quorum,
       });
       router.replace(`/events/${event.id}/invite` as any);
     } catch (e: any) {
@@ -75,6 +77,23 @@ export default function NewPrivate() {
               </Pressable>
             ))}
           </View>
+        </View>
+
+        <View style={{ gap: 6 }}>
+          <Text style={{ fontFamily: T.fontBodySemiBold, fontSize: 12, color: T.ink500, letterSpacing: 0.5, textTransform: "uppercase" }}>
+            Quórum mínimo
+          </Text>
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            {[1, 2, 3, 4, 5].map((q) => (
+              <Pressable key={q} onPress={() => setQuorum(q)}
+                style={{ width: 52, paddingVertical: 10, borderRadius: 14, alignItems: "center", backgroundColor: quorum === q ? T.vermillion : T.white, borderWidth: 1.5, borderColor: quorum === q ? T.vermillion : T.ink100 }}>
+                <Text style={{ fontFamily: T.fontBodySemiBold, fontSize: 15, color: quorum === q ? T.white : T.ink700 }}>{q}</Text>
+              </Pressable>
+            ))}
+          </View>
+          <Text style={{ fontFamily: T.fontBody, fontSize: 12, color: T.ink500 }}>
+            A IA só sugere uma data quando {quorum} {quorum === 1 ? "pessoa marca" : "pessoas marcam"} "sim" pro mesmo dia e turno.
+          </Text>
         </View>
 
         {error && (

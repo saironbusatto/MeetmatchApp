@@ -159,3 +159,59 @@ export interface ApiErrorResponse {
   code?: string;
   details?: unknown;
 }
+
+/** Par (dia × turno) sugerido pela IA — shape V2 (gate + quórum). */
+export interface SlotSuggestion {
+  date: string;
+  slot: TimeSlot;
+  score: number;
+  confidence: number;
+  yesCount: number;
+  quorumMet: boolean;
+  keyPersonState: "YES" | "MAYBE" | "NO" | "NO_RESPONSE";
+  reasoning: string;
+}
+
+export interface SuggestionResponse {
+  suggestion: SlotSuggestion | null;
+  ranked: SlotSuggestion[];
+  keyPersonBlocking: boolean;
+  message?: string;
+}
+
+export interface PrivateEventDetail {
+  event: Event;
+  settings: PrivateEventSettings;
+  participants: EventParticipant[];
+}
+
+export interface AvailabilityRow {
+  id: string;
+  eventId: string;
+  participantId: string;
+  date: string;
+  slot: TimeSlot;
+  response: AvailabilityChoice;
+}
+
+export interface AvailabilitySubmitRequest {
+  inviteToken?: string;
+  responses: Array<{
+    date: string;
+    slot: TimeSlot;
+    response: AvailabilityChoice;
+  }>;
+}
+
+export interface DiaDoBoloResponse {
+  event: Event;
+  rematched: boolean;
+  noDate: boolean;
+  suggestion?: SlotSuggestion | null;
+}
+
+export interface PublicEventDetail {
+  event: Event;
+  settings: PublicEventSettings;
+  attendees: PublicEventRegistration[];
+}

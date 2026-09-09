@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { CreatePrivateEventRequest, CreatePublicEventRequest } from "@farmei/types";
+import type { AvailabilitySubmitRequest, CreatePrivateEventRequest, CreatePublicEventRequest } from "@farmei/types";
 import { useApi } from "./useApi";
 
 export function usePrivateEvents() {
@@ -25,6 +25,7 @@ export function usePrivateEventSuggestion(id: string, enabled: boolean) {
     queryKey: ["private-events", id, "suggestion"],
     queryFn: () => api.privateEvents.suggestion(id),
     enabled: !!id && enabled,
+    retry: false,
   });
 }
 
@@ -37,12 +38,43 @@ export function useCreatePrivateEvent() {
   });
 }
 
+export function useUpdatePrivateEvent(id: string) {
+  const api = useApi();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { keyPersonUserId?: string | null; quorumMin?: number }) =>
+      api.privateEvents.update(id, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["private-events", id] }),
+  });
+}
+
 export function useConfirmEvent(id: string) {
   const api = useApi();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (date: string) => api.privateEvents.confirm(id, date),
+    mutationFn: () => api.privateEvents.confirm(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["private-events", id] }),
+  });
+}
+
+export function useDiaDoBolo(id: string) {
+  const api = useApi();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (action: "leave" | "join") => api.privateEvents.diaDoBolo(id, action),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["private-events", id] });
+      qc.invalidateQueries({ queryKey: ["private-events", id, "suggestion"] });
+    },
+  });
+}
+
+export function useAvailability(id: string) {
+  const api = useApi();
+  return useQuery({
+    queryKey: ["private-events", id, "availability"],
+    queryFn: () => api.privateEvents.availability(id),
+    enabled: !!id,
   });
 }
 
@@ -81,6 +113,15 @@ export function useRegisterPublicEvent(id: string) {
   });
 }
 
+export function useUnregisterPublicEvent(id: string) {
+  const api = useApi();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.publicEvents.unregister(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["public-events", id] }),
+  });
+}
+
 export function useInviteParticipant(eventId: string) {
   const api = useApi();
   const qc = useQueryClient();
@@ -94,8 +135,12 @@ export function useSubmitAvailability(eventId: string) {
   const api = useApi();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (responses: Array<{ date: string; response: "YES" | "MAYBE" | "NO" }>) =>
-      api.privateEvents.submitAvailability(eventId, { responses }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["private-events", eventId] }),
+    mutationFn: (body: AvailabilitySubmitRequest) =>
+      api.privateEvents.submitAvailability(eventId, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["private-events", eventId] });
+      qc.invalidateQueries({ queryKey: ["private-events", eventId, "availability"] });
+      qc.invalidateQueries({ queryKey: ["private-events", eventId, "suggestion"] });
+    },
   });
 }
